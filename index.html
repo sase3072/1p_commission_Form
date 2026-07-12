@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1인 커미션 신청서</title>
+    <title>커미션 프로필 신청서 틀</title>
+    <!-- 구글 Noto Sans KR & Noto Serif KR 웹폰트 한 번에 가져오기 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* 외부 본명조 소스 폰트 정의 반영 */
         @font-face {
             font-family: 'BonmyeongjoSourceHanSerif';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
@@ -25,21 +27,10 @@
             --primary-hover: #3aa3c7;
             --desc-font-size: 13px;
             
-            /* 실시간 폰트 제어용 커스텀 변수 (기본값은 Sans) */
+            /* 🎯 실시간 폰트 제어용 커스텀 변수 (기본값은 Sans) */
             --main-font: 'Noto Sans KR', sans-serif;
         }
-/* 오른쪽 위 아이디 표시 스타일 */
-.credit-tag {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #94a3b8; /* 은은한 회색 계열 */
-    letter-spacing: 0.5px;
-    z-index: 10;
-    user-select: none;
-}
+
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -270,6 +261,19 @@
             border: 1px solid var(--border-color);
         }
 
+        /* 🎯 [수정] 표정 슬롯과 겹치지 않도록 top과 right를 여백 안쪽으로 바짝 올려 재배치 */
+        .credit-tag {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            z-index: 100;
+            user-select: none;
+        }
+
         .left-area {
             position: absolute;
             left: 25px;
@@ -305,7 +309,6 @@
             text-overflow: ellipsis;
         }
 
-        /* 다시 더블 클릭 편집 모드로 전환 */
         .upload-zone {
             border: 2px dashed #cbd5e1;
             background: #f8fafc;
@@ -752,8 +755,6 @@
         
         .icon-select-label:has(input:checked) { background: var(--primary-color); color: #ffffff; }
         .line-select-label:has(input:checked) { background: #334155; color: #ffffff; }
-        
-        /* 🎯 폰트 라디오 토글 스위치 활성화 색상 */
         .font-select-label:has(input:checked) { background: #0284c7; color: #ffffff; }
     </style>
 </head>
@@ -809,7 +810,7 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>💬 한마디 말풍선 </span>
+                    <span>💬 한마디 말풍선 출력</span>
                     <label class="toggle-label">
                         <input type="checkbox" checked class="toggle-input" id="sidebar-bubble-toggle" onchange="toggleVisibility('speech-bubble-layer', this.checked)">
                         <div class="toggle-switch"></div>
@@ -861,6 +862,8 @@
 
         <!-- [중앙 영역] 메인 캔버스 -->
         <div class="template-outer" id="main-canvas">
+            <!-- 🎯 고정 아이디 배칭 기입을 가장 상단 여백 레이아웃으로 위치 조정 완료 -->
+            <div class="credit-tag">@sa_se372</div>
             
             <div class="left-area">
                 <div class="tag-list" id="tag-list-layer">
@@ -897,7 +900,7 @@
                     </div>
                 </div>
 
-                <!-- 🎯 [수정] 더블클릭 이벤트(ondblclick)로 파일 선택 실행 복구 완료 -->
+                <!-- 두상 컨테이너 -->
                 <div class="upload-zone bust-box" data-type="bust" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">더블클릭하여 두상 업로드</div>
                     <span class="upload-hint">더블클릭</span>
@@ -937,7 +940,6 @@
                 </div>
             </div>
 
-            <!-- 🎯 [수정] 우측 서브 슬롯들 역시 더블클릭 방식으로 안전하게 원복 완료 -->
             <div class="right-area" id="right-area-layer">
                 <div class="upload-zone expression-box" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 1</div>
@@ -972,7 +974,6 @@
 
                 <button class="add-palette-btn" style="background: #0284c7;" onclick="addSingleSpecCardSlot()">📋 프로필 박스 추가</button>
                 
-                <!-- 🎯 [신규 기능] 폰트 종류 선택 토글 UI 탑재 완료 -->
                 <div class="font-size-control-vertical" style="margin-top: 2px;">
                     <span>🅰️ 서체 종류 선택</span>
                     <div class="font-select-box">
@@ -1076,7 +1077,6 @@
                         changeSpeechLineAlignment(data.lineChoice);
                     }
 
-                    // 서체 선택 상태 세션 로드 연동
                     if(data.fontChoice) {
                         const fontRadio = document.querySelector(`input[name="font-style-choice"][value="${data.fontChoice}"]`);
                         if(fontRadio) fontRadio.checked = true;
@@ -1134,7 +1134,6 @@
             setupAutoSaveListeners();
         }
 
-        // 🎯 [신규] 서체 전역 가변 제어 함수 (고딕 / 명조(BonmyeongjoSourceHanSerif) 바인딩)
         function changeMainFontFamily(fontType) {
             if(fontType === 'serif') {
                 document.documentElement.style.setProperty('--main-font', "'BonmyeongjoSourceHanSerif', 'Noto Serif KR', serif");
@@ -1154,11 +1153,10 @@
             }
         }
 
-        // 🎯 [요청 변경 적용] 기본 더미 셋업 데이터를 수정하여 강제 초기값 지정
         function buildInitialSpecsLayout() {
             const specContainer = document.getElementById('spec-box-container');
             specContainer.innerHTML = '';
-            const defaults = ['남성/여성', 'nn세', 'nnncm', '기타'];
+            const defaults = ['남성/여성', 'nn세', 'nncm', '기타'];
             defaults.forEach(function(val) {
                 createSpecBoxNode(val);
             });
@@ -1183,7 +1181,7 @@
             inputField.type = 'text';
             inputField.className = 'input-spec-field';
             inputField.value = textVal;
-            inputField.maxLength = 10; // 글자 크기 확장 고려 유연화
+            inputField.maxLength = 10; 
             inputField.addEventListener('input', saveToLocalStorage);
             
             boxDiv.appendChild(delBtn);
@@ -1379,10 +1377,6 @@
             });
         }
 
-        function applyTransform(img) {
-            img.style.transform = `translate(${img.dataset.posX}px, ${img.dataset.posY}px) scale(${img.dataset.scale})`;
-        }
-
         function updateColorFromPicker(picker, textInputId) {
             const chosenColor = picker.value;
             const targetTextInput = document.getElementById(textInputId);
@@ -1515,13 +1509,20 @@
                 textSpan.style.fontSize = getComputedStyle(input).fontSize;
                 textSpan.style.fontWeight = getComputedStyle(input).fontWeight;
                 textSpan.style.color = getComputedStyle(input).color;
-                textSpan.style.textAlign = getComputedStyle(input).textAlign;
+                
+                if (input.closest('#profile-desc-container')) {
+                    textSpan.style.textAlign = 'left';
+                    textSpan.style.justifyContent = 'flex-start';
+                } else {
+                    textSpan.style.textAlign = getComputedStyle(input).textAlign;
+                    textSpan.style.justifyContent = 'center';
+                }
+
                 textSpan.style.width = input.offsetWidth + 'px';
                 textSpan.style.height = input.offsetHeight + 'px';
                 textSpan.style.lineHeight = getComputedStyle(input).lineHeight;
                 textSpan.style.display = 'flex';
                 textSpan.style.alignItems = 'center';
-                textSpan.style.justifyContent = 'center';
 
                 input.parentNode.insertBefore(textSpan, input);
                 input.style.display = 'none';
