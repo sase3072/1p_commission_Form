@@ -307,7 +307,6 @@
             transition: opacity 0.2s ease;
         }
         
-        /* 🎯 캔버스가 늘어나도 성격 태그 상자의 실제 가로 길이는 130px로 단단히 유지 */
         .tag-item {
             width: 130px; 
             height: 28px;
@@ -366,7 +365,6 @@
             z-index: 2;
         }
 
-        /* 🎯 캔버스 너비와 무관하게 우측 표정슬롯 기준 완벽 간격 고정 */
         .center-area {
             position: absolute;
             right: 240px; 
@@ -681,7 +679,6 @@
         }
         .row-add-btn:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; }
 
-        /* 🎯 오른쪽 표정 슬롯 영역은 캔버스 오른쪽 벽면에 완전 고정 */
         .right-area {
             position: absolute;
             right: 45px; 
@@ -730,7 +727,159 @@
         .draggable-sticker:hover .delete-sticker-btn,
         .draggable-sticker:hover .resize-sticker-handle,
         .draggable-sticker:hover .rotate-sticker-handle { display: flex; }
+
+        /* ========================================================
+           🎯 [완벽 매핑] HUD 가이드 오버레이 & 네온 화살표 시스템
+           ======================================================== */
+        .canvas-overlay-guide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.91);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+        .canvas-overlay-guide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 🎯 정밀 위치 타겟 하이라이트 박스 */
+        .hud-highlight {
+            position: absolute;
+            border: 2px dashed #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
+            border-radius: 12px;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+
+        /* 🎯 네온 블루 화살표 컴포넌트 */
+        .hud-arrow-right {
+            position: absolute;
+            height: 2px;
+            background: #38bdf8;
+            pointer-events: none;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+        .hud-arrow-right::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: -4px;
+            border-width: 5px 0 5px 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent #38bdf8;
+        }
+        .hud-arrow-left {
+            position: absolute;
+            height: 2px;
+            background: #38bdf8;
+            pointer-events: none;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+        .hud-arrow-left::after {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: -4px;
+            border-width: 5px 6px 5px 0;
+            border-style: solid;
+            border-color: transparent #38bdf8 transparent transparent;
+        }
+        /* 위쪽으로 향하는 화살표 (성격 키워드 전용) */
+        .hud-arrow-up {
+            position: absolute;
+            width: 2px;
+            background: #38bdf8;
+            pointer-events: none;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+        .hud-arrow-up::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -4px;
+            border-width: 0 5px 6px 5px;
+            border-style: solid;
+            border-color: transparent transparent #38bdf8 transparent;
+        }
+
+        /* 🏷️ 설명 라벨 박스 */
+        .overlay-label {
+            position: absolute;
+            background: #1e293b;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 12px; 
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            line-height: 1.6;
+            z-index: 10000;
+            color: #ffffff;
+        }
         
+        .overlay-label strong {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
+            margin-bottom: 2px;
+        }
+        .overlay-label span {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .overlay-label span b {
+            color: #e2e8f0;
+        }
+
+        /* 💾 시스템 가이드 (하단 중앙) */
+        .lbl-system-status {
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 380px;
+            text-align: center;
+            background: #10b981;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            align-items: center;
+        }
+        .lbl-system-status strong {
+            border: none;
+            color: #ffffff;
+            font-size: 12px;
+        }
+        .lbl-system-status span {
+            color: #ecfdf5;
+            text-align: center;
+        }
+
+        .overlay-close-hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-weight: 700;
+        }
+
+        /* 이미지 저장 시 가이드 숨김 */
         .hide-on-save .delete-sticker-btn,
         .hide-on-save .resize-sticker-handle,
         .hide-on-save .rotate-sticker-handle,
@@ -740,20 +889,22 @@
         .hide-on-save .row-add-btn,
         .hide-on-save .palette-del-btn,
         .hide-on-save .spec-box-del-btn,
+        .hide-on-save .canvas-overlay-guide, 
+        .hide-on-save .hud-highlight,
+        .hide-on-save .hud-arrow-right,
+        .hide-on-save .hud-arrow-left,
+        .hide-on-save .hud-arrow-up,
         .hide-on-save .color-preview input[type="color"] { 
             display: none !important;
         }
         .hide-on-save .upload-zone { border: none !important; background: transparent !important; }
         .hide-on-save .draggable-sticker { outline: none !important; }
-        
         .hide-on-save .color-code-input { display: none !important; }
         .hide-on-save .spec-box-item { background: transparent !important; border: none !important; }
-        
         .hide-on-save .center-area { height: 790px !important; display: flex !important; flex-direction: column !important; }
         .hide-on-save .profile-info { flex-grow: 1 !important; display: flex !important; flex-direction: column !important; }
         .hide-on-save .desc-list { max-height: none !important; overflow: visible !important; display: flex !important; flex-direction: column !important; }
         
-        /* 🎛️ 모던 플랫 선택박스 디자인 */
         .icon-select-box, .line-select-box, .font-select-box {
             display: flex;
             gap: 4px;
@@ -796,7 +947,7 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>🏷️ 성격 키워드 제어</span>
+                    <span>🏷️ 성격 키워드</span>
                     <label class="toggle-label">
                         <input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('tag-list-layer', this.checked)">
                         <div class="toggle-switch"></div>
@@ -892,6 +1043,59 @@
         <div class="template-outer" id="main-canvas">
             <div class="credit-tag">@sa_se372</div>
             
+            <!-- 🎯 조작 도움말 오버레이 레이어 -->
+            <div class="canvas-overlay-guide active" id="canvas-help-overlay" onclick="toggleHelpOverlay()">
+                
+                <!-- [01] 성격 키워드 (위치 아래로 겹침 방지 수정) -->
+                <div class="hud-highlight" style="left: 25px; top: 25px; width: 145px; height: 110px;"></div>
+                <div class="hud-arrow-up" style="left: 97px; top: 135px; height: 20px;"></div>
+                <div class="overlay-label" style="left: 25px; top: 155px; width: 250px;">
+                    <strong>📐 성격 키워드</strong>
+                    <span>좌측 패널에서 키워드 입력 및 색을 수정할 수 있습니다.<br>슬라이더를 끄면 사라집니다.<br>각 색상별로 지정 할 수도 있고, 한번에 적용도 가능합니다.</span>
+                </div>
+                
+                <!-- [02] 한마디 말풍선 -->
+                <div class="hud-highlight" style="right: 330px; top: 15px; width: 250px; height: 72px;"></div>
+                <div class="hud-arrow-right" style="right: 580px; top: 50px; width: 30px;"></div>
+                <div class="overlay-label" style="right: 610px; top: 15px; width: 270px;">
+                    <strong>💬 말풍선</strong>
+                    <span>좌측 패널에서 1줄 대사, 2줄 대사 선택이 가능합니다.<br>아이콘을 클릭하면 색상을 변경할 수 있습니다.<br>좌측 패널에서 마이크, 인용, 표정 중 선택해서 적용해보세요.</span>
+                </div>
+                
+                <!-- [03] 메인 두상 -->
+                <div class="hud-highlight" style="right: 240px; top: 75px; width: 290px; height: 290px;"></div>
+                <div class="hud-arrow-right" style="right: 530px; top: 220px; width: 30px;"></div>
+                <div class="overlay-label" style="right: 560px; top: 170px; width: 250px;">
+                    <strong>🖼️ 메인 두상</strong>
+                    <span>더블 클릭하여 사용합니다.<br>마우스 휠 : 줌인 줌아웃 / 클릭 : 위치 조정</span>
+                </div>
+                
+                <!-- [04] 표정 변화 슬롯 -->
+                <div class="hud-highlight" style="right: 45px; top: 50px; width: 150px; height: 490px;"></div>
+                <div class="hud-arrow-right" style="right: 195px; top: 190px; width: 20px;"></div>
+                <div class="overlay-label" style="right: 215px; top: 140px; width: 240px;">
+                    <strong>🎭 표정</strong>
+                    <span>같은 크기의 캔버스를 넣으면 동기화 맵핑이 가능합니다.<br>표정말고 다른 이미지를 넣어도 사용이 가능합니다.<br>좌측에서 해당 기능을 끌 수 있습니다.</span>
+                </div>
+                
+                <!-- [05] 컬러 파레트 및 텍스트 편집 -->
+                <div class="hud-highlight" style="right: 240px; bottom: 45px; width: 290px; height: 380px;"></div>
+                <div class="hud-arrow-right" style="right: 530px; bottom: 200px; width: 30px;"></div>
+                <div class="overlay-label" style="right: 560px; bottom: 120px; width: 320px;">
+                    <strong>📋 컬러 파레트 & 텍스트 편집</strong>
+                    <span><b>컬러 파레트 :</b> 한 패널을 클릭하여 색상 피커로 선택이 가능합니다. 박스 아래에 컬러코드를 입력하여도 적용이 됩니다. (이미지로 저장시 컬러코드는 지워집니다.)<br><br><b>텍스트 편집 :</b> 모든 텍스트는 클릭하여 바로 수정합니다. 우측의 [프로필 박스 추가]를 누르면 프로필 정보 박스가 추가됩니다.</span>
+                </div>
+                
+                <!-- 💾 하단 시스템 가이드 -->
+                <div class="overlay-label lbl-system-status">
+                    <strong>💾 기기 브라우저 내부 안심 자동 저장 (IndexedDB)</strong>
+                    <span>새로고침을 하거나 창을 닫아도 소중한 작업 데이터가 즉시 유지됩니다.<br>(이미지 다운로드 시 이 오버레이 화면은 전혀 저장되지 않습니다.)</span>
+                </div>
+                
+                <div class="overlay-close-hint">화면 아무 곳이나 클릭하면 가이드가 닫힙니다.</div>
+            </div>
+
+            <!-- UI 요소들 -->
             <div class="left-area">
                 <div class="tag-list" id="tag-list-layer">
                     <div id="tag-item-1" class="tag-item">성격 키워드 1</div>
@@ -993,7 +1197,9 @@
             
             <div class="btn-group-vertical">
 
-                <!-- 🎯 캔버스 전체 가로폭 너비를 실시간으로 제어하는 조절기 -->
+                <!-- 💡 도움말 오버레이를 켜는 토글 도구 -->
+                <button class="add-palette-btn" style="background: #0f172a;" onclick="toggleHelpOverlay()">💡 조작 도움말 오버레이</button>
+
                 <div class="font-size-control-vertical">
                     <span>📐 캔버스 가로 너비 조절</span>
                     <div class="slider-row">
@@ -1049,6 +1255,12 @@
         let paletteCount = 2; 
         let dbInstance = null;
         const DEFAULT_SLOT_ID = 999; 
+
+        // 🎯 도움말 오버레이 제어 함수
+        function toggleHelpOverlay() {
+            const overlay = document.getElementById('canvas-help-overlay');
+            overlay.classList.toggle('active');
+        }
 
         // 🎯 IndexedDB 초기화
         function initIndexedDB() {
@@ -1248,7 +1460,6 @@
                     document.getElementById('font-slider').value = data.fontSize || 13;
                     changeDescFontSize(data.fontSize || 13);
 
-                    // 🎯 캔버스 가로 너비 복구 적용
                     const savedCanvasWidth = data.canvasWidth || 950;
                     document.getElementById('canvas-width-slider').value = savedCanvasWidth;
                     changeCanvasWidth(savedCanvasWidth);
@@ -1324,13 +1535,11 @@
             setupAutoSaveListeners();
         }
 
-        // 🎯 캔버스 가로 너비 조절 기능
         function changeCanvasWidth(val) {
             document.getElementById('canvas-width-slider').value = val;
             document.getElementById('canvas-width-val').innerText = val + 'px';
             document.documentElement.style.setProperty('--canvas-width', val + 'px');
             
-            // 그라데이션 비율 다시 계산 적용
             for(let i = 1; i <= 3; i++) {
                 const picker = document.getElementById(`sidebar-picker-${i}`);
                 if(picker) syncTagColor(i, picker.value);
