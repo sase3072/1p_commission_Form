@@ -17,17 +17,20 @@
         }
 
         :root {
-            --bg-color: #f1f5f9;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-dark: #1e293b;
+            --text-dark: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --mic-color: #455a64;
-            --primary-color: #4cbade;
-            --primary-hover: #3aa3c7;
+            --mic-color: #475569;
+            --primary-color: #38bdf8;
+            --primary-hover: #0ea5e9;
             --desc-font-size: 13px;
             
-            /* 🎯 실시간 폰트 제어용 커스텀 변수 (기본값은 Sans) */
+            /* 🎯 캔버스 가로 너비 동적 제어용 CSS 변수 (기본값 950px) */
+            --canvas-width: 950px;
+            
+            /* 실시간 폰트 제어용 커스텀 변수 */
             --main-font: 'Noto Sans KR', sans-serif;
         }
 
@@ -52,34 +55,36 @@
 
         .workspace-container {
             display: flex;
-            gap: 20px;
-            width: 1340px;
+            gap: 24px;
+            width: 1750px; 
             justify-content: center;
             align-items: flex-start;
             height: 840px; 
         }
 
+        /* 💻 사이드바 패널 figma 스타일 모던화 */
         .sidebar-panel {
-            width: 230px;
+            width: 240px;
             background: #ffffff;
-            padding: 18px;
-            border-radius: 14px;
-            box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
             height: 100%; 
             border: 1px solid var(--border-color);
         }
 
         .panel-title {
-            font-size: 14px;
-            font-weight: 900;
+            font-size: 13px;
+            font-weight: 800;
             color: #0f172a;
-            border-bottom: 2px solid #475569;
-            padding-bottom: 8px;
-            margin-bottom: 4px;
-            letter-spacing: -0.5px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-group-vertical {
@@ -96,11 +101,11 @@
             gap: 8px;
             background: #f8fafc;
             padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
+            border-radius: 10px;
+            font-size: 11px;
             color: var(--text-dark);
             font-weight: 700;
-            border: 1px solid var(--border-color);
+            border: 1px solid #f1f5f9;
         }
         .font-size-control-vertical .slider-row {
             display: flex;
@@ -109,82 +114,88 @@
         }
         .font-size-control-vertical input[type="range"] {
             cursor: pointer;
-            accent-color: var(--primary-color);
+            accent-color: #0f172a;
             flex-grow: 1;
             width: 100%;
+            height: 4px;
+            border-radius: 2px;
         }
-        #font-val {
-            color: var(--primary-color);
+        #font-val, #canvas-width-val {
+            color: #0f172a;
             font-weight: 700;
-            min-width: 32px;
+            min-width: 40px;
             text-align: right;
         }
 
-        .sticker-btn-label, .save-btn, .add-palette-btn, .bulk-color-btn, .reset-btn {
+        /* 🔘 버튼 모던 스타일 플랫화 */
+        .sticker-btn-label, .save-btn, .add-palette-btn, .bulk-color-btn, .reset-btn, .action-btn {
             display: block;
             width: 100%;
-            padding: 11px 12px;
+            padding: 10px 12px;
             color: #ffffff;
-            border-radius: 8px;
-            font-size: 12px;
+            border-radius: 10px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .sticker-btn-label { background: #334155; }
-        .sticker-btn-label:hover { background: #1e293b; }
+        .sticker-btn-label { background: #0f172a; }
+        .sticker-btn-label:hover { background: #1e293b; transform: translateY(-1px); }
         .add-palette-btn { background: #64748b; }
-        .add-palette-btn:hover { background: #475569; }
-        .bulk-color-btn { background: #94a3b8; padding: 6px; font-size: 11px; border-radius: 6px; }
-        .bulk-color-btn:hover { background: #64748b; }
+        .add-palette-btn:hover { background: #475569; transform: translateY(-1px); }
+        .bulk-color-btn { background: #e2e8f0; color: #475569; padding: 6px; font-size: 11px; border-radius: 8px; }
+        .bulk-color-btn:hover { background: #cbd5e1; }
         
         .reset-btn { 
-            background: #ef4444; 
+            background: #fef2f2; 
+            color: #ef4444;
             margin-top: auto; 
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            border: 1px solid #fee2e2;
         }
-        .reset-btn:hover { background: #dc2626; }
+        .reset-btn:hover { background: #fee2e2; }
         .reset-svg {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             fill: none;
-            stroke: #ffffff;
+            stroke: #ef4444;
             stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
         
-        .save-btn.png-theme { background: var(--primary-color); }
-        .save-btn.png-theme:hover { background: var(--primary-hover); }
-        .save-btn.jpeg-theme { background: #10b981; margin-top: 0; }
-        .save-btn.jpeg-theme:hover { background: #059669; }
+        .save-btn.png-theme { background: #0f172a; }
+        .save-btn.png-theme:hover { background: #1e293b; transform: translateY(-1px); }
+        .save-btn.jpeg-theme { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+        .save-btn.jpeg-theme:hover { background: #f8fafc; transform: translateY(-1px); }
 
         .sidebar-section {
             display: flex;
             flex-direction: column;
             gap: 8px;
             background: #f8fafc;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
         }
 
         .sidebar-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #475569;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 2px;
+            letter-spacing: 0.2px;
         }
 
+        /* 💡 미니 토글 스위치 */
         .toggle-label {
             display: inline-flex;
             align-items: center;
@@ -193,7 +204,7 @@
         }
         .toggle-input { display: none; }
         .toggle-switch {
-            width: 34px; height: 18px;
+            width: 30px; height: 16px;
             background: #cbd5e1;
             border-radius: 10px;
             position: relative;
@@ -202,73 +213,76 @@
         .toggle-switch::after {
             content: '';
             position: absolute; top: 2px; left: 2px;
-            width: 14px; height: 14px;
+            width: 12px; height: 12px;
             background: white; border-radius: 50%;
             transition: left 0.2s;
         }
-        .toggle-input:checked + .toggle-switch { background: var(--primary-color); }
-        .toggle-input:checked + .toggle-switch::after { left: 18px; }
+        .toggle-input:checked + .toggle-switch { background: #0f172a; }
+        .toggle-input:checked + .toggle-switch::after { left: 16px; }
 
         .sidebar-input-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             background: #ffffff;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
         }
 
         .sidebar-meta-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             font-weight: 700;
         }
 
         .sidebar-tag-input {
             width: 100%;
-            padding: 6px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 11px;
             outline: none;
             color: var(--text-dark);
+            background: #f8fafc;
+            transition: border 0.15s;
         }
-        .sidebar-tag-input:focus { border-color: var(--primary-color); }
+        .sidebar-tag-input:focus { border-color: #cbd5e1; background: #ffffff; }
 
         .sidebar-color-picker {
-            width: 34px;
-            height: 20px;
-            border: 1px solid #cbd5e1;
+            width: 28px;
+            height: 16px;
+            border: 1px solid #e2e8f0;
             border-radius: 4px;
             cursor: pointer;
             padding: 0;
             background: none;
         }
 
+        /* 🖼️ 메인 캔버스 템플릿 - 가로 유동폭 제어 */
         .template-outer {
             position: relative;
-            width: 840px;
+            width: var(--canvas-width); 
             height: 840px;
             background: var(--card-bg);
-            box-shadow: 0 15px 45px rgba(148, 163, 184, 0.18);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
             overflow: hidden;
-            border-radius: 8px;
+            border-radius: 20px;
             flex-shrink: 0;
             border: 1px solid var(--border-color);
+            transition: width 0.1s ease-out; 
         }
 
-        /* 🎯 [수정] 표정 슬롯과 겹치지 않도록 top과 right를 여백 안쪽으로 바짝 올려 재배치 */
         .credit-tag {
             position: absolute;
-            top: 8px;
-            right: 12px;
+            top: 10px;
+            right: 14px;
             font-size: 11px;
             font-weight: 700;
-            color: #94a3b8;
+            color: #cbd5e1;
             letter-spacing: 0.5px;
             z-index: 100;
             user-select: none;
@@ -278,7 +292,7 @@
             position: absolute;
             left: 25px;
             top: 25px;
-            width: 300px;
+            width: calc(var(--canvas-width) - 675px); 
             height: 790px;
             z-index: 10;
             pointer-events: none;
@@ -293,8 +307,9 @@
             transition: opacity 0.2s ease;
         }
         
+        /* 🎯 캔버스가 늘어나도 성격 태그 상자의 실제 가로 길이는 130px로 단단히 유지 */
         .tag-item {
-            width: 130px;
+            width: 130px; 
             height: 28px;
             color: white;
             font-size: 13px;
@@ -351,12 +366,13 @@
             z-index: 2;
         }
 
+        /* 🎯 캔버스 너비와 무관하게 우측 표정슬롯 기준 완벽 간격 고정 */
         .center-area {
             position: absolute;
-            left: 350px;
+            right: 240px; 
             top: 25px;
             width: 290px;
-            height: 790px;
+            height: 800px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -371,7 +387,7 @@
             height: 72px; 
             display: flex;
             align-items: center;
-            gap: 8px; 
+            gap: 10px; 
             padding: 6px 14px;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
@@ -382,8 +398,8 @@
         }
         
         .mic-icon-wrapper {
-            width: 24px;
-            height: 24px;
+            width: 32px; 
+            height: 32px; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -398,7 +414,12 @@
             opacity: 0;
             cursor: pointer;
         }
-        .mic-svg { width: 20px; height: 20px; fill: var(--mic-color); display: none; }
+        .mic-svg { 
+            width: 28px; 
+            height: 28px; 
+            fill: var(--mic-color); 
+            display: none; 
+        }
         .mic-svg.active { display: block; }
 
         .speech-input-wrapper {
@@ -652,18 +673,19 @@
         .desc-list li:hover .row-del-btn { opacity: 1; }
         
         .row-add-btn {
-            background: #f1f5f9; color: #475569; border: 1px dashed #cbd5e1;
-            padding: 6px; border-radius: 6px; font-size: 11px; cursor: pointer; text-align: center; font-weight: 700;
+            background: #ffffff; color: #64748b; border: 1px dashed #cbd5e1;
+            padding: 7px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: 700;
             width: 100%;
             flex-shrink: 0;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .row-add-btn:hover { background: #e2e8f0; }
+        .row-add-btn:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; }
 
+        /* 🎯 오른쪽 표정 슬롯 영역은 캔버스 오른쪽 벽면에 완전 고정 */
         .right-area {
             position: absolute;
-            right: 25px;
-            top: 25px;
+            right: 45px; 
+            top: 50px;
             width: 150px;
             height: 790px;
             display: flex;
@@ -731,31 +753,37 @@
         .hide-on-save .profile-info { flex-grow: 1 !important; display: flex !important; flex-direction: column !important; }
         .hide-on-save .desc-list { max-height: none !important; overflow: visible !important; display: flex !important; flex-direction: column !important; }
         
+        /* 🎛️ 모던 플랫 선택박스 디자인 */
         .icon-select-box, .line-select-box, .font-select-box {
             display: flex;
             gap: 4px;
-            background: #e2e8f0;
+            background: #f1f5f9;
             padding: 3px;
             border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
         .icon-select-label, .line-select-label, .font-select-label {
             flex: 1;
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             padding: 6px 0;
             background: transparent;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
-            color: #475569;
+            color: #64748b;
             transition: all 0.15s ease;
         }
         .icon-select-label input, .line-select-label input, .font-select-label input { display: none; }
         
-        .icon-select-label:has(input:checked) { background: var(--primary-color); color: #ffffff; }
-        .line-select-label:has(input:checked) { background: #334155; color: #ffffff; }
-        .font-select-label:has(input:checked) { background: #0284c7; color: #ffffff; }
+        .icon-select-label:has(input:checked),
+        .line-select-label:has(input:checked),
+        .font-select-label:has(input:checked) { 
+            background: #ffffff; 
+            color: #0f172a; 
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+        }
     </style>
 </head>
 <body>
@@ -775,9 +803,9 @@
                     </label>
                 </div>
                 
-                <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 2px;">
+                <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 2px;">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span style="font-size: 11px; font-weight: bold; color: #64748b;">일괄 색상 선택:</span>
+                        <span style="font-size: 10px; font-weight: bold; color: #64748b;">일괄 색상 선택:</span>
                         <input type="color" id="bulk-tag-color-picker" value="#8e959c" class="sidebar-color-picker">
                     </div>
                     <button class="bulk-color-btn" onclick="applyBulkTagColor()">🎨 전체 일괄 색상 적용</button>
@@ -862,7 +890,6 @@
 
         <!-- [중앙 영역] 메인 캔버스 -->
         <div class="template-outer" id="main-canvas">
-            <!-- 🎯 고정 아이디 배칭 기입을 가장 상단 여백 레이아웃으로 위치 조정 완료 -->
             <div class="credit-tag">@sa_se372</div>
             
             <div class="left-area">
@@ -901,7 +928,7 @@
                 </div>
 
                 <!-- 두상 컨테이너 -->
-                <div class="upload-zone bust-box" data-type="bust" ondblclick="triggerFileInput(this)">
+                <div class="upload-zone bust-box" id="bust-upload-zone" data-type="bust" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">더블클릭하여 두상 업로드</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
@@ -941,17 +968,17 @@
             </div>
 
             <div class="right-area" id="right-area-layer">
-                <div class="upload-zone expression-box" data-type="expression" ondblclick="triggerFileInput(this)">
+                <div class="upload-zone expression-box" id="expr-zone-1" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 1</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
                 </div>
-                <div class="upload-zone expression-box" data-type="expression" ondblclick="triggerFileInput(this)">
+                <div class="upload-zone expression-box" id="expr-zone-2" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 2</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
                 </div>
-                <div class="upload-zone expression-box" data-type="expression" ondblclick="triggerFileInput(this)">
+                <div class="upload-zone expression-box" id="expr-zone-3" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 3</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
@@ -965,6 +992,16 @@
             <div class="panel-title">🛠️ 유틸리티 도구</div>
             
             <div class="btn-group-vertical">
+
+                <!-- 🎯 캔버스 전체 가로폭 너비를 실시간으로 제어하는 조절기 -->
+                <div class="font-size-control-vertical">
+                    <span>📐 캔버스 가로 너비 조절</span>
+                    <div class="slider-row">
+                        <input type="range" id="canvas-width-slider" min="900" max="1200" value="950" oninput="changeCanvasWidth(this.value)">
+                        <span id="canvas-width-val">950px</span>
+                    </div>
+                </div>
+                
                 <label class="sticker-btn-label">
                     ✨ 스티커 추가 선택
                     <input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)">
@@ -972,7 +1009,7 @@
 
                 <button class="add-palette-btn" onclick="addNewPaletteItem()">🎨 컬러 팔레트 추가</button>
 
-                <button class="add-palette-btn" style="background: #0284c7;" onclick="addSingleSpecCardSlot()">📋 프로필 박스 추가</button>
+                <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()">📋 프로필 박스 추가</button>
                 
                 <div class="font-size-control-vertical" style="margin-top: 2px;">
                     <span>🅰️ 서체 종류 선택</span>
@@ -1010,15 +1047,94 @@
 
     <script>
         let paletteCount = 2; 
+        let dbInstance = null;
+        const DEFAULT_SLOT_ID = 999; 
 
-        function saveToLocalStorage() {
+        // 🎯 IndexedDB 초기화
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open("trpg_canvas_autosave_db", 1);
+                request.onupgradeneeded = function(e) {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains("slots")) {
+                        db.createObjectStore("slots", { keyPath: "slotId" });
+                    }
+                };
+                request.onsuccess = function(e) {
+                    dbInstance = e.target.result;
+                    resolve(dbInstance);
+                };
+                request.onerror = function(e) {
+                    console.error("Database initialization failed.", e);
+                    reject(e);
+                };
+            });
+        }
+
+        function readSlotFromDB(slotId) {
+            return new Promise((resolve) => {
+                if (!dbInstance) return resolve(null);
+                const transaction = dbInstance.transaction(["slots"], "readonly");
+                const store = transaction.objectStore("slots");
+                const request = store.get(slotId);
+                request.onsuccess = function(e) {
+                    resolve(e.target.result || null);
+                };
+                request.onerror = function() {
+                    resolve(null);
+                };
+            });
+        }
+
+        function writeSlotToDB(slotData) {
+            return new Promise((resolve, reject) => {
+                if (!dbInstance) return reject("DB not initialized");
+                const transaction = dbInstance.transaction(["slots"], "readwrite");
+                const store = transaction.objectStore("slots");
+                const request = store.put(slotData);
+                request.onsuccess = function() {
+                    resolve(true);
+                };
+                request.onerror = function(e) {
+                    reject(e);
+                };
+            });
+        }
+
+        // 🎯 실시간 자동 저장 함수
+        async function saveToLocalStorage() {
+            if (!dbInstance) return;
+            
             const specInputs = document.querySelectorAll('#spec-box-container .input-spec-field');
             const specValues = [];
             specInputs.forEach(function(input) {
                 specValues.push(input.value);
             });
 
+            const addedPalettes = [];
+            const paletteItems = document.querySelectorAll('#palette-target-row .color-item');
+            paletteItems.forEach((item) => {
+                const isPermanent = item.getAttribute('data-permanent') === 'true';
+                if (!isPermanent) {
+                    const inputColor = item.querySelector('input[type="text"]');
+                    if (inputColor) {
+                        addedPalettes.push({
+                            id: inputColor.id,
+                            color: inputColor.value
+                        });
+                    }
+                }
+            });
+
+            const images = {
+                bust: getUploadImageData('bust-upload-zone'),
+                expr1: getUploadImageData('expr-zone-1'),
+                expr2: getUploadImageData('expr-zone-2'),
+                expr3: getUploadImageData('expr-zone-3'),
+            };
+
             const data = {
+                slotId: DEFAULT_SLOT_ID,
                 speech: document.getElementById('input-speech').value,
                 bubbleVisible: document.getElementById('sidebar-bubble-toggle').checked,
                 iconChoice: document.querySelector('input[name="bubble-icon-choice"]:checked')?.value || 'mic',
@@ -1028,6 +1144,7 @@
                 name: document.getElementById('input-name').value,
                 hanja: document.getElementById('input-hanja').value,
                 fontSize: document.getElementById('font-slider').value,
+                canvasWidth: document.getElementById('canvas-width-slider').value, 
                 
                 tags: [
                     { text: document.getElementById('sidebar-input-text-1').value, color: document.getElementById('sidebar-picker-1').value },
@@ -1037,22 +1154,64 @@
                 
                 c1: document.getElementById('c1').value,
                 c2: document.getElementById('c2').value,
+                addedPalettes: addedPalettes, 
                 
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
-                specs: specValues
+                specs: specValues,
+                images: images 
             };
-            localStorage.setItem('trpg_profile_save_data', JSON.stringify(data));
+
+            await writeSlotToDB(data);
         }
 
-        function loadFromLocalStorage() {
-            const savedDataString = localStorage.getItem('trpg_profile_save_data');
+        function getUploadImageData(zoneId) {
+            const zone = document.getElementById(zoneId);
+            if (!zone) return null;
+            const img = zone.querySelector('img');
+            if (!img) return null;
+            return {
+                src: img.src, 
+                posX: img.dataset.posX || 0,
+                posY: img.dataset.posY || 0,
+                scale: img.dataset.scale || 1.0
+            };
+        }
+
+        function setUploadImageData(zoneId, imgData) {
+            const zone = document.getElementById(zoneId);
+            if (!zone) return;
+            let img = zone.querySelector('img');
+            const placeholder = zone.querySelector('.placeholder-text');
+
+            if (!imgData) {
+                if (img) img.remove();
+                if (placeholder) placeholder.style.display = 'block';
+                return;
+            }
+
+            if (!img) {
+                img = document.createElement('img');
+                zone.appendChild(img);
+                makeImageInteractive(img, zone);
+            }
+
+            img.src = imgData.src;
+            img.dataset.posX = imgData.posX;
+            img.dataset.posY = imgData.posY;
+            img.dataset.scale = imgData.scale;
+            img.style.transform = `translate(${imgData.posX}px, ${imgData.posY}px) scale(${imgData.scale})`;
+            if (placeholder) placeholder.style.display = 'none';
+        }
+
+        // 🎯 데이터 자동 복구 로직
+        async function loadFromLocalStorage() {
             const container = document.getElementById('profile-desc-container');
             container.innerHTML = ''; 
 
-            if (savedDataString) {
+            const data = await readSlotFromDB(DEFAULT_SLOT_ID);
+
+            if (data) {
                 try {
-                    const data = JSON.parse(savedDataString);
-                    
                     document.getElementById('input-speech').value = data.speech || '';
                     
                     if (data.hasOwnProperty('bubbleVisible')) {
@@ -1088,6 +1247,11 @@
                     
                     document.getElementById('font-slider').value = data.fontSize || 13;
                     changeDescFontSize(data.fontSize || 13);
+
+                    // 🎯 캔버스 가로 너비 복구 적용
+                    const savedCanvasWidth = data.canvasWidth || 950;
+                    document.getElementById('canvas-width-slider').value = savedCanvasWidth;
+                    changeCanvasWidth(savedCanvasWidth);
                     
                     if(data.tags) {
                         data.tags.forEach((tag, index) => {
@@ -1108,6 +1272,13 @@
                         updateColorFromText(document.getElementById('c2'));
                     }
 
+                    clearAddedPalettesOnly();
+                    if (data.addedPalettes && Array.isArray(data.addedPalettes)) {
+                        data.addedPalettes.forEach(item => {
+                            rebuildPaletteItem(item.id, item.color);
+                        });
+                    }
+
                     if (data.descriptions && data.descriptions.length > 0) {
                         data.descriptions.forEach(text => { addDescRow(text); });
                     } else {
@@ -1122,16 +1293,76 @@
                     } else {
                         buildInitialSpecsLayout();
                     }
+
+                    if (data.images) {
+                        setUploadImageData('bust-upload-zone', data.images.bust);
+                        setUploadImageData('expr-zone-1', data.images.expr1);
+                        setUploadImageData('expr-zone-2', data.images.expr2);
+                        setUploadImageData('expr-zone-3', data.images.expr3);
+                    } else {
+                        setUploadImageData('bust-upload-zone', null);
+                        setUploadImageData('expr-zone-1', null);
+                        setUploadImageData('expr-zone-2', null);
+                        setUploadImageData('expr-zone-3', null);
+                    }
+
                 } catch(e) {
+                    console.error(e);
                     provideDefaultRows();
                     buildInitialSpecsLayout();
                 }
             } else {
                 provideDefaultRows();
                 buildInitialSpecsLayout();
+                clearAddedPalettesOnly();
+                setUploadImageData('bust-upload-zone', null);
+                setUploadImageData('expr-zone-1', null);
+                setUploadImageData('expr-zone-2', null);
+                setUploadImageData('expr-zone-3', null);
             }
             
             setupAutoSaveListeners();
+        }
+
+        // 🎯 캔버스 가로 너비 조절 기능
+        function changeCanvasWidth(val) {
+            document.getElementById('canvas-width-slider').value = val;
+            document.getElementById('canvas-width-val').innerText = val + 'px';
+            document.documentElement.style.setProperty('--canvas-width', val + 'px');
+            
+            // 그라데이션 비율 다시 계산 적용
+            for(let i = 1; i <= 3; i++) {
+                const picker = document.getElementById(`sidebar-picker-${i}`);
+                if(picker) syncTagColor(i, picker.value);
+            }
+        }
+
+        function clearAddedPalettesOnly() {
+            const targetRow = document.getElementById('palette-target-row');
+            const items = targetRow.querySelectorAll('.color-item');
+            items.forEach(item => {
+                const isPermanent = item.getAttribute('data-permanent') === 'true';
+                if (!isPermanent) item.remove();
+            });
+        }
+
+        function rebuildPaletteItem(id, colorHex) {
+            const currentNum = parseInt(id.replace('c', ''));
+            if (currentNum > paletteCount) paletteCount = currentNum;
+            const row = document.getElementById('palette-target-row');
+            const newItem = document.createElement('div');
+            newItem.className = 'color-item';
+            newItem.innerHTML = `
+                <button class="palette-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
+                <div class="color-preview" style="background-color: ${colorHex};">
+                    <input type="color" value="${colorHex}" oninput="updateColorFromPicker(this, '${id}')">
+                </div>
+                <input type="text" id="${id}" class="color-code-input" value="${colorHex.toUpperCase()}" onchange="updateColorFromText(this)">
+            `;
+            row.appendChild(newItem);
+            newItem.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', saveToLocalStorage);
+            });
         }
 
         function changeMainFontFamily(fontType) {
@@ -1156,7 +1387,7 @@
         function buildInitialSpecsLayout() {
             const specContainer = document.getElementById('spec-box-container');
             specContainer.innerHTML = '';
-            const defaults = ['성별', '나이', '신장', '기타'];
+            const defaults = ['남성/여성', 'nn세', 'nnncm', '기타'];
             defaults.forEach(function(val) {
                 createSpecBoxNode(val);
             });
@@ -1201,7 +1432,11 @@
 
         function resetCanvasData() {
             if(confirm("작성 중인 모든 프로필 정보와 세팅이 공백 상태로 초기화됩니다. 진행할까요?")) {
-                localStorage.removeItem('trpg_profile_save_data');
+                if (dbInstance) {
+                    const transaction = dbInstance.transaction(["slots"], "readwrite");
+                    const store = transaction.objectStore("slots");
+                    store.delete(DEFAULT_SLOT_ID);
+                }
                 window.location.reload();
             }
         }
@@ -1312,6 +1547,8 @@
 
                     const textPlaceholder = zone.querySelector('.placeholder-text');
                     if (textPlaceholder) textPlaceholder.style.display = 'none';
+
+                    saveToLocalStorage();
                 }
                 fileReader.readAsDataURL(selectedFile);
             }
@@ -1343,7 +1580,12 @@
                 }
             });
 
-            document.addEventListener('mouseup', () => { activeMove = false; });
+            document.addEventListener('mouseup', () => { 
+                if (activeMove) {
+                    activeMove = false;
+                    saveToLocalStorage(); 
+                }
+            });
 
             zone.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -1361,6 +1603,7 @@
                 if(zone.dataset.type === 'expression') {
                     syncAllExpressionTransforms(img.dataset.posX, img.dataset.posY, currentScale);
                 }
+                saveToLocalStorage(); 
             });
         }
 
@@ -1560,13 +1803,15 @@
 
             canvasElement.classList.add('hide-on-save');
 
+            const currentWidthVal = parseInt(document.getElementById('canvas-width-slider').value);
+
             setTimeout(() => {
                 html2canvas(canvasElement, {
                     scale: 2, 
                     useCORS: true,
                     backgroundColor: "#ffffff",
                     logging: false,
-                    width: 840,
+                    width: currentWidthVal, 
                     height: 840
                 }).then(canvas => {
                     const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
@@ -1605,7 +1850,10 @@
             }, 100); 
         }
 
-        window.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initIndexedDB();
+            await loadFromLocalStorage();
+        });
     </script>
 </body>
 </html>
