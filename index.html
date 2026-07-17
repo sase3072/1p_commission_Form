@@ -365,6 +365,36 @@
             z-index: 2;
         }
 
+        /* 💡 추가: 표정 슬롯 이름 텍스트 라벨 */
+        .expr-label-input {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 100px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: right;
+            z-index: 20;
+            pointer-events: auto;
+            /* 검은색(다크 네이비) 두꺼운 테두리 효과 */
+            text-shadow: 
+                -1.5px -1.5px 0 #0f172a,
+                 1.5px -1.5px 0 #0f172a,
+                -1.5px  1.5px 0 #0f172a,
+                 1.5px  1.5px 0 #0f172a,
+                 0px -1.5px 0 #0f172a,
+                 0px  1.5px 0 #0f172a,
+                -1.5px  0px 0 #0f172a,
+                 1.5px  0px 0 #0f172a;
+        }
+        .expr-label-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         .center-area {
             position: absolute;
             right: 240px; 
@@ -735,8 +765,8 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.88); /* 살짝 투명도 조정 */
-            backdrop-filter: blur(4px); /* 고급스러운 블러 효과 */
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(4px);
             z-index: 9999;
             opacity: 0;
             pointer-events: none;
@@ -749,7 +779,6 @@
             pointer-events: auto;
         }
 
-        /* 🎯 정밀 위치 타겟 하이라이트 박스 */
         .hud-highlight {
             position: absolute;
             border: 2px dashed #38bdf8;
@@ -759,7 +788,6 @@
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
         }
 
-        /* 🎯 네온 블루 화살표 컴포넌트 */
         .hud-arrow-right {
             position: absolute;
             height: 2px;
@@ -793,7 +821,6 @@
             border-color: transparent transparent #38bdf8 transparent;
         }
 
-        /* 🏷️ 설명 라벨 박스 (디자인 및 리스트 최적화) */
         .overlay-label {
             position: absolute;
             background: rgba(15, 23, 42, 0.95);
@@ -815,14 +842,13 @@
             margin-bottom: 10px;
         }
 
-        /* 설명글 리스트 UI 적용 */
         .overlay-label ul {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px; /* 문장 사이의 간격 확 벌려주기 */
+            gap: 8px;
         }
         
         .overlay-label li {
@@ -840,7 +866,7 @@
             position: absolute;
             left: 0;
             top: -1px;
-            color: #38bdf8; /* 불릿 포인트 색상 포인트 */
+            color: #38bdf8;
             font-size: 14px;
         }
 
@@ -849,7 +875,6 @@
             font-weight: 700;
         }
 
-        /* 💾 시스템 가이드 (우측 하단 정렬 유지) */
         .lbl-system-status {
             bottom: 40px;
             right: 40px;
@@ -889,7 +914,7 @@
             font-weight: 700;
         }
 
-        /* 이미지 저장 시 가이드 숨김 */
+        /* 이미지 저장 시 가이드 및 불필요 요소 숨김 */
         .hide-on-save .delete-sticker-btn,
         .hide-on-save .resize-sticker-handle,
         .hide-on-save .rotate-sticker-handle,
@@ -1095,11 +1120,11 @@
                 <!-- [04] 표정 변화 슬롯 -->
                 <div class="hud-highlight" style="right: 45px; top: 50px; width: 150px; height: 490px;"></div>
                 <div class="hud-arrow-right" style="right: 195px; top: 430px; width: 20px;"></div>
-                <div class="overlay-label" style="right: 215px; top: 400px; width: 250px;">
+                <div class="overlay-label" style="right: 215px; top: 400px; width: 260px;">
                     <strong>🎭 표정 슬롯</strong>
                     <ul>
                         <li>동일한 크기의 이미지를 넣으면 조작 값이 <b>자동 동기화</b> 됩니다.</li>
-                        <li>표정 외에 전혀 다른 이미지를 넣어도 사용 가능합니다.</li>
+                        <li>우측 하단의 텍스트를 클릭해 <b>표정 이름</b>을 지을 수 있습니다.</li>
                         <li>좌측 패널에서 해당 슬롯 기능을 끌 수 있습니다.</li>
                     </ul>
                 </div>
@@ -1201,21 +1226,25 @@
                 </div>
             </div>
 
+            <!-- 🎯 표정 슬롯 영역 (이름 입력 인풋 추가) -->
             <div class="right-area" id="right-area-layer">
                 <div class="upload-zone expression-box" id="expr-zone-1" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 1</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
+                    <input type="text" class="expr-label-input" id="expr-label-1" value="표정 1" placeholder="표정 이름" ondblclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
                 </div>
                 <div class="upload-zone expression-box" id="expr-zone-2" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 2</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
+                    <input type="text" class="expr-label-input" id="expr-label-2" value="표정 2" placeholder="표정 이름" ondblclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
                 </div>
                 <div class="upload-zone expression-box" id="expr-zone-3" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 3</div>
                     <span class="upload-hint">더블클릭</span>
                     <input type="file" accept="image/*" onchange="displayUploadedImage(event, this)">
+                    <input type="text" class="expr-label-input" id="expr-label-3" value="표정 3" placeholder="표정 이름" ondblclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
                 </div>
             </div>
 
@@ -1344,7 +1373,7 @@
             });
         }
 
-        // 🎯 실시간 자동 저장 함수 (스티커 데이터 포함)
+        // 🎯 실시간 자동 저장 함수
         async function saveToLocalStorage() {
             if (!dbInstance || isRestoringData) return; 
             
@@ -1390,6 +1419,13 @@
                 }
             });
 
+            // 🎯 표정 슬롯 이름 데이터 수집
+            const exprLabels = [
+                document.getElementById('expr-label-1').value,
+                document.getElementById('expr-label-2').value,
+                document.getElementById('expr-label-3').value
+            ];
+
             const data = {
                 slotId: DEFAULT_SLOT_ID,
                 speech: document.getElementById('input-speech').value,
@@ -1416,7 +1452,8 @@
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
                 specs: specValues,
                 images: images,
-                stickers: stickers
+                stickers: stickers,
+                exprLabels: exprLabels // 저장 데이터에 포함
             };
 
             await writeSlotToDB(data);
@@ -1569,6 +1606,13 @@
                         data.stickers.forEach(sData => {
                             restoreSticker(sData);
                         });
+                    }
+
+                    // 🎯 표정 슬롯 텍스트 복구
+                    if (data.exprLabels && data.exprLabels.length === 3) {
+                        document.getElementById('expr-label-1').value = data.exprLabels[0];
+                        document.getElementById('expr-label-2').value = data.exprLabels[1];
+                        document.getElementById('expr-label-3').value = data.exprLabels[2];
                     }
 
                 } catch(e) {
@@ -2050,6 +2094,13 @@
                 textSpan.style.fontWeight = getComputedStyle(input).fontWeight;
                 textSpan.style.color = getComputedStyle(input).color;
                 
+                // 🎯 캔버스에 구울 때 절대 위치 및 텍스트 섀도우 속성도 복사 (표정 텍스트용)
+                textSpan.style.textShadow = getComputedStyle(input).textShadow;
+                textSpan.style.position = getComputedStyle(input).position;
+                textSpan.style.bottom = getComputedStyle(input).bottom;
+                textSpan.style.right = getComputedStyle(input).right;
+                textSpan.style.zIndex = getComputedStyle(input).zIndex;
+
                 if (input.closest('#profile-desc-container')) {
                     textSpan.style.textAlign = 'left';
                     textSpan.style.justifyContent = 'flex-start';
