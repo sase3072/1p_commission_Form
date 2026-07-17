@@ -843,26 +843,29 @@
             color: #e2e8f0;
         }
 
-        /* 💾 시스템 가이드 (하단 중앙) */
+        /* 💾 시스템 가이드 (수정: 우측 하단 정렬) */
         .lbl-system-status {
             bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 380px;
-            text-align: center;
+            right: 40px;
+            left: auto;
+            transform: none;
+            width: 320px;
+            text-align: right;
             background: #10b981;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-            align-items: center;
+            align-items: flex-end;
         }
         .lbl-system-status strong {
             border: none;
             color: #ffffff;
             font-size: 12px;
+            padding-bottom: 0;
+            margin-bottom: 0;
         }
         .lbl-system-status span {
             color: #ecfdf5;
-            text-align: center;
+            text-align: right;
         }
 
         .overlay-close-hint {
@@ -1046,7 +1049,7 @@
             <!-- 🎯 조작 도움말 오버레이 레이어 -->
             <div class="canvas-overlay-guide active" id="canvas-help-overlay" onclick="toggleHelpOverlay()">
                 
-                <!-- [01] 성격 키워드 (위치 아래로 겹침 방지 수정) -->
+                <!-- [01] 성격 키워드 -->
                 <div class="hud-highlight" style="left: 25px; top: 25px; width: 145px; height: 110px;"></div>
                 <div class="hud-arrow-up" style="left: 97px; top: 135px; height: 20px;"></div>
                 <div class="overlay-label" style="left: 25px; top: 155px; width: 250px;">
@@ -1086,7 +1089,7 @@
                     <span><b>컬러 파레트 :</b> 한 패널을 클릭하여 색상 피커로 선택이 가능합니다. 박스 아래에 컬러코드를 입력하여도 적용이 됩니다. (이미지로 저장시 컬러코드는 지워집니다.)<br><br><b>텍스트 편집 :</b> 모든 텍스트는 클릭하여 바로 수정합니다. 우측의 [프로필 박스 추가]를 누르면 프로필 정보 박스가 추가됩니다.</span>
                 </div>
                 
-                <!-- 💾 하단 시스템 가이드 -->
+                <!-- 💾 하단 시스템 가이드 (수정된 위치 적용) -->
                 <div class="overlay-label lbl-system-status">
                     <strong>💾 기기 브라우저 내부 안심 자동 저장 (IndexedDB)</strong>
                     <span>새로고침을 하거나 창을 닫아도 소중한 작업 데이터가 즉시 유지됩니다.<br>(이미지 다운로드 시 이 오버레이 화면은 전혀 저장되지 않습니다.)</span>
@@ -1255,6 +1258,7 @@
         let paletteCount = 2; 
         let dbInstance = null;
         const DEFAULT_SLOT_ID = 999; 
+        let isRestoringData = false; // 🎯 새로고침 버그 방지용 플래그
 
         // 🎯 도움말 오버레이 제어 함수
         function toggleHelpOverlay() {
@@ -1313,9 +1317,9 @@
             });
         }
 
-        // 🎯 실시간 자동 저장 함수
+        // 🎯 실시간 자동 저장 함수 (스티커 데이터 추가 반영)
         async function saveToLocalStorage() {
-            if (!dbInstance) return;
+            if (!dbInstance || isRestoringData) return; // 🎯 데이터 복구 중에는 저장 스킵 (버그 픽스)
             
             const specInputs = document.querySelectorAll('#spec-box-container .input-spec-field');
             const specValues = [];
@@ -1345,6 +1349,21 @@
                 expr3: getUploadImageData('expr-zone-3'),
             };
 
+            // 🎯 스티커 데이터 수집
+            const stickers = [];
+            document.querySelectorAll('.draggable-sticker').forEach(sticker => {
+                const img = sticker.querySelector('img');
+                if (img) {
+                    stickers.push({
+                        src: img.src,
+                        left: sticker.style.left,
+                        top: sticker.style.top,
+                        width: sticker.style.width,
+                        angle: sticker.dataset.angle || 0
+                    });
+                }
+            });
+
             const data = {
                 slotId: DEFAULT_SLOT_ID,
                 speech: document.getElementById('input-speech').value,
@@ -1370,7 +1389,8 @@
                 
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
                 specs: specValues,
-                images: images 
+                images: images,
+                stickers: stickers // 스티커 저장
             };
 
             await writeSlotToDB(data);
@@ -1417,6 +1437,7 @@
 
         // 🎯 데이터 자동 복구 로직
         async function loadFromLocalStorage() {
+            isRestoringData = true; // 🎯 데이터 복구 시작 (자동저장 차단)
             const container = document.getElementById('profile-desc-container');
             container.innerHTML = ''; 
 
@@ -1517,6 +1538,14 @@
                         setUploadImageData('expr-zone-3', null);
                     }
 
+                    // 🎯 스티커 복구
+                    document.querySelectorAll('.draggable-sticker').forEach(s => s.remove()); // 기존 스티커 초기화
+                    if (data.stickers && Array.isArray(data.stickers)) {
+                        data.stickers.forEach(sData => {
+                            restoreSticker(sData);
+                        });
+                    }
+
                 } catch(e) {
                     console.error(e);
                     provideDefaultRows();
@@ -1530,9 +1559,15 @@
                 setUploadImageData('expr-zone-1', null);
                 setUploadImageData('expr-zone-2', null);
                 setUploadImageData('expr-zone-3', null);
+                document.querySelectorAll('.draggable-sticker').forEach(s => s.remove());
             }
             
             setupAutoSaveListeners();
+            
+            // 🎯 데이터 복구가 완전히 끝난 후 플래그 해제 (0.5초 대기 후 안전하게 저장 허용)
+            setTimeout(() => {
+                isRestoringData = false;
+            }, 500);
         }
 
         function changeCanvasWidth(val) {
@@ -1873,6 +1908,60 @@
             saveToLocalStorage();
         }
 
+        // 🎯 스티커 공통 이벤트 바인딩 함수
+        function attachStickerEvents(sticker) {
+            let isDragging = false, isResizing = false, isRotating = false;
+            let diffX = 0, diffY = 0, startWidth = 0, startMouseX = 0, centerPointX = 0, centerPointY = 0;
+
+            sticker.addEventListener('mousedown', function(dragEvent) {
+                const targetClass = dragEvent.target.className;
+                if (targetClass === 'delete-sticker-btn' || targetClass === 'resize-sticker-handle' || targetClass === 'rotate-sticker-handle') return;
+                isDragging = true;
+                diffX = dragEvent.clientX - sticker.offsetLeft;
+                diffY = dragEvent.clientY - sticker.offsetTop;
+                dragEvent.preventDefault();
+            });
+            
+            sticker.querySelector('.resize-sticker-handle').addEventListener('mousedown', function(resizeEvent) {
+                isResizing = true;
+                startWidth = sticker.clientWidth;
+                startMouseX = resizeEvent.clientX;
+                resizeEvent.preventDefault();
+                resizeEvent.stopPropagation();
+            });
+            
+            sticker.querySelector('.rotate-sticker-handle').addEventListener('mousedown', function(rotateEvent) {
+                isRotating = true;
+                const rect = sticker.getBoundingClientRect();
+                centerPointX = rect.left + rect.width / 2;
+                centerPointY = rect.top + rect.height / 2;
+                rotateEvent.preventDefault();
+                rotateEvent.stopPropagation();
+            });
+            
+            document.addEventListener('mousemove', function(moveEvent) {
+                if (isDragging) {
+                    sticker.style.left = `${moveEvent.clientX - diffX}px`;
+                    sticker.style.top = `${moveEvent.clientY - diffY}px`;
+                }
+                if (isResizing) {
+                    sticker.style.width = `${Math.max(30, startWidth + (moveEvent.clientX - startMouseX))}px`;
+                }
+                if (isRotating) {
+                    let angleDegrees = Math.atan2(moveEvent.clientY - centerPointY, moveEvent.clientX - centerPointX) * (180 / Math.PI) + 45;
+                    sticker.dataset.angle = angleDegrees;
+                    sticker.style.transform = `rotate(${angleDegrees}deg)`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging || isResizing || isRotating) {
+                    isDragging = isResizing = isRotating = false;
+                    saveToLocalStorage(); // 스티커 조작이 끝날 때마다 자동 저장
+                }
+            });
+        }
+
         function createNewSticker(event) {
             const selectedFile = event.target.files[0];
             if (selectedFile) {
@@ -1888,63 +1977,40 @@
                     
                     sticker.innerHTML = `
                         <img src="${e.target.result}">
-                        <button class="delete-sticker-btn" onclick="this.parentElement.remove()">×</button>
+                        <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
                         <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
                         <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
                     `;
                     canvas.appendChild(sticker);
-                    
-                    let isDragging = false, isResizing = false, isRotating = false;
-                    let diffX = 0, diffY = 0, startWidth = 0, startMouseX = 0, centerPointX = 0, centerPointY = 0;
-
-                    sticker.addEventListener('mousedown', function(dragEvent) {
-                        const targetClass = dragEvent.target.className;
-                        if (targetClass === 'delete-sticker-btn' || targetClass === 'resize-sticker-handle' || targetClass === 'rotate-sticker-handle') return;
-                        isDragging = true;
-                        diffX = dragEvent.clientX - sticker.offsetLeft;
-                        diffY = dragEvent.clientY - sticker.offsetTop;
-                        dragEvent.preventDefault();
-                    });
-                    
-                    sticker.querySelector('.resize-sticker-handle').addEventListener('mousedown', function(resizeEvent) {
-                        isResizing = true;
-                        startWidth = sticker.clientWidth;
-                        startMouseX = resizeEvent.clientX;
-                        resizeEvent.preventDefault();
-                        resizeEvent.stopPropagation();
-                    });
-                    
-                    sticker.querySelector('.rotate-sticker-handle').addEventListener('mousedown', function(rotateEvent) {
-                        isRotating = true;
-                        const rect = sticker.getBoundingClientRect();
-                        centerPointX = rect.left + rect.width / 2;
-                        centerPointY = rect.top + rect.height / 2;
-                        rotateEvent.preventDefault();
-                        rotateEvent.stopPropagation();
-                    });
-                    
-                    document.addEventListener('mousemove', function(moveEvent) {
-                        if (isDragging) {
-                            sticker.style.left = `${moveEvent.clientX - diffX}px`;
-                            sticker.style.top = `${moveEvent.clientY - diffY}px`;
-                        }
-                        if (isResizing) {
-                            sticker.style.width = `${Math.max(30, startWidth + (moveEvent.clientX - startMouseX))}px`;
-                        }
-                        if (isRotating) {
-                            let angleDegrees = Math.atan2(moveEvent.clientY - centerPointY, moveEvent.clientX - centerPointX) * (180 / Math.PI) + 45;
-                            sticker.dataset.angle = angleDegrees;
-                            sticker.style.transform = `rotate(${angleDegrees}deg)`;
-                        }
-                    });
-                    
-                    document.addEventListener('mouseup', function() {
-                        isDragging = isResizing = isRotating = false;
-                    });
+                    attachStickerEvents(sticker);
+                    saveToLocalStorage();
                 };
                 fileReader.readAsDataURL(selectedFile);
                 event.target.value = '';
             }
+        }
+
+        // 🎯 스티커 복구 함수 (DB 로드용)
+        function restoreSticker(sData) {
+            const canvas = document.getElementById('main-canvas');
+            const sticker = document.createElement('div');
+            sticker.className = 'draggable-sticker';
+            sticker.style.left = sData.left;
+            sticker.style.top = sData.top;
+            sticker.style.width = sData.width;
+            sticker.dataset.angle = sData.angle || 0;
+            if (sData.angle && sData.angle != 0) {
+                sticker.style.transform = `rotate(${sData.angle}deg)`;
+            }
+
+            sticker.innerHTML = `
+                <img src="${sData.src}">
+                <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
+                <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
+                <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
+            `;
+            canvas.appendChild(sticker);
+            attachStickerEvents(sticker);
         }
 
         function saveTemplateAsImage(format = 'png') {
@@ -2066,3 +2132,4 @@
     </script>
 </body>
 </html>
+
