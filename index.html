@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>커미션 프로필 신청서 틀</title>
-    <!-- 구글 Noto Sans KR & Noto Serif KR 웹폰트 한 번에 가져오기 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* 외부 본명조 소스 폰트 정의 반영 */
         @font-face {
             font-family: 'BonmyeongjoSourceHanSerif';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
@@ -26,912 +24,154 @@
             --primary-color: #38bdf8;
             --primary-hover: #0ea5e9;
             --desc-font-size: 13px;
-            
-            /* 🎯 캔버스 가로 너비 동적 제어용 CSS 변수 (기본값 950px) */
             --canvas-width: 950px;
-            
-            /* 실시간 폰트 제어용 커스텀 변수 */
             --main-font: 'Noto Sans KR', sans-serif;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: var(--main-font); 
-            font-weight: 500;
-        }
-        
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-dark); 
-            display: flex; 
-            justify-content: center;
-            align-items: center; 
-            height: 100vh; 
-            padding: 0 20px;
-            overflow: hidden; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--main-font); font-weight: 500; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; justify-content: center; align-items: center; height: 100vh; padding: 0 20px; overflow: hidden; }
 
-        .workspace-container {
-            display: flex;
-            gap: 24px;
-            width: 1750px; 
-            justify-content: center;
-            align-items: flex-start;
-            height: 840px; 
-        }
+        .workspace-container { display: flex; gap: 24px; width: 1750px; justify-content: center; align-items: flex-start; height: 840px; }
 
-        /* 💻 사이드바 패널 figma 스타일 모던화 */
-        .sidebar-panel {
-            width: 240px;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            height: 100%; 
-            border: 1px solid var(--border-color);
-        }
+        /* 사이드바 패널 */
+        .sidebar-panel { width: 240px; background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02); display: flex; flex-direction: column; gap: 16px; height: 100%; border: 1px solid var(--border-color); }
+        .panel-title { font-size: 13px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-group-vertical { display: flex; flex-direction: column; gap: 10px; width: 100%; height: 100%; }
+        .font-size-control-vertical { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 10px; font-size: 11px; color: var(--text-dark); font-weight: 700; border: 1px solid #f1f5f9; }
+        .font-size-control-vertical .slider-row { display: flex; align-items: center; gap: 8px; }
+        .font-size-control-vertical input[type="range"] { cursor: pointer; accent-color: #0f172a; flex-grow: 1; width: 100%; height: 4px; border-radius: 2px; }
+        #font-val, #canvas-width-val { color: #0f172a; font-weight: 700; min-width: 40px; text-align: right; }
 
-        .panel-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #0f172a;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 10px;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-group-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            height: 100%;
-        }
-
-        .font-size-control-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            color: var(--text-dark);
-            font-weight: 700;
-            border: 1px solid #f1f5f9;
-        }
-        .font-size-control-vertical .slider-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .font-size-control-vertical input[type="range"] {
-            cursor: pointer;
-            accent-color: #0f172a;
-            flex-grow: 1;
-            width: 100%;
-            height: 4px;
-            border-radius: 2px;
-        }
-        #font-val, #canvas-width-val {
-            color: #0f172a;
-            font-weight: 700;
-            min-width: 40px;
-            text-align: right;
-        }
-
-        /* 🔘 버튼 모던 스타일 플랫화 */
-        .sticker-btn-label, .save-btn, .add-palette-btn, .bulk-color-btn, .reset-btn, .action-btn {
-            display: block;
-            width: 100%;
-            padding: 10px 12px;
-            color: #ffffff;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-        }
+        .sticker-btn-label, .save-btn, .add-palette-btn, .bulk-color-btn, .reset-btn, .action-btn { display: block; width: 100%; padding: 10px 12px; color: #ffffff; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: none; }
         .sticker-btn-label { background: #0f172a; }
         .sticker-btn-label:hover { background: #1e293b; transform: translateY(-1px); }
         .add-palette-btn { background: #64748b; }
         .add-palette-btn:hover { background: #475569; transform: translateY(-1px); }
         .bulk-color-btn { background: #e2e8f0; color: #475569; padding: 6px; font-size: 11px; border-radius: 8px; }
         .bulk-color-btn:hover { background: #cbd5e1; }
-        
-        .reset-btn { 
-            background: #fef2f2; 
-            color: #ef4444;
-            margin-top: auto; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border: 1px solid #fee2e2;
-        }
+        .reset-btn { background: #fef2f2; color: #ef4444; margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #fee2e2; }
         .reset-btn:hover { background: #fee2e2; }
-        .reset-svg {
-            width: 12px;
-            height: 12px;
-            fill: none;
-            stroke: #ef4444;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        
+        .reset-svg { width: 12px; height: 12px; fill: none; stroke: #ef4444; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
         .save-btn.png-theme { background: #0f172a; }
         .save-btn.png-theme:hover { background: #1e293b; transform: translateY(-1px); }
         .save-btn.jpeg-theme { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
         .save-btn.jpeg-theme:hover { background: #f8fafc; transform: translateY(-1px); }
 
-        .sidebar-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #f1f5f9;
-        }
+        .sidebar-section { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9; }
+        .sidebar-title { font-size: 11px; font-weight: 700; color: #475569; display: flex; justify-content: space-between; align-items: center; padding-bottom: 2px; letter-spacing: 0.2px; }
 
-        .sidebar-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #475569;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 2px;
-            letter-spacing: 0.2px;
-        }
-
-        /* 💡 미니 토글 스위치 */
-        .toggle-label {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-            gap: 4px;
-        }
+        .toggle-label { display: inline-flex; align-items: center; cursor: pointer; gap: 4px; }
         .toggle-input { display: none; }
-        .toggle-switch {
-            width: 30px; height: 16px;
-            background: #cbd5e1;
-            border-radius: 10px;
-            position: relative;
-            transition: background 0.2s;
-        }
-        .toggle-switch::after {
-            content: '';
-            position: absolute; top: 2px; left: 2px;
-            width: 12px; height: 12px;
-            background: white; border-radius: 50%;
-            transition: left 0.2s;
-        }
+        .toggle-switch { width: 30px; height: 16px; background: #cbd5e1; border-radius: 10px; position: relative; transition: background 0.2s; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: white; border-radius: 50%; transition: left 0.2s; }
         .toggle-input:checked + .toggle-switch { background: #0f172a; }
         .toggle-input:checked + .toggle-switch::after { left: 16px; }
 
-        .sidebar-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: #ffffff;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .sidebar-meta-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 700;
-        }
-
-        .sidebar-tag-input {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 11px;
-            outline: none;
-            color: var(--text-dark);
-            background: #f8fafc;
-            transition: border 0.15s;
-        }
+        .sidebar-input-group { display: flex; flex-direction: column; gap: 6px; background: #ffffff; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .sidebar-meta-row { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-muted); font-weight: 700; }
+        .sidebar-tag-input { width: 100%; padding: 6px 8px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 11px; outline: none; color: var(--text-dark); background: #f8fafc; transition: border 0.15s; }
         .sidebar-tag-input:focus { border-color: #cbd5e1; background: #ffffff; }
+        .sidebar-color-picker { width: 28px; height: 16px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; padding: 0; background: none; }
 
-        .sidebar-color-picker {
-            width: 28px;
-            height: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 0;
-            background: none;
-        }
+        /* 캔버스 템플릿 */
+        .template-outer { position: relative; width: var(--canvas-width); height: 840px; background: var(--card-bg); box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); overflow: hidden; border-radius: 20px; flex-shrink: 0; border: 1px solid var(--border-color); transition: width 0.1s ease-out; }
+        .credit-tag { position: absolute; top: 10px; right: 14px; font-size: 11px; font-weight: 700; color: #cbd5e1; letter-spacing: 0.5px; z-index: 100; user-select: none; }
 
-        /* 🖼️ 메인 캔버스 템플릿 - 가로 유동폭 제어 */
-        .template-outer {
-            position: relative;
-            width: var(--canvas-width); 
-            height: 840px;
-            background: var(--card-bg);
-            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-            overflow: hidden;
-            border-radius: 20px;
-            flex-shrink: 0;
-            border: 1px solid var(--border-color);
-            transition: width 0.1s ease-out; 
-        }
+        .left-area { position: absolute; left: 25px; top: 25px; width: calc(var(--canvas-width) - 675px); height: 790px; z-index: 10; pointer-events: none; }
+        .tag-list { display: flex; flex-direction: column; gap: 8px; width: 100%; z-index: 5; transition: opacity 0.2s ease; }
+        .tag-item { width: 130px; height: 28px; color: white; font-size: 13px; display: flex; align-items: center; padding-left: 14px; font-weight: 700; border-radius: 2px; background: linear-gradient(90deg, #8e959c, rgba(142, 149, 156, 0)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .credit-tag {
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #cbd5e1;
-            letter-spacing: 0.5px;
-            z-index: 100;
-            user-select: none;
-        }
-
-        .left-area {
-            position: absolute;
-            left: 25px;
-            top: 25px;
-            width: calc(var(--canvas-width) - 675px); 
-            height: 790px;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .tag-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-            z-index: 5; 
-            transition: opacity 0.2s ease;
-        }
-        
-        .tag-item {
-            width: 130px; 
-            height: 28px;
-            color: white;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            padding-left: 14px;
-            font-weight: 700; 
-            border-radius: 2px;
-            background: linear-gradient(90deg, #8e959c, rgba(142, 149, 156, 0));
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .upload-zone {
-            border: 2px dashed #cbd5e1;
-            background: #f8fafc;
-            position: relative;
-            cursor: move;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.2s;
-        }
+        .upload-zone { border: 2px dashed #cbd5e1; background: #f8fafc; position: relative; cursor: move; overflow: hidden; display: flex; justify-content: center; align-items: center; transition: background 0.2s; }
         .upload-zone:hover { background: #f1f5f9; }
         .upload-zone input[type="file"] { display: none; }
-        .upload-zone img { 
-            position: absolute;
-            cursor: move;
-            user-select: none;
-            transform-origin: center center;
-        }
-        
-        .placeholder-text { 
-            color: #94a3b8; 
-            text-align: center; 
-            font-size: 12px; 
-            z-index: 1; 
-            padding: 10px;
-            pointer-events: none; 
-        }
-        
-        .upload-hint {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 9px;
-            color: #94a3b8;
-            background: rgba(255,255,255,0.8);
-            padding: 2px 4px;
-            border-radius: 3px;
-            pointer-events: none;
-            z-index: 2;
-        }
+        .upload-zone img { position: absolute; cursor: move; user-select: none; transform-origin: center center; }
+        .placeholder-text { color: #94a3b8; text-align: center; font-size: 12px; z-index: 1; padding: 10px; pointer-events: none; }
+        .upload-hint { position: absolute; bottom: 5px; right: 5px; font-size: 9px; color: #94a3b8; background: rgba(255,255,255,0.8); padding: 2px 4px; border-radius: 3px; pointer-events: none; z-index: 2; }
 
-        /* 💡 추가: 표정 슬롯 이름 텍스트 라벨 */
-        .expr-label-input {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            width: 100px;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 900;
-            text-align: right;
-            z-index: 20;
-            pointer-events: auto;
-            /* 검은색(다크 네이비) 두꺼운 테두리 효과 */
-            text-shadow: 
-                -1.5px -1.5px 0 #0f172a,
-                 1.5px -1.5px 0 #0f172a,
-                -1.5px  1.5px 0 #0f172a,
-                 1.5px  1.5px 0 #0f172a,
-                 0px -1.5px 0 #0f172a,
-                 0px  1.5px 0 #0f172a,
-                -1.5px  0px 0 #0f172a,
-                 1.5px  0px 0 #0f172a;
-        }
-        .expr-label-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
+        .expr-label-input { position: absolute; bottom: 8px; right: 8px; width: 100px; background: transparent; border: none; outline: none; color: #ffffff; font-size: 11px; font-weight: 900; text-align: right; z-index: 20; pointer-events: auto; text-shadow: -1.5px -1.5px 0 #0f172a, 1.5px -1.5px 0 #0f172a, -1.5px 1.5px 0 #0f172a, 1.5px 1.5px 0 #0f172a, 0px -1.5px 0 #0f172a, 0px 1.5px 0 #0f172a, -1.5px 0px 0 #0f172a, 1.5px 0px 0 #0f172a; }
+        .expr-label-input::placeholder { color: rgba(255, 255, 255, 0.7); }
 
-        .center-area {
-            position: absolute;
-            right: 240px; 
-            top: 25px;
-            width: 290px;
-            height: 800px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 15;
-        }
-
-        .top-speech-bubble {
-            position: absolute;
-            left: -50px; 
-            top: -1%; 
-            width: 250px; 
-            height: 72px; 
-            display: flex;
-            align-items: center;
-            gap: 10px; 
-            padding: 6px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            background: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            z-index: 500; 
-            transition: opacity 0.2s ease;
-        }
+        .center-area { position: absolute; right: 240px; top: 25px; width: 290px; height: 800px; display: flex; flex-direction: column; gap: 12px; z-index: 15; }
+        .top-speech-bubble { position: absolute; left: -50px; top: -1%; width: 250px; height: 72px; display: flex; align-items: center; gap: 10px; padding: 6px 14px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); z-index: 500; transition: opacity 0.2s ease; }
         
-        .mic-icon-wrapper {
-            width: 32px; 
-            height: 32px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            flex-shrink: 0;
-        }
-        .mic-icon-wrapper input[type="color"] {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .mic-svg { 
-            width: 28px; 
-            height: 28px; 
-            fill: var(--mic-color); 
-            display: none; 
-        }
+        .mic-icon-wrapper { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; flex-shrink: 0; }
+        .mic-icon-wrapper input[type="color"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .mic-svg { width: 28px; height: 28px; fill: var(--mic-color); display: none; }
         .mic-svg.active { display: block; }
+        .speech-input-wrapper { flex-grow: 1; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .speech-input { width: 170px; font-size: 14px; font-weight: 700; color: #334155 !important; border: none; outline: none; background: transparent; text-align: center; resize: none; overflow: hidden; padding: 0; }
+        .speech-input.line-mode-1 { height: 20px; line-height: 20px; }
+        .speech-input.line-mode-2 { height: 42px; line-height: 1.4; }
+        .speech-input::placeholder { text-align: center; font-size: 14px; font-weight: 700; color: #94a3b8; }
 
-        .speech-input-wrapper {
-            flex-grow: 1;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .speech-input {
-            width: 170px;
-            font-size: 14px; 
-            font-weight: 700; 
-            color: #334155 !important; 
-            border: none;
-            outline: none;
-            background: transparent;
-            text-align: center;
-            resize: none; 
-            overflow: hidden;
-            padding: 0;
-        }
-
-        .speech-input.line-mode-1 { 
-            height: 20px;
-            line-height: 20px; 
-        }
-        .speech-input.line-mode-2 { 
-            height: 42px;
-            line-height: 1.4; 
-        }
-
-        .speech-input::placeholder {
-            text-align: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #94a3b8;
-        }
-
-        .bust-box {
-            width: 290px;
-            height: 290px;
-            border-radius: 20px;
-            flex-shrink: 0;
-            margin-top: 50px; 
-        }
+        .bust-box { width: 290px; height: 290px; border-radius: 20px; flex-shrink: 0; margin-top: 50px; }
 
         .palette-container { width: 290px; flex-shrink: 0; }
-        .palette-row {
-            display: flex;
-            justify-content: flex-start;
-            gap: 8px;
-            width: 290px; 
-            flex-wrap: nowrap; 
-            margin-top: 2px;
-        }
+        .palette-row { display: flex; justify-content: flex-start; gap: 8px; width: 290px; flex-wrap: nowrap; margin-top: 2px; }
+        .color-item { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1 1 0%; min-width: 30px; position: relative; }
+        .color-preview { width: 100%; height: 38px; border-radius: 4px; border: 1px solid #cbd5e1; cursor: pointer; position: relative; overflow: hidden; }
+        .color-preview input[type="color"] { position: absolute; top: -10px; left: -10px; width: 60px; height: 60px; cursor: pointer; border: none; padding: 0; background: none; }
+        .color-code-input { width: 100%; font-size: 9px; font-weight: 700; text-align: center; border: none; outline: none; background: transparent; text-transform: uppercase; color: #475569; padding: 2px 0; }
+        .palette-del-btn { position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #ef4444; color: white; border: none; border-radius: 50%; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5; }
 
-        .color-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            flex: 1 1 0%; 
-            min-width: 30px; 
-            position: relative;
-        }
+        .profile-info { display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; flex-grow: 1; overflow: hidden; }
+        .name-container-vertical { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; width: 100%; flex-shrink: 0; }
+        .input-name { font-size: 21px; font-weight: 700; border: none; width: 100%; outline: none; text-align: center; background: transparent; }
+        .input-hanja { font-size: 12px; font-weight: 500; color: #94a3b8; border: none; width: 100%; outline: none; text-align: center; background: transparent; }
         
-        .color-preview {
-            width: 100%;
-            height: 38px;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        .color-preview input[type="color"] {
-            position: absolute;
-            top: -10px; left: -10px; width: 60px; height: 60px;
-            cursor: pointer; border: none; padding: 0; background: none;
-        }
-        
-        .color-code-input {
-            width: 100%;
-            font-size: 9px;
-            font-weight: 700;
-            text-align: center;
-            border: none;
-            outline: none;
-            background: transparent;
-            text-transform: uppercase;
-            color: #475569;
-            padding: 2px 0;
-        }
+        .spec-dynamic-row { display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; flex-shrink: 0; flex-wrap: nowrap; }
+        .spec-box-item { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 4px; display: flex; align-items: center; justify-content: center; position: relative; min-width: 44px; max-width: 65px; flex: 0 1 auto; }
+        .input-spec-field { font-size: 11px; font-weight: 700; color: #475569; border: none; width: 100%; outline: none; text-align: center; background: transparent; }
+        .spec-box-del-btn { position: absolute; top: -5px; right: -5px; width: 13px; height: 13px; background: #ef4444; color: #ffffff; border: none; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
 
-        .palette-del-btn {
-            position: absolute;
-            top: -6px; right: -6px;
-            width: 14px; height: 14px;
-            background: #ef4444; color: white;
-            border: none; border-radius: 50%;
-            font-size: 10px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 5;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            align-items: center;
-            width: 100%;
-            flex-grow: 1; 
-            overflow: hidden;
-        }
-        
-        .name-container-vertical {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1px;
-            width: 100%;
-            flex-shrink: 0;
-        }
-        .input-name { 
-            font-size: 21px; 
-            font-weight: 700;
-            border: none; 
-            width: 100%; 
-            outline: none; 
-            text-align: center; 
-            background: transparent;
-        }
-        .input-hanja { 
-            font-size: 12px; 
-            font-weight: 500;
-            color: #94a3b8; 
-            border: none; 
-            width: 100%; 
-            outline: none; 
-            text-align: center; 
-            background: transparent;
-        }
-        
-        .spec-dynamic-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-            flex-shrink: 0;
-            flex-wrap: nowrap;
-        }
-
-        .spec-box-item {
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 5px 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            min-width: 44px;
-            max-width: 65px;
-            flex: 0 1 auto;
-        }
-
-        .input-spec-field {
-            font-size: 11px;
-            font-weight: 700;
-            color: #475569;
-            border: none;
-            width: 100%;
-            outline: none;
-            text-align: center;
-            background: transparent;
-        }
-
-        .spec-box-del-btn {
-            position: absolute;
-            top: -5px; right: -5px;
-            width: 13px; height: 13px;
-            background: #ef4444; color: #ffffff;
-            border: none; border-radius: 50%;
-            font-size: 9px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 10;
-        }
-
-        .desc-list-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .desc-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            max-height: 220px; 
-            overflow-y: auto; 
-            padding-right: 2px;
-        }
+        .desc-list-wrapper { display: flex; flex-direction: column; gap: 4px; width: 100%; overflow: hidden; }
+        .desc-list { list-style: none; display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; padding-right: 2px; }
         .desc-list::-webkit-scrollbar { width: 4px; }
         .desc-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-
-        .desc-list li { 
-            display: flex; 
-            align-items: center; 
-            position: relative; 
-            width: 100%; 
-            justify-content: flex-start;
-        }
-        .desc-list li::before {
-            content: "▪"; 
-            margin-right: 6px; 
-            color: #334155; 
-            flex-shrink: 0;
-            font-size: calc(var(--desc-font-size) - 2px);
-        }
-        .desc-list input {
-            font-weight: 500; 
-            border: none; 
-            width: 100%; 
-            color: #334155; 
-            outline: none;
-            padding-right: 25px; 
-            font-size: var(--desc-font-size) !important;
-            line-height: normal; 
-            text-align: left;
-            background: transparent;
-        }
-        .row-del-btn {
-            position: absolute; 
-            right: 0; 
-            color: #ef4444; 
-            background: none; 
-            border: none; 
-            font-size: 14px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            opacity: 0;
-            z-index: 5;
-        }
+        .desc-list li { display: flex; align-items: center; position: relative; width: 100%; justify-content: flex-start; }
+        .desc-list li::before { content: "▪"; margin-right: 6px; color: #334155; flex-shrink: 0; font-size: calc(var(--desc-font-size) - 2px); }
+        .desc-list input { font-weight: 500; border: none; width: 100%; color: #334155; outline: none; padding-right: 25px; font-size: var(--desc-font-size) !important; line-height: normal; text-align: left; background: transparent; }
+        .row-del-btn { position: absolute; right: 0; color: #ef4444; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; opacity: 0; z-index: 5; }
         .desc-list li:hover .row-del-btn { opacity: 1; }
-        
-        .row-add-btn {
-            background: #ffffff; color: #64748b; border: 1px dashed #cbd5e1;
-            padding: 7px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: 700;
-            width: 100%;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
+        .row-add-btn { background: #ffffff; color: #64748b; border: 1px dashed #cbd5e1; padding: 7px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: 700; width: 100%; flex-shrink: 0; transition: all 0.2s; }
         .row-add-btn:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; }
 
-        .right-area {
-            position: absolute;
-            right: 45px; 
-            top: 50px;
-            width: 150px;
-            height: 790px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 15;
-            transition: opacity 0.2s ease;
-        }
-        .expression-box {
-            width: 150px;
-            height: 150px;
-            border-radius: 10px;
-        }
+        .right-area { position: absolute; right: 45px; top: 50px; width: 150px; height: 790px; display: flex; flex-direction: column; gap: 12px; z-index: 15; transition: opacity 0.2s ease; }
+        .expression-box { width: 150px; height: 150px; border-radius: 10px; }
 
-        .draggable-sticker {
-            position: absolute; 
-            cursor: move; 
-            user-select: none; 
-            z-index: 100; 
-            padding: 6px; 
-            display: inline-block;
-            transform-origin: center center; 
-        }
+        .draggable-sticker { position: absolute; cursor: move; user-select: none; z-index: 100; padding: 6px; display: inline-block; transform-origin: center center; }
         .draggable-sticker:hover { outline: 1px dashed var(--primary-color); }
         .draggable-sticker img { width: 100%; height: auto; display: block; pointer-events: none; }
-        
-        .delete-sticker-btn {
-            position: absolute; top: -8px; left: -8px; width: 18px; height: 18px;
-            background: #ef4444; color: white; border-radius: 50%; font-size: 11px;
-            display: none; align-items: center; justify-content: center; cursor: pointer; border: none; font-weight: bold; z-index: 11;
-        }
-        .resize-sticker-handle {
-            position: absolute; bottom: -4px; right: -4px; width: 12px; height: 12px;
-            background: var(--primary-color); cursor: se-resize; display: none; border-radius: 2px; z-index: 11;
-        }
-        .rotate-sticker-handle {
-            position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
-            background: #222222; color: #ffffff; cursor: alias; display: none; border-radius: 50%; 
-            z-index: 11; font-size: 10px; align-items: center; justify-content: center;
-        }
-        
-        .draggable-sticker:hover .delete-sticker-btn,
-        .draggable-sticker:hover .resize-sticker-handle,
-        .draggable-sticker:hover .rotate-sticker-handle { display: flex; }
+        .delete-sticker-btn { position: absolute; top: -8px; left: -8px; width: 18px; height: 18px; background: #ef4444; color: white; border-radius: 50%; font-size: 11px; display: none; align-items: center; justify-content: center; cursor: pointer; border: none; font-weight: bold; z-index: 11; }
+        .resize-sticker-handle { position: absolute; bottom: -4px; right: -4px; width: 12px; height: 12px; background: var(--primary-color); cursor: se-resize; display: none; border-radius: 2px; z-index: 11; }
+        .rotate-sticker-handle { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #222222; color: #ffffff; cursor: alias; display: none; border-radius: 50%; z-index: 11; font-size: 10px; align-items: center; justify-content: center; }
+        .draggable-sticker:hover .delete-sticker-btn, .draggable-sticker:hover .resize-sticker-handle, .draggable-sticker:hover .rotate-sticker-handle { display: flex; }
 
-        /* ========================================================
-           🎯 [완벽 매핑] HUD 가이드 오버레이 & 네온 화살표 시스템
-           ======================================================== */
-        .canvas-overlay-guide {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.88);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-            user-select: none;
-            cursor: pointer;
-        }
-        .canvas-overlay-guide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .hud-highlight {
-            position: absolute;
-            border: 2px dashed #38bdf8;
-            background: rgba(56, 189, 248, 0.05);
-            border-radius: 12px;
-            pointer-events: none;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
-        }
-
-        .hud-arrow-right {
-            position: absolute;
-            height: 2px;
-            background: #38bdf8;
-            pointer-events: none;
-            box-shadow: 0 0 8px #38bdf8;
-        }
-        .hud-arrow-right::after {
-            content: '';
-            position: absolute;
-            right: -2px;
-            top: -4px;
-            border-width: 5px 0 5px 6px;
-            border-style: solid;
-            border-color: transparent transparent transparent #38bdf8;
-        }
-        .hud-arrow-up {
-            position: absolute;
-            width: 2px;
-            background: #38bdf8;
-            pointer-events: none;
-            box-shadow: 0 0 8px #38bdf8;
-        }
-        .hud-arrow-up::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -4px;
-            border-width: 0 5px 6px 5px;
-            border-style: solid;
-            border-color: transparent transparent #38bdf8 transparent;
-        }
-
-        .overlay-label {
-            position: absolute;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            padding: 16px;
-            border-radius: 14px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            z-index: 10000;
-        }
-        
-        .overlay-label strong {
-            display: block;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            padding-bottom: 6px;
-            margin-bottom: 10px;
-        }
-
-        .overlay-label ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .overlay-label li {
-            position: relative;
-            padding-left: 12px;
-            color: #cbd5e1;
-            font-size: 12px;
-            line-height: 1.5;
-            letter-spacing: -0.2px;
-            font-weight: 500;
-        }
-
-        .overlay-label li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            top: -1px;
-            color: #38bdf8;
-            font-size: 14px;
-        }
-
-        .overlay-label li b {
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .lbl-system-status {
-            bottom: 40px;
-            right: 40px;
-            left: auto;
-            transform: none;
-            width: 330px;
-            background: #10b981;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-            text-align: right;
-        }
-        .lbl-system-status strong {
-            border: none;
-            color: #ffffff;
-            font-size: 13px;
-            padding-bottom: 2px;
-            margin-bottom: 2px;
-        }
-        .lbl-system-status span {
-            display: block;
-            color: #ecfdf5;
-            font-size: 11.5px;
-            line-height: 1.5;
-        }
-
-        .overlay-close-hint {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(0, 0, 0, 0.5);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            font-weight: 700;
-        }
+        /* HUD 가이드 오버레이 */
+        .canvas-overlay-guide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(4px); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; user-select: none; cursor: pointer; }
+        .canvas-overlay-guide.active { opacity: 1; pointer-events: auto; }
+        .hud-highlight { position: absolute; border: 2px dashed #38bdf8; background: rgba(56, 189, 248, 0.05); border-radius: 12px; pointer-events: none; box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
+        .hud-arrow-right { position: absolute; height: 2px; background: #38bdf8; pointer-events: none; box-shadow: 0 0 8px #38bdf8; }
+        .hud-arrow-right::after { content: ''; position: absolute; right: -2px; top: -4px; border-width: 5px 0 5px 6px; border-style: solid; border-color: transparent transparent transparent #38bdf8; }
+        .hud-arrow-up { position: absolute; width: 2px; background: #38bdf8; pointer-events: none; box-shadow: 0 0 8px #38bdf8; }
+        .hud-arrow-up::after { content: ''; position: absolute; top: -2px; left: -4px; border-width: 0 5px 6px 5px; border-style: solid; border-color: transparent transparent #38bdf8 transparent; }
+        .overlay-label { position: absolute; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); padding: 16px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); z-index: 10000; }
+        .overlay-label strong { display: block; color: #ffffff; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); padding-bottom: 6px; margin-bottom: 10px; }
+        .overlay-label ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .overlay-label li { position: relative; padding-left: 12px; color: #cbd5e1; font-size: 12px; line-height: 1.5; letter-spacing: -0.2px; font-weight: 500; }
+        .overlay-label li::before { content: "•"; position: absolute; left: 0; top: -1px; color: #38bdf8; font-size: 14px; }
+        .overlay-label li b { color: #ffffff; font-weight: 700; }
+        .lbl-system-status { bottom: 40px; right: 40px; left: auto; transform: none; width: 330px; background: #10b981; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); text-align: right; }
+        .lbl-system-status strong { border: none; color: #ffffff; font-size: 13px; padding-bottom: 2px; margin-bottom: 2px; }
+        .lbl-system-status span { display: block; color: #ecfdf5; font-size: 11.5px; line-height: 1.5; }
+        .overlay-close-hint { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.6); background: rgba(0, 0, 0, 0.5); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.15); font-weight: 700; }
 
         /* 이미지 저장 시 가이드 및 불필요 요소 숨김 */
-        .hide-on-save .delete-sticker-btn,
-        .hide-on-save .resize-sticker-handle,
-        .hide-on-save .rotate-sticker-handle,
-        .hide-on-save .upload-hint,
-        .hide-on-save .placeholder-text,
-        .hide-on-save .row-del-btn,
-        .hide-on-save .row-add-btn,
-        .hide-on-save .palette-del-btn,
-        .hide-on-save .spec-box-del-btn,
-        .hide-on-save .canvas-overlay-guide, 
-        .hide-on-save .hud-highlight,
-        .hide-on-save .hud-arrow-right,
-        .hide-on-save .hud-arrow-left,
-        .hide-on-save .hud-arrow-up,
-        .hide-on-save .color-preview input[type="color"] { 
-            display: none !important;
-        }
+        .hide-on-save .delete-sticker-btn, .hide-on-save .resize-sticker-handle, .hide-on-save .rotate-sticker-handle,
+        .hide-on-save .upload-hint, .hide-on-save .placeholder-text, .hide-on-save .row-del-btn, .hide-on-save .row-add-btn,
+        .hide-on-save .palette-del-btn, .hide-on-save .spec-box-del-btn, .hide-on-save .canvas-overlay-guide, 
+        .hide-on-save .hud-highlight, .hide-on-save .hud-arrow-right, .hide-on-save .hud-arrow-left, .hide-on-save .hud-arrow-up,
+        .hide-on-save .color-preview input[type="color"] { display: none !important; }
         .hide-on-save .upload-zone { border: none !important; background: transparent !important; }
         .hide-on-save .draggable-sticker { outline: none !important; }
         .hide-on-save .color-code-input { display: none !important; }
@@ -940,42 +180,15 @@
         .hide-on-save .profile-info { flex-grow: 1 !important; display: flex !important; flex-direction: column !important; }
         .hide-on-save .desc-list { max-height: none !important; overflow: visible !important; display: flex !important; flex-direction: column !important; }
         
-        .icon-select-box, .line-select-box, .font-select-box {
-            display: flex;
-            gap: 4px;
-            background: #f1f5f9;
-            padding: 3px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .icon-select-label, .line-select-label, .font-select-label {
-            flex: 1;
-            text-align: center;
-            font-size: 10px;
-            padding: 6px 0;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 700;
-            color: #64748b;
-            transition: all 0.15s ease;
-        }
+        .icon-select-box, .line-select-box, .font-select-box { display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .icon-select-label, .line-select-label, .font-select-label { flex: 1; text-align: center; font-size: 10px; padding: 6px 0; background: transparent; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: #64748b; transition: all 0.15s ease; }
         .icon-select-label input, .line-select-label input, .font-select-label input { display: none; }
-        
-        .icon-select-label:has(input:checked),
-        .line-select-label:has(input:checked),
-        .font-select-label:has(input:checked) { 
-            background: #ffffff; 
-            color: #0f172a; 
-            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
-        }
+        .icon-select-label:has(input:checked), .line-select-label:has(input:checked), .font-select-label:has(input:checked) { background: #ffffff; color: #0f172a; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05); }
     </style>
 </head>
 <body>
 
     <div class="workspace-container">
-        
         <!-- [좌측 패널] 성격 및 커스텀 제어 패널 -->
         <div class="sidebar-panel">
             <div class="panel-title">⚙️ 컴포넌트 세팅</div>
@@ -983,12 +196,8 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">
                     <span>🏷️ 성격 키워드</span>
-                    <label class="toggle-label">
-                        <input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('tag-list-layer', this.checked)">
-                        <div class="toggle-switch"></div>
-                    </label>
+                    <label class="toggle-label"><input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('tag-list-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
-                
                 <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 2px;">
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <span style="font-size: 10px; font-weight: bold; color: #64748b;">일괄 색상 선택:</span>
@@ -996,80 +205,48 @@
                     </div>
                     <button class="bulk-color-btn" onclick="applyBulkTagColor()">🎨 전체 일괄 색상 적용</button>
                 </div>
-
                 <div class="sidebar-input-group" style="margin-top: 4px;">
-                    <div class="sidebar-meta-row">
-                        <span>키워드 1</span>
-                        <input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-1" oninput="syncTagColor(1, this.value)">
-                    </div>
+                    <div class="sidebar-meta-row"><span>키워드 1</span><input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-1" oninput="syncTagColor(1, this.value)"></div>
                     <input type="text" value="성격 키워드 1" class="sidebar-tag-input" id="sidebar-input-text-1" oninput="syncTagText(1, this.value)">
                 </div>
-                
                 <div class="sidebar-input-group">
-                    <div class="sidebar-meta-row">
-                        <span>키워드 2</span>
-                        <input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-2" oninput="syncTagColor(2, this.value)">
-                    </div>
+                    <div class="sidebar-meta-row"><span>키워드 2</span><input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-2" oninput="syncTagColor(2, this.value)"></div>
                     <input type="text" value="성격 키워드 2" class="sidebar-tag-input" id="sidebar-input-text-2" oninput="syncTagText(2, this.value)">
                 </div>
-                
                 <div class="sidebar-input-group">
-                    <div class="sidebar-meta-row">
-                        <span>키워드 3</span>
-                        <input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-3" oninput="syncTagColor(3, this.value)">
-                    </div>
+                    <div class="sidebar-meta-row"><span>키워드 3</span><input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-3" oninput="syncTagColor(3, this.value)"></div>
                     <input type="text" value="성격 키워드 3" class="sidebar-tag-input" id="sidebar-input-text-3" oninput="syncTagText(3, this.value)">
                 </div>
             </div>
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>💬 한마디 말풍선 출력</span>
-                    <label class="toggle-label">
-                        <input type="checkbox" checked class="toggle-input" id="sidebar-bubble-toggle" onchange="toggleVisibility('speech-bubble-layer', this.checked)">
-                        <div class="toggle-switch"></div>
-                    </label>
+                    <span>💬 한마디 말풍선 ON/OFF</span>
+                    <label class="toggle-label"><input type="checkbox" checked class="toggle-input" id="sidebar-bubble-toggle" onchange="toggleVisibility('speech-bubble-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <span>📏 말풍선 정렬 방식</span>
-                </div>
+                <div class="sidebar-title"><span>💬 말풍선 정렬 방식</span></div>
                 <div class="line-select-box">
-                    <label class="line-select-label">
-                        <input type="radio" name="speech-line-choice" value="1" checked onchange="changeSpeechLineAlignment(this.value)">1줄
-                    </label>
-                    <label class="line-select-label">
-                        <input type="radio" name="speech-line-choice" value="2" onchange="changeSpeechLineAlignment(this.value)">2줄
-                    </label>
+                    <label class="line-select-label"><input type="radio" name="speech-line-choice" value="1" checked onchange="changeSpeechLineAlignment(this.value)">1줄</label>
+                    <label class="line-select-label"><input type="radio" name="speech-line-choice" value="2" onchange="changeSpeechLineAlignment(this.value)">2줄</label>
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-title">
-                    <span>💬 말풍선 아이콘 종류</span>
-                </div>
+                <div class="sidebar-title"><span>💬 말풍선 아이콘 종류</span></div>
                 <div class="icon-select-box">
-                    <label class="icon-select-label">
-                        <input type="radio" name="bubble-icon-choice" value="mic" checked onchange="changeSpeechIcon(this.value)">마이크
-                    </label>
-                    <label class="icon-select-label">
-                        <input type="radio" name="bubble-icon-choice" value="quote" onchange="changeSpeechIcon(this.value)">인용구
-                    </label>
-                    <label class="icon-select-label">
-                        <input type="radio" name="bubble-icon-choice" value="smile" onchange="changeSpeechIcon(this.value)">표정
-                    </label>
+                    <label class="icon-select-label"><input type="radio" name="bubble-icon-choice" value="mic" checked onchange="changeSpeechIcon(this.value)">마이크</label>
+                    <label class="icon-select-label"><input type="radio" name="bubble-icon-choice" value="quote" onchange="changeSpeechIcon(this.value)">인용구</label>
+                    <label class="icon-select-label"><input type="radio" name="bubble-icon-choice" value="smile" onchange="changeSpeechIcon(this.value)">표정</label>
                 </div>
             </div>
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>🎭 오른쪽 표정 슬롯</span>
-                    <label class="toggle-label">
-                        <input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('right-area-layer', this.checked)">
-                        <div class="toggle-switch"></div>
-                    </label>
+                    <span>🎭 오른쪽 표정 슬롯 ON/OFF</span>
+                    <label class="toggle-label"><input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('right-area-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
             </div>
         </div>
@@ -1078,75 +255,52 @@
         <div class="template-outer" id="main-canvas">
             <div class="credit-tag">@sa_se372</div>
             
-            <!-- 🎯 캔버스 크기가 작아져도 겹치지 않는 안심 HUD 오버레이 -->
+            <!-- 🎯 안심 HUD 오버레이 -->
             <div class="canvas-overlay-guide active" id="canvas-help-overlay" onclick="toggleHelpOverlay()">
                 
-                <!-- [01] 성격 키워드 -->
                 <div class="hud-highlight" style="left: 25px; top: 25px; width: 145px; height: 110px;"></div>
                 <div class="hud-arrow-up" style="left: 97px; top: 135px; height: 20px;"></div>
                 <div class="overlay-label" style="left: 25px; top: 155px; width: 250px;">
-                    <strong>📐 성격 키워드</strong>
-                    <ul>
-                        <li>좌측 패널에서 키워드 입력 및 색을 수정할 수 있습니다.</li>
-                        <li>슬라이더를 끄면 캔버스에서 사라집니다.</li>
-                        <li>각 색상별로 지정할 수도 있고, <b>한 번에 일괄 적용</b>도 가능합니다.</li>
-                    </ul>
+                    <strong>성격 키워드</strong>
+                    <ul><li>좌측 패널에서 키워드 입력 및 색을 수정할 수 있습니다.</li><li>슬라이더를 끄면 캔버스에서 사라집니다.</li><li>각 색상별로 지정할 수도 있고, <b>한 번에 일괄 적용</b>도 가능합니다.</li></ul>
                 </div>
                 
-                <!-- [02] 한마디 말풍선 -->
                 <div class="hud-highlight" style="right: 330px; top: 15px; width: 250px; height: 72px;"></div>
                 <div class="hud-arrow-right" style="right: 580px; top: 50px; width: 30px;"></div>
                 <div class="overlay-label" style="right: 610px; top: 15px; width: 260px;">
-                    <strong>💬 말풍선</strong>
-                    <ul>
-                        <li>좌측 패널에서 <b>1줄 대사, 2줄 대사</b> 선택이 가능합니다.</li>
-                        <li>아이콘을 클릭하면 색상을 바로 변경할 수 있습니다.</li>
-                        <li>마이크, 인용, 표정 중 하나를 선택해 적용해보세요.</li>
-                    </ul>
+                    <strong>말풍선</strong>
+                    <ul><li>좌측 패널에서 <b>1줄 대사, 2줄 대사</b> 선택이 가능합니다.</li><li>아이콘을 클릭하면 색상을 바로 변경할 수 있습니다.</li></ul>
                 </div>
                 
-                <!-- [03] 메인 두상 -->
                 <div class="hud-highlight" style="right: 240px; top: 75px; width: 290px; height: 290px;"></div>
                 <div class="hud-arrow-right" style="right: 530px; top: 310px; width: 30px;"></div>
                 <div class="overlay-label" style="right: 560px; top: 280px; width: 250px;">
-                    <strong>🖼️ 메인 두상</strong>
-                    <ul>
-                        <li>점선 영역을 <b>더블 클릭</b>하여 이미지를 띄웁니다.</li>
-                        <li><b>마우스 휠:</b> 줌인 / 줌아웃</li>
-                        <li><b>클릭 후 드래그:</b> 상하좌우 위치 조정</li>
-                    </ul>
+                    <strong>메인 두상</strong>
+                    <ul><li>점선 영역을 <b>더블 클릭</b>하여 이미지를 띄웁니다.</li><li><b>마우스 휠:</b> 줌인 / 줌아웃</li><li><b>클릭 후 드래그:</b> 상하좌우 위치 조정</li></ul>
                 </div>
                 
-                <!-- [04] 표정 변화 슬롯 -->
+                <!-- 💡 짧게 개선된 표정 슬롯 가이드 -->
                 <div class="hud-highlight" style="right: 45px; top: 50px; width: 150px; height: 490px;"></div>
                 <div class="hud-arrow-right" style="right: 195px; top: 430px; width: 20px;"></div>
                 <div class="overlay-label" style="right: 215px; top: 400px; width: 260px;">
-                    <strong>🎭 표정 슬롯</strong>
+                    <strong>표정 슬롯</strong>
                     <ul>
-                        <li>동일한 크기의 이미지를 넣으면 조작 값이 <b>자동 동기화</b> 됩니다.</li>
-                        <li>우측 하단의 텍스트를 클릭해 <b>표정 이름</b>을 지을 수 있습니다.</li>
-                        <li>좌측 패널에서 해당 슬롯 기능을 끌 수 있습니다.</li>
+                        <li><b>크기가 같은 이미지:</b> 위치/확대 자동 동기화</li>
+                        <li><b>크기가 다른 이미지:</b> 각각 독립적으로 조작</li>
+                        <li>슬롯 우측 하단을 클릭해 <b>표정 이름</b> 입력</li>
                     </ul>
                 </div>
                 
-                <!-- [05] 컬러 파레트 및 텍스트 편집 -->
                 <div class="hud-highlight" style="right: 240px; bottom: 45px; width: 290px; height: 380px;"></div>
                 <div class="hud-arrow-right" style="right: 530px; bottom: 120px; width: 30px;"></div>
                 <div class="overlay-label" style="right: 560px; bottom: 60px; width: 260px;">
-                    <strong>📋 컬러 파레트 & 텍스트 편집</strong>
-                    <ul>
-                        <li><b>컬러 파레트:</b> 색상 피커를 쓰거나 컬러 코드를 직접 입력할 수 있습니다. (저장 시 코드는 지워짐)</li>
-                        <li><b>텍스트 편집:</b> 모든 텍스트는 <b>클릭하여 바로 수정</b>합니다.</li>
-                        <li>우측의 [프로필 박스 추가] 버튼으로 스펙 상자를 늘릴 수 있습니다.</li>
-                    </ul>
+                    <strong>컬러 파레트 & 텍스트 편집</strong>
+                    <ul><li><b>컬러 파레트:</b> 색상 피커를 쓰거나 컬러 코드를 직접 입력할 수 있습니다.</li><li><b>텍스트 편집:</b> 모든 텍스트는 <b>클릭하여 바로 수정</b>합니다.</li></ul>
                 </div>
                 
-                <!-- 💾 하단 시스템 가이드 -->
                 <div class="overlay-label lbl-system-status">
-                    <strong>💾 기기 브라우저 내부 안심 저장</strong>
-                    <span>스티커를 포함한 모든 작업 데이터는 새로고침을 해도 즉시 유지됩니다. (다운로드 시 이 가이드는 저장되지 않습니다.)</span>
+                    <strong>💾 기기 브라우저 내부 안심 저장</strong><span>새로고침을 해도 즉시 유지됩니다. (다운로드 시 이 가이드는 저장되지 않습니다.)</span>
                 </div>
-                
                 <div class="overlay-close-hint">화면 아무 곳이나 클릭하면 가이드가 닫힙니다.</div>
             </div>
 
@@ -1160,25 +314,11 @@
             </div>
 
             <div class="center-area">
-                
-                <!-- 고정형 배치 및 2줄 처리가 내장된 말풍선 컴포넌트 -->
                 <div class="top-speech-bubble" id="speech-bubble-layer">
                     <div class="mic-icon-wrapper" title="아이콘 색상 변경">
-                        <svg class="mic-svg active" id="icon-mic" viewBox="0 0 24 24">
-                            <rect x="11" y="19" width="2" height="2" />
-                            <rect x="6" y="20" width="12" height="2" rx="1" />
-                            <path d="M4,10 v1 a8,8 0 0,0 16,0 v-1 h-2 v1 a6,6 0 0,1 -12,0 v-1 z" />
-                            <rect x="7.5" y="2" width="9" height="13" rx="4.5" />
-                        </svg>
-                        <svg class="mic-svg" id="icon-quote" viewBox="0 0 24 24">
-                            <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
-                        </svg>
-                        <svg class="mic-svg" id="icon-smile" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" stroke-width="2" fill="none" style="stroke: var(--mic-color);"/>
-                            <circle cx="8.5" cy="9.5" r="1.5"/>
-                            <circle cx="15.5" cy="9.5" r="1.5"/>
-                            <path d="M8 14.5s2.5 3 4 3 4-3 4-3" stroke-width="2" stroke-linecap="round" fill="none" style="stroke: var(--mic-color);"/>
-                        </svg>
+                        <svg class="mic-svg active" id="icon-mic" viewBox="0 0 24 24"><rect x="11" y="19" width="2" height="2" /><rect x="6" y="20" width="12" height="2" rx="1" /><path d="M4,10 v1 a8,8 0 0,0 16,0 v-1 h-2 v1 a6,6 0 0,1 -12,0 v-1 z" /><rect x="7.5" y="2" width="9" height="13" rx="4.5" /></svg>
+                        <svg class="mic-svg" id="icon-quote" viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
+                        <svg class="mic-svg" id="icon-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2" fill="none" style="stroke: var(--mic-color);"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M8 14.5s2.5 3 4 3 4-3 4-3" stroke-width="2" stroke-linecap="round" fill="none" style="stroke: var(--mic-color);"/></svg>
                         <input type="color" value="#455a64" id="bubble-icon-color-picker" oninput="changeMicColor(this)">
                     </div>
                     <div class="speech-input-wrapper">
@@ -1186,7 +326,6 @@
                     </div>
                 </div>
 
-                <!-- 두상 컨테이너 -->
                 <div class="upload-zone bust-box" id="bust-upload-zone" data-type="bust" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">더블클릭하여 두상 업로드</div>
                     <span class="upload-hint">더블클릭</span>
@@ -1196,15 +335,11 @@
                 <div class="palette-container">
                     <div class="palette-row" id="palette-target-row">
                         <div class="color-item" data-permanent="true">
-                            <div class="color-preview" id="c1-preview" style="background-color: #3a444d;">
-                                <input type="color" id="c1-picker" value="#3a444d" oninput="updateColorFromPicker(this, 'c1')">
-                            </div>
+                            <div class="color-preview" id="c1-preview" style="background-color: #3a444d;"><input type="color" id="c1-picker" value="#3a444d" oninput="updateColorFromPicker(this, 'c1')"></div>
                             <input type="text" id="c1" class="color-code-input" value="#3A444D" onchange="updateColorFromText(this)">
                         </div>
                         <div class="color-item" data-permanent="true">
-                            <div class="color-preview" id="c2-preview" style="background-color: #7cbade;">
-                                <input type="color" id="c2-picker" value="#7cbade" oninput="updateColorFromPicker(this, 'c2')">
-                            </div>
+                            <div class="color-preview" id="c2-preview" style="background-color: #7cbade;"><input type="color" id="c2-picker" value="#7cbade" oninput="updateColorFromPicker(this, 'c2')"></div>
                             <input type="text" id="c2" class="color-code-input" value="#7CBADE" onchange="updateColorFromText(this)">
                         </div>
                     </div>
@@ -1216,7 +351,6 @@
                         <input type="text" class="input-hanja" id="input-hanja" value="원문 이름">
                     </div>
                     
-                    <!-- 중앙 정렬 밀림형 스펙 박스 -->
                     <div class="spec-dynamic-row" id="spec-box-container"></div>
                     
                     <div class="desc-list-wrapper">
@@ -1226,7 +360,6 @@
                 </div>
             </div>
 
-            <!-- 🎯 표정 슬롯 영역 (이름 입력 인풋 추가) -->
             <div class="right-area" id="right-area-layer">
                 <div class="upload-zone expression-box" id="expr-zone-1" data-type="expression" ondblclick="triggerFileInput(this)">
                     <div class="placeholder-text">표정 슬롯 1</div>
@@ -1250,13 +383,9 @@
 
         </div>
 
-        <!-- [우측 패널] 유틸리티 패널 -->
         <div class="sidebar-panel">
             <div class="panel-title">🛠️ 유틸리티 도구</div>
-            
             <div class="btn-group-vertical">
-
-                <!-- 💡 도움말 오버레이를 켜는 토글 도구 -->
                 <button class="add-palette-btn" style="background: #0f172a;" onclick="toggleHelpOverlay()">💡 조작 도움말 오버레이</button>
 
                 <div class="font-size-control-vertical">
@@ -1267,24 +396,15 @@
                     </div>
                 </div>
                 
-                <label class="sticker-btn-label">
-                    ✨ 스티커 추가 선택
-                    <input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)">
-                </label>
-
+                <label class="sticker-btn-label">✨ 스티커 추가 선택<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
                 <button class="add-palette-btn" onclick="addNewPaletteItem()">🎨 컬러 팔레트 추가</button>
-
                 <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()">📋 프로필 박스 추가</button>
                 
                 <div class="font-size-control-vertical" style="margin-top: 2px;">
                     <span>🅰️ 서체 종류 선택</span>
                     <div class="font-select-box">
-                        <label class="font-select-label">
-                            <input type="radio" name="font-style-choice" value="sans" checked onchange="changeMainFontFamily(this.value)">고딕체
-                        </label>
-                        <label class="font-select-label">
-                            <input type="radio" name="font-style-choice" value="serif" onchange="changeMainFontFamily(this.value)">명조체
-                        </label>
+                        <label class="font-select-label"><input type="radio" name="font-style-choice" value="sans" checked onchange="changeMainFontFamily(this.value)">고딕체</label>
+                        <label class="font-select-label"><input type="radio" name="font-style-choice" value="serif" onchange="changeMainFontFamily(this.value)">명조체</label>
                     </div>
                 </div>
 
@@ -1298,16 +418,9 @@
 
                 <button class="save-btn png-theme" style="margin-top: 10px;" onclick="saveTemplateAsImage('png')">🖼️ PNG 이미지 저장</button>
                 <button class="save-btn jpeg-theme" onclick="saveTemplateAsImage('jpeg')">🖼️ JPEG 이미지 저장</button>
-                
-                <button class="reset-btn" onclick="resetCanvasData()">
-                    <svg class="reset-svg" viewBox="0 0 24 24">
-                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                    </svg>
-                    전체 데이터 초기화
-                </button>
+                <button class="reset-btn" onclick="resetCanvasData()"><svg class="reset-svg" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>전체 데이터 초기화</button>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -1316,13 +429,11 @@
         const DEFAULT_SLOT_ID = 999; 
         let isRestoringData = false; 
 
-        // 🎯 도움말 오버레이 제어 함수
         function toggleHelpOverlay() {
             const overlay = document.getElementById('canvas-help-overlay');
             overlay.classList.toggle('active');
         }
 
-        // 🎯 IndexedDB 초기화
         function initIndexedDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open("trpg_canvas_autosave_db", 1);
@@ -1332,14 +443,8 @@
                         db.createObjectStore("slots", { keyPath: "slotId" });
                     }
                 };
-                request.onsuccess = function(e) {
-                    dbInstance = e.target.result;
-                    resolve(dbInstance);
-                };
-                request.onerror = function(e) {
-                    console.error("Database initialization failed.", e);
-                    reject(e);
-                };
+                request.onsuccess = function(e) { dbInstance = e.target.result; resolve(dbInstance); };
+                request.onerror = function(e) { reject(e); };
             });
         }
 
@@ -1349,12 +454,8 @@
                 const transaction = dbInstance.transaction(["slots"], "readonly");
                 const store = transaction.objectStore("slots");
                 const request = store.get(slotId);
-                request.onsuccess = function(e) {
-                    resolve(e.target.result || null);
-                };
-                request.onerror = function() {
-                    resolve(null);
-                };
+                request.onsuccess = function(e) { resolve(e.target.result || null); };
+                request.onerror = function() { resolve(null); };
             });
         }
 
@@ -1364,37 +465,24 @@
                 const transaction = dbInstance.transaction(["slots"], "readwrite");
                 const store = transaction.objectStore("slots");
                 const request = store.put(slotData);
-                request.onsuccess = function() {
-                    resolve(true);
-                };
-                request.onerror = function(e) {
-                    reject(e);
-                };
+                request.onsuccess = function() { resolve(true); };
+                request.onerror = function(e) { reject(e); };
             });
         }
 
-        // 🎯 실시간 자동 저장 함수
         async function saveToLocalStorage() {
             if (!dbInstance || isRestoringData) return; 
             
             const specInputs = document.querySelectorAll('#spec-box-container .input-spec-field');
             const specValues = [];
-            specInputs.forEach(function(input) {
-                specValues.push(input.value);
-            });
+            specInputs.forEach(input => specValues.push(input.value));
 
             const addedPalettes = [];
-            const paletteItems = document.querySelectorAll('#palette-target-row .color-item');
-            paletteItems.forEach((item) => {
+            document.querySelectorAll('#palette-target-row .color-item').forEach((item) => {
                 const isPermanent = item.getAttribute('data-permanent') === 'true';
                 if (!isPermanent) {
                     const inputColor = item.querySelector('input[type="text"]');
-                    if (inputColor) {
-                        addedPalettes.push({
-                            id: inputColor.id,
-                            color: inputColor.value
-                        });
-                    }
+                    if (inputColor) addedPalettes.push({ id: inputColor.id, color: inputColor.value });
                 }
             });
 
@@ -1409,17 +497,10 @@
             document.querySelectorAll('.draggable-sticker').forEach(sticker => {
                 const img = sticker.querySelector('img');
                 if (img) {
-                    stickers.push({
-                        src: img.src,
-                        left: sticker.style.left,
-                        top: sticker.style.top,
-                        width: sticker.style.width,
-                        angle: sticker.dataset.angle || 0
-                    });
+                    stickers.push({ src: img.src, left: sticker.style.left, top: sticker.style.top, width: sticker.style.width, angle: sticker.dataset.angle || 0 });
                 }
             });
 
-            // 🎯 표정 슬롯 이름 데이터 수집
             const exprLabels = [
                 document.getElementById('expr-label-1').value,
                 document.getElementById('expr-label-2').value,
@@ -1438,22 +519,15 @@
                 hanja: document.getElementById('input-hanja').value,
                 fontSize: document.getElementById('font-slider').value,
                 canvasWidth: document.getElementById('canvas-width-slider').value, 
-                
                 tags: [
                     { text: document.getElementById('sidebar-input-text-1').value, color: document.getElementById('sidebar-picker-1').value },
                     { text: document.getElementById('sidebar-input-text-2').value, color: document.getElementById('sidebar-picker-2').value },
                     { text: document.getElementById('sidebar-input-text-3').value, color: document.getElementById('sidebar-picker-3').value }
                 ],
-                
-                c1: document.getElementById('c1').value,
-                c2: document.getElementById('c2').value,
+                c1: document.getElementById('c1').value, c2: document.getElementById('c2').value,
                 addedPalettes: addedPalettes, 
-                
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
-                specs: specValues,
-                images: images,
-                stickers: stickers,
-                exprLabels: exprLabels // 저장 데이터에 포함
+                specs: specValues, images: images, stickers: stickers, exprLabels: exprLabels
             };
 
             await writeSlotToDB(data);
@@ -1466,9 +540,7 @@
             if (!img) return null;
             return {
                 src: img.src, 
-                posX: img.dataset.posX || 0,
-                posY: img.dataset.posY || 0,
-                scale: img.dataset.scale || 1.0
+                posX: img.dataset.posX || 0, posY: img.dataset.posY || 0, scale: img.dataset.scale || 1.0
             };
         }
 
@@ -1491,14 +563,11 @@
             }
 
             img.src = imgData.src;
-            img.dataset.posX = imgData.posX;
-            img.dataset.posY = imgData.posY;
-            img.dataset.scale = imgData.scale;
+            img.dataset.posX = imgData.posX; img.dataset.posY = imgData.posY; img.dataset.scale = imgData.scale;
             img.style.transform = `translate(${imgData.posX}px, ${imgData.posY}px) scale(${imgData.scale})`;
             if (placeholder) placeholder.style.display = 'none';
         }
 
-        // 🎯 데이터 자동 복구 로직
         async function loadFromLocalStorage() {
             isRestoringData = true; 
             const container = document.getElementById('profile-desc-container');
@@ -1509,29 +578,24 @@
             if (data) {
                 try {
                     document.getElementById('input-speech').value = data.speech || '';
-                    
                     if (data.hasOwnProperty('bubbleVisible')) {
                         document.getElementById('sidebar-bubble-toggle').checked = data.bubbleVisible;
                         toggleVisibility('speech-bubble-layer', data.bubbleVisible);
                     }
-                    
                     if(data.iconChoice) {
                         const radioBtn = document.querySelector(`input[name="bubble-icon-choice"][value="${data.iconChoice}"]`);
                         if(radioBtn) radioBtn.checked = true;
                         changeSpeechIcon(data.iconChoice);
                     }
-                    
                     if(data.iconColor) {
                         document.getElementById('bubble-icon-color-picker').value = data.iconColor;
                         document.documentElement.style.setProperty('--mic-color', data.iconColor);
                     }
-
                     if(data.lineChoice) {
                         const lineRadio = document.querySelector(`input[name="speech-line-choice"][value="${data.lineChoice}"]`);
                         if(lineRadio) lineRadio.checked = true;
                         changeSpeechLineAlignment(data.lineChoice);
                     }
-
                     if(data.fontChoice) {
                         const fontRadio = document.querySelector(`input[name="font-style-choice"][value="${data.fontChoice}"]`);
                         if(fontRadio) fontRadio.checked = true;
@@ -1540,7 +604,6 @@
                     
                     document.getElementById('input-name').value = data.name || '한국어 이름';
                     document.getElementById('input-hanja').value = data.hanja || '원문 이름';
-                    
                     document.getElementById('font-slider').value = data.fontSize || 13;
                     changeDescFontSize(data.fontSize || 13);
 
@@ -1553,96 +616,59 @@
                             const idx = index + 1;
                             document.getElementById(`sidebar-input-text-${idx}`).value = tag.text;
                             document.getElementById(`sidebar-picker-${idx}`).value = tag.color;
-                            syncTagText(idx, tag.text);
-                            syncTagColor(idx, tag.color);
+                            syncTagText(idx, tag.text); syncTagColor(idx, tag.color);
                         });
                     }
                     
-                    if(data.c1) {
-                        document.getElementById('c1').value = data.c1;
-                        updateColorFromText(document.getElementById('c1'));
-                    }
-                    if(data.c2) {
-                        document.getElementById('c2').value = data.c2;
-                        updateColorFromText(document.getElementById('c2'));
-                    }
+                    if(data.c1) { document.getElementById('c1').value = data.c1; updateColorFromText(document.getElementById('c1')); }
+                    if(data.c2) { document.getElementById('c2').value = data.c2; updateColorFromText(document.getElementById('c2')); }
 
                     clearAddedPalettesOnly();
                     if (data.addedPalettes && Array.isArray(data.addedPalettes)) {
-                        data.addedPalettes.forEach(item => {
-                            rebuildPaletteItem(item.id, item.color);
-                        });
+                        data.addedPalettes.forEach(item => rebuildPaletteItem(item.id, item.color));
                     }
 
                     if (data.descriptions && data.descriptions.length > 0) {
                         data.descriptions.forEach(text => { addDescRow(text); });
-                    } else {
-                        provideDefaultRows();
-                    }
+                    } else { provideDefaultRows(); }
 
                     if (data.specs && Array.isArray(data.specs) && data.specs.length > 0) {
                         document.getElementById('spec-box-container').innerHTML = '';
-                        data.specs.forEach(function(val) {
-                            createSpecBoxNode(val);
-                        });
-                    } else {
-                        buildInitialSpecsLayout();
-                    }
+                        data.specs.forEach(val => createSpecBoxNode(val));
+                    } else { buildInitialSpecsLayout(); }
 
                     if (data.images) {
                         setUploadImageData('bust-upload-zone', data.images.bust);
                         setUploadImageData('expr-zone-1', data.images.expr1);
                         setUploadImageData('expr-zone-2', data.images.expr2);
                         setUploadImageData('expr-zone-3', data.images.expr3);
-                    } else {
-                        setUploadImageData('bust-upload-zone', null);
-                        setUploadImageData('expr-zone-1', null);
-                        setUploadImageData('expr-zone-2', null);
-                        setUploadImageData('expr-zone-3', null);
                     }
 
                     document.querySelectorAll('.draggable-sticker').forEach(s => s.remove()); 
                     if (data.stickers && Array.isArray(data.stickers)) {
-                        data.stickers.forEach(sData => {
-                            restoreSticker(sData);
-                        });
+                        data.stickers.forEach(sData => restoreSticker(sData));
                     }
 
-                    // 🎯 표정 슬롯 텍스트 복구
                     if (data.exprLabels && data.exprLabels.length === 3) {
                         document.getElementById('expr-label-1').value = data.exprLabels[0];
                         document.getElementById('expr-label-2').value = data.exprLabels[1];
                         document.getElementById('expr-label-3').value = data.exprLabels[2];
                     }
-
                 } catch(e) {
-                    console.error(e);
-                    provideDefaultRows();
-                    buildInitialSpecsLayout();
+                    provideDefaultRows(); buildInitialSpecsLayout();
                 }
             } else {
-                provideDefaultRows();
-                buildInitialSpecsLayout();
-                clearAddedPalettesOnly();
-                setUploadImageData('bust-upload-zone', null);
-                setUploadImageData('expr-zone-1', null);
-                setUploadImageData('expr-zone-2', null);
-                setUploadImageData('expr-zone-3', null);
-                document.querySelectorAll('.draggable-sticker').forEach(s => s.remove());
+                provideDefaultRows(); buildInitialSpecsLayout(); clearAddedPalettesOnly();
             }
             
             setupAutoSaveListeners();
-            
-            setTimeout(() => {
-                isRestoringData = false;
-            }, 500);
+            setTimeout(() => { isRestoringData = false; }, 500);
         }
 
         function changeCanvasWidth(val) {
             document.getElementById('canvas-width-slider').value = val;
             document.getElementById('canvas-width-val').innerText = val + 'px';
             document.documentElement.style.setProperty('--canvas-width', val + 'px');
-            
             for(let i = 1; i <= 3; i++) {
                 const picker = document.getElementById(`sidebar-picker-${i}`);
                 if(picker) syncTagColor(i, picker.value);
@@ -1650,11 +676,8 @@
         }
 
         function clearAddedPalettesOnly() {
-            const targetRow = document.getElementById('palette-target-row');
-            const items = targetRow.querySelectorAll('.color-item');
-            items.forEach(item => {
-                const isPermanent = item.getAttribute('data-permanent') === 'true';
-                if (!isPermanent) item.remove();
+            document.querySelectorAll('#palette-target-row .color-item').forEach(item => {
+                if (item.getAttribute('data-permanent') !== 'true') item.remove();
             });
         }
 
@@ -1666,116 +689,67 @@
             newItem.className = 'color-item';
             newItem.innerHTML = `
                 <button class="palette-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
-                <div class="color-preview" style="background-color: ${colorHex};">
-                    <input type="color" value="${colorHex}" oninput="updateColorFromPicker(this, '${id}')">
-                </div>
+                <div class="color-preview" style="background-color: ${colorHex};"><input type="color" value="${colorHex}" oninput="updateColorFromPicker(this, '${id}')"></div>
                 <input type="text" id="${id}" class="color-code-input" value="${colorHex.toUpperCase()}" onchange="updateColorFromText(this)">
             `;
             row.appendChild(newItem);
-            newItem.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', saveToLocalStorage);
-            });
+            newItem.querySelectorAll('input').forEach(input => input.addEventListener('input', saveToLocalStorage));
         }
 
         function changeMainFontFamily(fontType) {
-            if(fontType === 'serif') {
-                document.documentElement.style.setProperty('--main-font', "'BonmyeongjoSourceHanSerif', 'Noto Serif KR', serif");
-            } else {
-                document.documentElement.style.setProperty('--main-font', "'Noto Sans KR', sans-serif");
-            }
+            document.documentElement.style.setProperty('--main-font', fontType === 'serif' ? "'BonmyeongjoSourceHanSerif', 'Noto Serif KR', serif" : "'Noto Sans KR', sans-serif");
         }
 
         function changeSpeechLineAlignment(lines) {
-            const speechTextarea = document.getElementById('input-speech');
-            if(lines === '1') {
-                speechTextarea.classList.remove('line-mode-2');
-                speechTextarea.classList.add('line-mode-1');
-            } else {
-                speechTextarea.classList.remove('line-mode-1');
-                speechTextarea.classList.add('line-mode-2');
-            }
+            const textarea = document.getElementById('input-speech');
+            textarea.className = lines === '1' ? 'speech-input line-mode-1' : 'speech-input line-mode-2';
         }
 
         function buildInitialSpecsLayout() {
-            const specContainer = document.getElementById('spec-box-container');
-            specContainer.innerHTML = '';
-            const defaults = ['남성/여성', 'nn세', 'nnncm', '기타'];
-            defaults.forEach(function(val) {
-                createSpecBoxNode(val);
-            });
+            document.getElementById('spec-box-container').innerHTML = '';
+            ['남성/여성', 'nn세', 'nnncm', '기타'].forEach(val => createSpecBoxNode(val));
         }
 
         function createSpecBoxNode(textVal) {
-            const specContainer = document.getElementById('spec-box-container');
-            
+            const container = document.getElementById('spec-box-container');
             const boxDiv = document.createElement('div');
             boxDiv.className = 'spec-box-item';
-            
-            const delBtn = document.createElement('button');
-            delBtn.className = 'spec-box-del-btn';
-            delBtn.innerText = '×';
-            delBtn.onclick = function(e) {
-                e.stopPropagation();
-                boxDiv.remove();
-                saveToLocalStorage();
-            };
-            
-            const inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.className = 'input-spec-field';
-            inputField.value = textVal;
-            inputField.maxLength = 10; 
-            inputField.addEventListener('input', saveToLocalStorage);
-            
-            boxDiv.appendChild(delBtn);
-            boxDiv.appendChild(inputField);
-            specContainer.appendChild(boxDiv);
+            boxDiv.innerHTML = `<button class="spec-box-del-btn" onclick="event.stopPropagation(); this.parentElement.remove(); saveToLocalStorage();">×</button><input type="text" class="input-spec-field" value="${textVal}" maxlength="10">`;
+            boxDiv.querySelector('input').addEventListener('input', saveToLocalStorage);
+            container.appendChild(boxDiv);
         }
 
         function addSingleSpecCardSlot() {
-            const totalSlots = document.querySelectorAll('#spec-box-container .spec-box-item').length;
-            if (totalSlots >= 6) {
+            if (document.querySelectorAll('#spec-box-container .spec-box-item').length >= 6) {
                 alert('프로필 박스는 최대 6개까지만 배치할 수 있습니다.');
                 return;
             }
-            createSpecBoxNode('입력');
-            saveToLocalStorage();
+            createSpecBoxNode('입력'); saveToLocalStorage();
         }
 
         function resetCanvasData() {
             if(confirm("작성 중인 모든 프로필 정보와 세팅이 공백 상태로 초기화됩니다. 진행할까요?")) {
-                if (dbInstance) {
-                    const transaction = dbInstance.transaction(["slots"], "readwrite");
-                    const store = transaction.objectStore("slots");
-                    store.delete(DEFAULT_SLOT_ID);
-                }
+                if (dbInstance) { dbInstance.transaction(["slots"], "readwrite").objectStore("slots").delete(DEFAULT_SLOT_ID); }
                 window.location.reload();
             }
         }
 
         function provideDefaultRows() {
-            addDescRow('이곳에 외관 포인트를 적습니다.');
-            addDescRow('이곳에 외관 포인트를 적습니다.');
-            addDescRow('이곳에 외관 포인트를 적습니다.');
+            addDescRow('이곳에 외관 포인트를 적습니다.'); addDescRow('이곳에 외관 포인트를 적습니다.'); addDescRow('이곳에 외관 포인트를 적습니다.');
         }
 
         function setupAutoSaveListeners() {
-            const targets = document.querySelectorAll('input[type="text"], textarea, input[type="range"], input[type="color"], input[type="radio"], input[type="checkbox"]');
-            targets.forEach(element => {
-                element.addEventListener('input', saveToLocalStorage);
-                element.addEventListener('change', saveToLocalStorage);
+            document.querySelectorAll('input[type="text"], textarea, input[type="range"], input[type="color"], input[type="radio"], input[type="checkbox"]').forEach(el => {
+                el.addEventListener('input', saveToLocalStorage); el.addEventListener('change', saveToLocalStorage);
             });
         }
 
         function changeSpeechIcon(iconType) {
             document.querySelectorAll('.mic-svg').forEach(svg => svg.classList.remove('active'));
-            const activeSvg = document.getElementById(`icon-${iconType}`);
-            if(activeSvg) activeSvg.classList.add('active');
+            document.getElementById(`icon-${iconType}`)?.classList.add('active');
         }
 
-        function triggerFileInput(element) {
-            element.querySelector('input[type="file"]').click();
-        }
+        function triggerFileInput(element) { element.querySelector('input[type="file"]').click(); }
 
         function changeDescFontSize(val) {
             document.getElementById('font-slider').value = val;
@@ -1784,24 +758,16 @@
         }
 
         function toggleVisibility(targetId, isChecked) {
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                targetElement.style.opacity = isChecked ? "1" : "0";
-                targetElement.style.pointerEvents = isChecked ? "auto" : "none";
-            }
+            const el = document.getElementById(targetId);
+            if (el) { el.style.opacity = isChecked ? "1" : "0"; el.style.pointerEvents = isChecked ? "auto" : "none"; }
         }
 
-        function syncTagText(index, text) {
-            const item = document.getElementById(`tag-item-${index}`);
-            if(item) item.innerText = text;
-        }
+        function syncTagText(index, text) { document.getElementById(`tag-item-${index}`).innerText = text; }
 
         function syncTagColor(index, colorHex) {
             const target = document.getElementById(`tag-item-${index}`);
             if(!target) return;
-            const r = parseInt(colorHex.slice(1, 3), 16);
-            const g = parseInt(colorHex.slice(3, 5), 16);
-            const b = parseInt(colorHex.slice(5, 7), 16);
+            const r = parseInt(colorHex.slice(1, 3), 16), g = parseInt(colorHex.slice(3, 5), 16), b = parseInt(colorHex.slice(5, 7), 16);
             target.style.background = `linear-gradient(90deg, ${colorHex}, rgba(${r}, ${g}, ${b}, 0))`;
         }
 
@@ -1817,15 +783,9 @@
         function addDescRow(textValue = '이곳에 외관 포인트를 적습니다.') {
             const container = document.getElementById('profile-desc-container');
             const newLi = document.createElement('li');
-            newLi.innerHTML = `<input type="text" value="${textValue}"><button class="row-del-btn" onclick="deleteDescRow(this)">×</button>`;
+            newLi.innerHTML = `<input type="text" value="${textValue}"><button class="row-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>`;
             container.appendChild(newLi);
-            
             newLi.querySelector('input').addEventListener('input', saveToLocalStorage);
-            saveToLocalStorage();
-        }
-
-        function deleteDescRow(btnElement) {
-            btnElement.parentElement.remove();
             saveToLocalStorage();
         }
 
@@ -1853,13 +813,14 @@
                     imageTag.dataset.posY = 0;
                     imageTag.dataset.scale = 1.0;
                     
-                    if(zone.dataset.type === 'expression') {
-                        syncAllExpressionTransforms(imageTag.dataset.posX, imageTag.dataset.posY, imageTag.dataset.scale);
-                    }
+                    imageTag.onload = function() {
+                        if(zone.dataset.type === 'expression') {
+                            syncAllExpressionTransforms(imageTag, 0, 0, 1.0);
+                        }
+                    };
 
                     const textPlaceholder = zone.querySelector('.placeholder-text');
                     if (textPlaceholder) textPlaceholder.style.display = 'none';
-
                     saveToLocalStorage();
                 }
                 fileReader.readAsDataURL(selectedFile);
@@ -1867,8 +828,7 @@
         }
 
         function makeImageInteractive(img, zone) {
-            let activeMove = false;
-            let startX, startY;
+            let activeMove = false, startX, startY;
 
             zone.addEventListener('mousedown', (e) => {
                 if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
@@ -1888,54 +848,52 @@
                 img.style.transform = `translate(${currentX}px, ${currentY}px) scale(${img.dataset.scale})`;
 
                 if(zone.dataset.type === 'expression') {
-                    syncAllExpressionTransforms(currentX, currentY, img.dataset.scale);
+                    syncAllExpressionTransforms(img, currentX, currentY, img.dataset.scale);
                 }
             });
 
             document.addEventListener('mouseup', () => { 
-                if (activeMove) {
-                    activeMove = false;
-                    saveToLocalStorage(); 
-                }
+                if (activeMove) { activeMove = false; saveToLocalStorage(); }
             });
 
             zone.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 let currentScale = parseFloat(img.dataset.scale);
-                const zoomFactor = 0.05; 
-                if (e.deltaY < 0) {
-                    currentScale += zoomFactor;
-                } else {
-                    currentScale = Math.max(0.1, currentScale - zoomFactor);
-                }
+                currentScale = e.deltaY < 0 ? currentScale + 0.05 : Math.max(0.1, currentScale - 0.05);
                 
                 img.dataset.scale = currentScale;
                 img.style.transform = `translate(${img.dataset.posX}px, ${img.dataset.posY}px) scale(${currentScale})`;
 
                 if(zone.dataset.type === 'expression') {
-                    syncAllExpressionTransforms(img.dataset.posX, img.dataset.posY, currentScale);
+                    syncAllExpressionTransforms(img, img.dataset.posX, img.dataset.posY, currentScale);
                 }
                 saveToLocalStorage(); 
             });
         }
 
-        function syncAllExpressionTransforms(x, y, scale) {
-            const expressionZones = document.querySelectorAll('.upload-zone[data-type="expression"]');
-            expressionZones.forEach(zone => {
+        function syncAllExpressionTransforms(sourceImg, x, y, scale) {
+            if(!sourceImg) return;
+            const srcW = sourceImg.naturalWidth;
+            const srcH = sourceImg.naturalHeight;
+
+            if(!srcW || !srcH) return;
+
+            document.querySelectorAll('.upload-zone[data-type="expression"]').forEach(zone => {
                 const innerImg = zone.querySelector('img');
-                if(innerImg) {
-                    innerImg.dataset.posX = x;
-                    innerImg.dataset.posY = y;
-                    innerImg.dataset.scale = scale;
-                    innerImg.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+                if (innerImg && innerImg !== sourceImg) {
+                    if (innerImg.naturalWidth === srcW && innerImg.naturalHeight === srcH) {
+                        innerImg.dataset.posX = x;
+                        innerImg.dataset.posY = y;
+                        innerImg.dataset.scale = scale;
+                        innerImg.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+                    }
                 }
             });
         }
 
         function updateColorFromPicker(picker, textInputId) {
             const chosenColor = picker.value;
-            const targetTextInput = document.getElementById(textInputId);
-            targetTextInput.value = chosenColor.toUpperCase();
+            document.getElementById(textInputId).value = chosenColor.toUpperCase();
             picker.parentElement.style.backgroundColor = chosenColor;
         }
 
@@ -1951,9 +909,7 @@
             }
         }
 
-        function changeMicColor(picker) {
-            document.documentElement.style.setProperty('--mic-color', picker.value);
-        }
+        function changeMicColor(picker) { document.documentElement.style.setProperty('--mic-color', picker.value); }
 
         function addNewPaletteItem() {
             paletteCount++;
@@ -1963,16 +919,11 @@
             newItem.className = 'color-item';
             newItem.innerHTML = `
                 <button class="palette-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
-                <div class="color-preview" style="background-color: #cccccc;">
-                    <input type="color" value="#cccccc" oninput="updateColorFromPicker(this, '${currentId}')">
-                </div>
+                <div class="color-preview" style="background-color: #cccccc;"><input type="color" value="#cccccc" oninput="updateColorFromPicker(this, '${currentId}')"></div>
                 <input type="text" id="${currentId}" class="color-code-input" value="#CCCCCC" onchange="updateColorFromText(this)">
             `;
             row.appendChild(newItem);
-            
-            newItem.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', saveToLocalStorage);
-            });
+            newItem.querySelectorAll('input').forEach(input => input.addEventListener('input', saveToLocalStorage));
             saveToLocalStorage();
         }
 
@@ -1984,48 +935,32 @@
                 const targetClass = dragEvent.target.className;
                 if (targetClass === 'delete-sticker-btn' || targetClass === 'resize-sticker-handle' || targetClass === 'rotate-sticker-handle') return;
                 isDragging = true;
-                diffX = dragEvent.clientX - sticker.offsetLeft;
-                diffY = dragEvent.clientY - sticker.offsetTop;
+                diffX = dragEvent.clientX - sticker.offsetLeft; diffY = dragEvent.clientY - sticker.offsetTop;
                 dragEvent.preventDefault();
             });
             
             sticker.querySelector('.resize-sticker-handle').addEventListener('mousedown', function(resizeEvent) {
-                isResizing = true;
-                startWidth = sticker.clientWidth;
-                startMouseX = resizeEvent.clientX;
-                resizeEvent.preventDefault();
-                resizeEvent.stopPropagation();
+                isResizing = true; startWidth = sticker.clientWidth; startMouseX = resizeEvent.clientX;
+                resizeEvent.preventDefault(); resizeEvent.stopPropagation();
             });
             
             sticker.querySelector('.rotate-sticker-handle').addEventListener('mousedown', function(rotateEvent) {
-                isRotating = true;
-                const rect = sticker.getBoundingClientRect();
-                centerPointX = rect.left + rect.width / 2;
-                centerPointY = rect.top + rect.height / 2;
-                rotateEvent.preventDefault();
-                rotateEvent.stopPropagation();
+                isRotating = true; const rect = sticker.getBoundingClientRect();
+                centerPointX = rect.left + rect.width / 2; centerPointY = rect.top + rect.height / 2;
+                rotateEvent.preventDefault(); rotateEvent.stopPropagation();
             });
             
             document.addEventListener('mousemove', function(moveEvent) {
-                if (isDragging) {
-                    sticker.style.left = `${moveEvent.clientX - diffX}px`;
-                    sticker.style.top = `${moveEvent.clientY - diffY}px`;
-                }
-                if (isResizing) {
-                    sticker.style.width = `${Math.max(30, startWidth + (moveEvent.clientX - startMouseX))}px`;
-                }
+                if (isDragging) { sticker.style.left = `${moveEvent.clientX - diffX}px`; sticker.style.top = `${moveEvent.clientY - diffY}px`; }
+                if (isResizing) { sticker.style.width = `${Math.max(30, startWidth + (moveEvent.clientX - startMouseX))}px`; }
                 if (isRotating) {
                     let angleDegrees = Math.atan2(moveEvent.clientY - centerPointY, moveEvent.clientX - centerPointX) * (180 / Math.PI) + 45;
-                    sticker.dataset.angle = angleDegrees;
-                    sticker.style.transform = `rotate(${angleDegrees}deg)`;
+                    sticker.dataset.angle = angleDegrees; sticker.style.transform = `rotate(${angleDegrees}deg)`;
                 }
             });
             
             document.addEventListener('mouseup', function() {
-                if (isDragging || isResizing || isRotating) {
-                    isDragging = isResizing = isRotating = false;
-                    saveToLocalStorage(); 
-                }
+                if (isDragging || isResizing || isRotating) { isDragging = isResizing = isRotating = false; saveToLocalStorage(); }
             });
         }
 
@@ -2037,23 +972,16 @@
                     const canvas = document.getElementById('main-canvas');
                     const sticker = document.createElement('div');
                     sticker.className = 'draggable-sticker';
-                    sticker.style.left = '80px'; 
-                    sticker.style.top = '120px';
-                    sticker.style.width = '180px';
-                    sticker.dataset.angle = 0; 
-                    
+                    sticker.style.left = '80px'; sticker.style.top = '120px'; sticker.style.width = '180px'; sticker.dataset.angle = 0; 
                     sticker.innerHTML = `
                         <img src="${e.target.result}">
                         <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
                         <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
                         <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
                     `;
-                    canvas.appendChild(sticker);
-                    attachStickerEvents(sticker);
-                    saveToLocalStorage();
+                    canvas.appendChild(sticker); attachStickerEvents(sticker); saveToLocalStorage();
                 };
-                fileReader.readAsDataURL(selectedFile);
-                event.target.value = '';
+                fileReader.readAsDataURL(selectedFile); event.target.value = '';
             }
         }
 
@@ -2061,28 +989,22 @@
             const canvas = document.getElementById('main-canvas');
             const sticker = document.createElement('div');
             sticker.className = 'draggable-sticker';
-            sticker.style.left = sData.left;
-            sticker.style.top = sData.top;
-            sticker.style.width = sData.width;
-            sticker.dataset.angle = sData.angle || 0;
-            if (sData.angle && sData.angle != 0) {
-                sticker.style.transform = `rotate(${sData.angle}deg)`;
-            }
-
+            sticker.style.left = sData.left; sticker.style.top = sData.top; sticker.style.width = sData.width; sticker.dataset.angle = sData.angle || 0;
+            if (sData.angle && sData.angle != 0) sticker.style.transform = `rotate(${sData.angle}deg)`;
             sticker.innerHTML = `
                 <img src="${sData.src}">
                 <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
                 <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
                 <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
             `;
-            canvas.appendChild(sticker);
-            attachStickerEvents(sticker);
+            canvas.appendChild(sticker); attachStickerEvents(sticker);
         }
 
         function saveTemplateAsImage(format = 'png') {
             const canvasElement = document.getElementById('main-canvas');
             const inputs = canvasElement.querySelectorAll('input[type="text"]');
             const savedTransfers = [];
+            const currentFontType = document.querySelector('input[name="font-style-choice"]:checked')?.value;
 
             inputs.forEach(input => {
                 if(input.classList.contains('color-code-input')) return;
@@ -2093,31 +1015,41 @@
                 textSpan.style.fontSize = getComputedStyle(input).fontSize;
                 textSpan.style.fontWeight = getComputedStyle(input).fontWeight;
                 textSpan.style.color = getComputedStyle(input).color;
-                
-                // 🎯 캔버스에 구울 때 절대 위치 및 텍스트 섀도우 속성도 복사 (표정 텍스트용)
                 textSpan.style.textShadow = getComputedStyle(input).textShadow;
                 textSpan.style.position = getComputedStyle(input).position;
                 textSpan.style.bottom = getComputedStyle(input).bottom;
                 textSpan.style.right = getComputedStyle(input).right;
                 textSpan.style.zIndex = getComputedStyle(input).zIndex;
 
+                textSpan.style.boxSizing = 'border-box';
+                textSpan.style.padding = getComputedStyle(input).padding;
+                textSpan.style.margin = getComputedStyle(input).margin;
+                textSpan.style.width = input.offsetWidth + 'px';
+                textSpan.style.whiteSpace = 'nowrap';
+                textSpan.style.overflow = 'hidden';
+                textSpan.style.display = 'block';
+
                 if (input.closest('#profile-desc-container')) {
                     textSpan.style.textAlign = 'left';
-                    textSpan.style.justifyContent = 'flex-start';
+                    textSpan.style.height = 'auto';
+                    textSpan.style.lineHeight = getComputedStyle(input).lineHeight;
+                } else if (input.classList.contains('expr-label-input')) {
+                    textSpan.style.textAlign = 'right';
+                    textSpan.style.height = 'auto';
+                    textSpan.style.lineHeight = getComputedStyle(input).lineHeight;
                 } else {
                     textSpan.style.textAlign = getComputedStyle(input).textAlign;
-                    textSpan.style.justifyContent = 'center';
+                    textSpan.style.height = input.offsetHeight + 'px';
+                    textSpan.style.lineHeight = input.offsetHeight + 'px';
                 }
 
-                textSpan.style.width = input.offsetWidth + 'px';
-                textSpan.style.height = input.offsetHeight + 'px';
-                textSpan.style.lineHeight = getComputedStyle(input).lineHeight;
-                textSpan.style.display = 'flex';
-                textSpan.style.alignItems = 'center';
+                if(currentFontType === 'sans' && !input.classList.contains('expr-label-input')) {
+                    textSpan.style.position = 'relative';
+                    textSpan.style.top = '-1.5px'; 
+                }
 
                 input.parentNode.insertBefore(textSpan, input);
                 input.style.display = 'none';
-
                 savedTransfers.push({ originalInput: input, temporarySpan: textSpan });
             });
 
@@ -2125,24 +1057,29 @@
             let textareaTransfer = null;
             if(textarea && getComputedStyle(document.getElementById('speech-bubble-layer')).opacity !== "0") {
                 const textDiv = document.createElement('div');
+                const currentLineOption = document.querySelector('input[name="speech-line-choice"]:checked')?.value || '1';
+
                 textDiv.innerText = textarea.value ? textarea.value : textarea.placeholder;
                 textDiv.style.fontFamily = getComputedStyle(textarea).fontFamily;
                 textDiv.style.fontSize = getComputedStyle(textarea).fontSize;
                 textDiv.style.fontWeight = getComputedStyle(textarea).fontWeight;
                 textDiv.style.color = textarea.value ? getComputedStyle(textarea).color : '#94a3b8';
                 
-                textDiv.style.display = 'flex';
-                textDiv.style.flexDirection = 'column';
+                textDiv.style.display = 'flex'; 
+                textDiv.style.flexDirection = 'column'; 
                 textDiv.style.justifyContent = 'center';
-                textDiv.style.alignItems = 'center';
-                textDiv.style.textAlign = 'center';
+                textDiv.style.alignItems = 'center'; 
+                textDiv.style.textAlign = 'center'; 
                 textDiv.style.height = textarea.offsetHeight + 'px';
-                textDiv.style.width = '100%';
-                textDiv.style.whiteSpace = 'pre-wrap';
+                textDiv.style.width = '100%'; 
+                textDiv.style.whiteSpace = 'pre-wrap'; 
                 textDiv.style.wordBreak = 'break-all';
-                
-                const currentLineOption = document.querySelector('input[name="speech-line-choice"]:checked')?.value || '1';
                 textDiv.style.lineHeight = currentLineOption === '1' ? '20px' : '1.4';
+
+                if(currentFontType === 'sans') {
+                    textDiv.style.position = 'relative';
+                    textDiv.style.top = '-1.5px'; 
+                }
 
                 textarea.parentNode.insertBefore(textDiv, textarea);
                 textarea.style.display = 'none';
@@ -2150,50 +1087,25 @@
             }
 
             canvasElement.classList.add('hide-on-save');
-
             const currentWidthVal = parseInt(document.getElementById('canvas-width-slider').value);
 
             setTimeout(() => {
                 html2canvas(canvasElement, {
-                    scale: 2, 
-                    useCORS: true,
-                    backgroundColor: "#ffffff",
-                    logging: false,
-                    width: currentWidthVal, 
-                    height: 840
+                    scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false, width: currentWidthVal, height: 840
                 }).then(canvas => {
                     const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
                     const fileExtension = format === 'jpeg' ? 'jpg' : 'png';
-                    
                     const imgDataUrl = canvas.toDataURL(mimeType, 0.95);
                     const downloadLink = document.createElement('a');
-                    const charName = document.getElementById('input-name').value || 'profile';
-                    
-                    downloadLink.download = `${charName}_프로필틀.${fileExtension}`;
-                    downloadLink.href = imgDataUrl;
-                    downloadLink.click();
+                    downloadLink.download = `${document.getElementById('input-name').value || 'profile'}_프로필틀.${fileExtension}`;
+                    downloadLink.href = imgDataUrl; downloadLink.click();
 
                     canvasElement.classList.remove('hide-on-save');
-                    savedTransfers.forEach(item => {
-                        item.temporarySpan.remove();
-                        item.originalInput.style.display = '';
-                    });
-                    if(textareaTransfer) {
-                        textareaTransfer.temporarySpan.remove();
-                        textareaTransfer.originalInput.style.display = '';
-                    }
-
+                    savedTransfers.forEach(item => { item.temporarySpan.remove(); item.originalInput.style.display = ''; });
+                    if(textareaTransfer) { textareaTransfer.temporarySpan.remove(); textareaTransfer.originalInput.style.display = ''; }
                 }).catch(err => {
-                    console.error("이미지 저장 실패:", err);
                     canvasElement.classList.remove('hide-on-save');
-                    savedTransfers.forEach(item => {
-                        item.temporarySpan.remove();
-                        item.originalInput.style.display = '';
-                    });
-                    if(textareaTransfer) {
-                        textareaTransfer.temporarySpan.remove();
-                        textareaTransfer.originalInput.style.display = '';
-                    }
+                    savedTransfers.forEach(item => { item.temporarySpan.remove(); item.originalInput.style.display = ''; });
                 });
             }, 100); 
         }
