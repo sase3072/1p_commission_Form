@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>커미션 프로필 신청서 틀</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @font-face {
@@ -25,7 +27,7 @@
             --primary-hover: #0ea5e9;
             --desc-font-size: 13px;
             --canvas-width: 950px;
-            --main-font: 'Noto Sans KR', sans-serif;
+            --main-font: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--main-font); font-weight: 500; }
@@ -148,30 +150,69 @@
         .draggable-sticker:hover .delete-sticker-btn, .draggable-sticker:hover .resize-sticker-handle, .draggable-sticker:hover .rotate-sticker-handle { display: flex; }
 
         /* HUD 가이드 오버레이 */
-        .canvas-overlay-guide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(4px); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; user-select: none; cursor: pointer; }
+        /* 화면 전체 고정형 HUD: 번호 배지 + 하단 통합 설명 패널로 항상 같은 자리에 정돈됩니다 */
+        .canvas-overlay-guide { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(4px); z-index: 99998; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; user-select: none; cursor: pointer; }
         .canvas-overlay-guide.active { opacity: 1; pointer-events: auto; }
-        .hud-highlight { position: absolute; border: 2px dashed #38bdf8; background: rgba(56, 189, 248, 0.05); border-radius: 12px; pointer-events: none; box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
-        .hud-arrow-right { position: absolute; height: 2px; background: #38bdf8; pointer-events: none; box-shadow: 0 0 8px #38bdf8; }
-        .hud-arrow-right::after { content: ''; position: absolute; right: -2px; top: -4px; border-width: 5px 0 5px 6px; border-style: solid; border-color: transparent transparent transparent #38bdf8; }
-        .hud-arrow-up { position: absolute; width: 2px; background: #38bdf8; pointer-events: none; box-shadow: 0 0 8px #38bdf8; }
-        .hud-arrow-up::after { content: ''; position: absolute; top: -2px; left: -4px; border-width: 0 5px 6px 5px; border-style: solid; border-color: transparent transparent #38bdf8 transparent; }
-        .overlay-label { position: absolute; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); padding: 16px; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); z-index: 10000; }
-        .overlay-label strong { display: block; color: #ffffff; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.15); padding-bottom: 6px; margin-bottom: 10px; }
-        .overlay-label ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-        .overlay-label li { position: relative; padding-left: 12px; color: #cbd5e1; font-size: 12px; line-height: 1.5; letter-spacing: -0.2px; font-weight: 500; }
-        .overlay-label li::before { content: "•"; position: absolute; left: 0; top: -1px; color: #38bdf8; font-size: 14px; }
-        .overlay-label li b { color: #ffffff; font-weight: 700; }
-        .lbl-system-status { bottom: 40px; right: 40px; left: auto; transform: none; width: 330px; background: #10b981; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); text-align: right; }
-        .lbl-system-status strong { border: none; color: #ffffff; font-size: 13px; padding-bottom: 2px; margin-bottom: 2px; }
-        .lbl-system-status span { display: block; color: #ecfdf5; font-size: 11.5px; line-height: 1.5; }
-        .overlay-close-hint { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.6); background: rgba(0, 0, 0, 0.5); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.15); font-weight: 700; }
+        .hud-highlight { position: fixed; border: 2px dashed #38bdf8; background: rgba(56, 189, 248, 0.06); border-radius: 12px; pointer-events: none; box-shadow: 0 0 18px rgba(56, 189, 248, 0.18); transition: left 0.15s ease, top 0.15s ease, width 0.15s ease, height 0.15s ease; }
+        .hud-num { position: fixed; width: 26px; height: 26px; border-radius: 50%; background: #38bdf8; color: #0f172a; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; pointer-events: none; box-shadow: 0 3px 10px rgba(0,0,0,0.4); z-index: 100001; transition: left 0.15s ease, top 0.15s ease; }
+
+        .hud-guide-panel { position: fixed; left: 20px; right: 20px; bottom: 20px; background: rgba(15, 23, 42, 0.97); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.55); z-index: 100000; padding: 16px 18px; cursor: default; }
+        .hud-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .hud-panel-head h3 { color: #ffffff; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 7px; }
+        .hud-panel-head .hud-save-note { color: #6ee7b7; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; gap: 5px; text-align: right; }
+        .hud-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+        .hud-card { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+        .hud-card-title { display: flex; align-items: center; gap: 7px; color: #ffffff; font-size: 13px; font-weight: 800; }
+        .hud-card-title span.num { width: 20px; height: 20px; border-radius: 50%; background: #38bdf8; color: #0f172a; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .hud-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+        .hud-card li { position: relative; padding-left: 11px; color: #cbd5e1; font-size: 12px; line-height: 1.5; font-weight: 500; }
+        .hud-card li::before { content: "•"; position: absolute; left: 0; top: -1px; color: #38bdf8; }
+        .hud-card li b { color: #ffffff; font-weight: 700; }
+        .overlay-close-hint { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255, 255, 255, 0.75); background: rgba(0, 0, 0, 0.55); padding: 7px 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.18); font-weight: 700; z-index: 100001; }
+
+        /* 좌우 패널 숨기기 플로팅 버튼 (M) */
+        .floating-toggle-btn { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; border: none; padding: 11px 18px; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25); z-index: 9000; display: flex; align-items: center; gap: 7px; transition: background 0.2s; }
+        .floating-toggle-btn:hover { background: #1e293b; }
+
+        /* ===== 반응형 / 모바일 대응 ===== */
+        .canvas-scale-wrap { flex-shrink: 0; transform-origin: top center; }
+
+        @media (max-width: 1780px) {
+            body { align-items: flex-start; height: auto; min-height: 100vh; overflow-y: auto; padding: 16px 12px 90px; }
+            .workspace-container { width: 100%; max-width: 100%; height: auto; align-items: flex-start; }
+        }
+
+        @media (max-width: 1100px) {
+            body { padding: 12px 10px 100px; }
+            .workspace-container { flex-direction: column; align-items: center; gap: 16px; }
+            .sidebar-panel { width: 100%; max-width: 620px; height: auto; }
+            .btn-group-vertical { height: auto; }
+            .reset-btn { margin-top: 10px; }
+            /* 모바일에서는 캔버스가 먼저 보이도록 순서를 조정합니다 */
+            .canvas-scale-wrap { order: -1; width: 100%; display: flex; justify-content: center; }
+            .hud-grid { grid-template-columns: repeat(2, 1fr); }
+            .hud-guide-panel { max-height: 62vh; overflow-y: auto; }
+        }
+
+        @media (max-width: 680px) {
+            .hud-grid { grid-template-columns: 1fr; }
+            .hud-guide-panel { left: 10px; right: 10px; bottom: 10px; padding: 14px; max-height: 68vh; }
+            .hud-panel-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .hud-panel-head .hud-save-note { text-align: left; }
+            .overlay-close-hint { font-size: 11px; padding: 6px 12px; }
+            .manual-modal-overlay { padding: 12px; }
+            .manual-modal-body { padding: 16px 18px 22px; }
+            .manual-section li { font-size: 13px; }
+            .floating-toggle-btn { bottom: 12px; font-size: 11px; padding: 10px 15px; }
+        }
 
         /* 이미지 저장 시 가이드 및 불필요 요소 숨김 */
         .hide-on-save .delete-sticker-btn, .hide-on-save .resize-sticker-handle, .hide-on-save .rotate-sticker-handle,
         .hide-on-save .upload-hint, .hide-on-save .placeholder-text, .hide-on-save .row-del-btn, .hide-on-save .row-add-btn,
         .hide-on-save .palette-del-btn, .hide-on-save .spec-box-del-btn, .hide-on-save .canvas-overlay-guide, 
         .hide-on-save .hud-highlight, .hide-on-save .hud-arrow-right, .hide-on-save .hud-arrow-left, .hide-on-save .hud-arrow-up,
-        .hide-on-save .color-preview input[type="color"] { display: none !important; }
+        .hide-on-save .color-preview input[type="color"], .hide-on-save .snap-guide-line { display: none !important; }
+        .hide-on-save .draggable-sticker.selected { outline: none !important; }
         .hide-on-save .upload-zone { border: none !important; background: transparent !important; }
         .hide-on-save .draggable-sticker { outline: none !important; }
         .hide-on-save .color-code-input { display: none !important; }
@@ -180,6 +221,52 @@
         .hide-on-save .profile-info { flex-grow: 1 !important; display: flex !important; flex-direction: column !important; }
         .hide-on-save .desc-list { max-height: none !important; overflow: visible !important; display: flex !important; flex-direction: column !important; }
         
+        /* SVG 아이콘 공통 */
+        .ui-icon { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+        .ui-icon-fill { width: 15px; height: 15px; fill: currentColor; stroke: none; flex-shrink: 0; }
+        .sidebar-title-left { display: flex; align-items: center; gap: 5px; }
+        .panel-title { display: flex; align-items: center; gap: 6px; }
+        .sticker-btn-label, .save-btn, .add-palette-btn, .bulk-color-btn { display: flex !important; align-items: center; justify-content: center; gap: 6px; }
+        .font-size-control-vertical > .sidebar-title-left { font-size: 11px; font-weight: 700; }
+
+        /* 스티커 선택 표시 */
+        .draggable-sticker.selected { outline: 2px solid #38bdf8 !important; outline-offset: 1px; }
+
+        /* 자석 스냅 가이드선 */
+        .snap-guide-line { position: absolute; background: #ec4899; pointer-events: none; z-index: 500; display: none; box-shadow: 0 0 6px rgba(236,72,153,0.7); }
+        .snap-guide-line.visible { display: block; }
+        .snap-guide-v { width: 1px; top: 0; bottom: 0; }
+        .snap-guide-h { height: 1px; left: 0; right: 0; }
+
+        /* 스티커 정렬 플로팅 툴바 */
+        #sticker-align-toolbar { position: fixed; display: none; align-items: center; gap: 2px; background: #0f172a; padding: 6px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.35); z-index: 100050; }
+        .align-btn { width: 30px; height: 30px; border-radius: 6px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #cbd5e1; transition: background 0.15s, color 0.15s; }
+        .align-btn:hover { background: #1e293b; color: #ffffff; }
+        .align-btn-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 3px; flex-shrink: 0; }
+
+        /* 자석 스냅 ON/OFF 행 */
+        .snap-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #fdf4ff; border: 1px solid #f5d0fe; padding: 10px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #86198f; }
+        .snap-toggle-row .sidebar-title-left { color: #86198f; }
+
+        /* 📖 사용설명서 모달 */
+        .manual-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(3px); z-index: 200000; display: none; align-items: center; justify-content: center; padding: 30px; }
+        .manual-modal-overlay.active { display: flex; }
+        .manual-modal-box { background: #ffffff; width: 100%; max-width: 720px; max-height: 85vh; border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; }
+        .manual-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; }
+        .manual-modal-header h2 { font-size: 17px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+        .manual-modal-close-btn { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 16px; font-weight: 700; transition: background 0.15s; flex-shrink: 0; }
+        .manual-modal-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+        .manual-modal-body { padding: 20px 24px 28px; overflow-y: auto; }
+        .manual-section { margin-bottom: 22px; }
+        .manual-section:last-child { margin-bottom: 0; }
+        .manual-section h3 { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #e0f2fe; }
+        .manual-section ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
+        .manual-section li { position: relative; padding-left: 14px; font-size: 13.5px; line-height: 1.6; color: #334155; font-weight: 500; }
+        .manual-section li::before { content: "•"; position: absolute; left: 0; top: 0; color: #0ea5e9; font-weight: 900; }
+        .manual-section li b { color: #0f172a; font-weight: 700; }
+        .manual-modal-body::-webkit-scrollbar { width: 6px; }
+        .manual-modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
         .icon-select-box, .line-select-box, .font-select-box { display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .icon-select-label, .line-select-label, .font-select-label { flex: 1; text-align: center; font-size: 10px; padding: 6px 0; background: transparent; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: #64748b; transition: all 0.15s ease; }
         .icon-select-label input, .line-select-label input, .font-select-label input { display: none; }
@@ -188,14 +275,54 @@
 </head>
 <body>
 
+    <svg width="0" height="0" style="display: none;">
+        <symbol id="icon-gear" viewBox="0 0 24 24"><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="icon-tag" viewBox="0 0 24 24"><path d="m20.59 13.41-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+        <symbol id="icon-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10 1 1 0 0 1-1 1h-2a1 1 0 0 0-1 1v1a2 2 0 0 1-2 2h-4Z"/><circle cx="7.5" cy="10.5" r=".5"/><circle cx="10.5" cy="6.5" r=".5"/><circle cx="14.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/></symbol>
+        <symbol id="icon-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+        <symbol id="icon-mask" viewBox="0 0 24 24"><path d="M4 5h16v6a8 8 0 0 1-8 8 8 8 0 0 1-8-8z"/><circle cx="8.5" cy="10.5" r="1"/><circle cx="15.5" cy="10.5" r="1"/><path d="M9.5 14.5s1 1.5 2.5 1.5 2.5-1.5 2.5-1.5"/></symbol>
+        <symbol id="icon-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+        <symbol id="icon-bulb" viewBox="0 0 24 24"><path d="M9 21h6"/><path d="M12 2v2"/><path d="M12 17v4"/><path d="M22 12h-2"/><path d="M4 12H2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M6.34 17.66l-1.41 1.41"/><path d="m19.07 19.07-1.41-1.41"/><path d="M6.34 6.34 4.93 4.93"/><circle cx="12" cy="12" r="5"/></symbol>
+        <symbol id="icon-ruler" viewBox="0 0 24 24"><path d="M3 8h18v8H3z"/><path d="M7 8v3"/><path d="M11 8v5"/><path d="M15 8v3"/><path d="M19 8v5"/></symbol>
+        <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></symbol>
+        <symbol id="icon-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></symbol>
+        <symbol id="icon-font" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></symbol>
+        <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+        <symbol id="icon-rotate" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+        <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="icon-magnet" viewBox="0 0 24 24"><path d="M18 6a6 6 0 0 0-12 0v6"/><path d="M6 12H2v3a4 4 0 0 0 4 4a4 4 0 0 0 4-4v-3"/><path d="M18 12h4v3a4 4 0 0 1-4 4a4 4 0 0 1-4-4v-3"/></symbol>
+        <symbol id="icon-align-left" viewBox="0 0 24 24"><line x1="4" y1="3" x2="4" y2="21"/><line x1="8" y1="7" x2="18" y2="7"/><line x1="8" y1="12" x2="14" y2="12"/><line x1="8" y1="17" x2="20" y2="17"/></symbol>
+        <symbol id="icon-align-right" viewBox="0 0 24 24"><line x1="20" y1="3" x2="20" y2="21"/><line x1="6" y1="7" x2="16" y2="7"/><line x1="10" y1="12" x2="16" y2="12"/><line x1="4" y1="17" x2="16" y2="17"/></symbol>
+        <symbol id="icon-align-center-h" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><line x1="7" y1="7" x2="17" y2="7"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/></symbol>
+        <symbol id="icon-align-top" viewBox="0 0 24 24"><line x1="3" y1="4" x2="21" y2="4"/><line x1="7" y1="8" x2="7" y2="18"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="17" y1="8" x2="17" y2="20"/></symbol>
+        <symbol id="icon-align-bottom" viewBox="0 0 24 24"><line x1="3" y1="20" x2="21" y2="20"/><line x1="7" y1="16" x2="7" y2="6"/><line x1="12" y1="16" x2="12" y2="10"/><line x1="17" y1="16" x2="17" y2="4"/></symbol>
+        <symbol id="icon-align-center-v" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="7" y1="7" x2="7" y2="17"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="17" y1="5" x2="17" y2="19"/></symbol>
+    </svg>
+
+    <!-- 스티커 선택 시 뜨는 정렬 플로팅 툴바 -->
+    <div id="sticker-align-toolbar">
+        <span id="align-toolbar-count" style="display:none; color:#94a3b8; font-size:11px; font-weight:700; padding:0 6px; white-space:nowrap;"></span>
+        <button class="align-btn" title="왼쪽 정렬" onclick="alignSticker('left')"><svg class="ui-icon"><use href="#icon-align-left"/></svg></button>
+        <button class="align-btn" title="가로 중앙 정렬" onclick="alignSticker('center-h')"><svg class="ui-icon"><use href="#icon-align-center-h"/></svg></button>
+        <button class="align-btn" title="오른쪽 정렬" onclick="alignSticker('right')"><svg class="ui-icon"><use href="#icon-align-right"/></svg></button>
+        <div class="align-btn-divider"></div>
+        <button class="align-btn" title="위쪽 정렬" onclick="alignSticker('top')"><svg class="ui-icon"><use href="#icon-align-top"/></svg></button>
+        <button class="align-btn" title="세로 중앙 정렬" onclick="alignSticker('center-v')"><svg class="ui-icon"><use href="#icon-align-center-v"/></svg></button>
+        <button class="align-btn" title="아래쪽 정렬" onclick="alignSticker('bottom')"><svg class="ui-icon"><use href="#icon-align-bottom"/></svg></button>
+    </div>
+
+    <button class="floating-toggle-btn" id="floating-sidebar-toggle" onclick="toggleSidebars()">
+        <svg class="ui-icon"><use href="#icon-eye"/></svg> <span id="floating-toggle-text">양쪽 메뉴 숨기기 (M)</span>
+    </button>
+
     <div class="workspace-container">
         <!-- [좌측 패널] 성격 및 커스텀 제어 패널 -->
         <div class="sidebar-panel">
-            <div class="panel-title">⚙️ 컴포넌트 세팅</div>
+            <div class="panel-title"><svg class="ui-icon"><use href="#icon-gear"/></svg> 컴포넌트 세팅</div>
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>🏷️ 성격 키워드</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-tag"/></svg> 성격 키워드</span>
                     <label class="toggle-label"><input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('tag-list-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 2px;">
@@ -203,7 +330,7 @@
                         <span style="font-size: 10px; font-weight: bold; color: #64748b;">일괄 색상 선택:</span>
                         <input type="color" id="bulk-tag-color-picker" value="#8e959c" class="sidebar-color-picker">
                     </div>
-                    <button class="bulk-color-btn" onclick="applyBulkTagColor()">🎨 전체 일괄 색상 적용</button>
+                    <button class="bulk-color-btn" onclick="applyBulkTagColor()"><svg class="ui-icon"><use href="#icon-palette"/></svg> 전체 일괄 색상 적용</button>
                 </div>
                 <div class="sidebar-input-group" style="margin-top: 4px;">
                     <div class="sidebar-meta-row"><span>키워드 1</span><input type="color" value="#8e959c" class="sidebar-color-picker" id="sidebar-picker-1" oninput="syncTagColor(1, this.value)"></div>
@@ -221,13 +348,13 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>💬 한마디 말풍선 ON/OFF</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-message"/></svg> 한마디 말풍선 ON/OFF</span>
                     <label class="toggle-label"><input type="checkbox" checked class="toggle-input" id="sidebar-bubble-toggle" onchange="toggleVisibility('speech-bubble-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-title"><span>💬 말풍선 정렬 방식</span></div>
+                <div class="sidebar-title"><span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-message"/></svg> 말풍선 정렬 방식</span></div>
                 <div class="line-select-box">
                     <label class="line-select-label"><input type="radio" name="speech-line-choice" value="1" checked onchange="changeSpeechLineAlignment(this.value)">1줄</label>
                     <label class="line-select-label"><input type="radio" name="speech-line-choice" value="2" onchange="changeSpeechLineAlignment(this.value)">2줄</label>
@@ -235,7 +362,7 @@
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-title"><span>💬 말풍선 아이콘 종류</span></div>
+                <div class="sidebar-title"><span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-message"/></svg> 말풍선 아이콘 종류</span></div>
                 <div class="icon-select-box">
                     <label class="icon-select-label"><input type="radio" name="bubble-icon-choice" value="mic" checked onchange="changeSpeechIcon(this.value)">마이크</label>
                     <label class="icon-select-label"><input type="radio" name="bubble-icon-choice" value="quote" onchange="changeSpeechIcon(this.value)">인용구</label>
@@ -245,65 +372,17 @@
 
             <div class="sidebar-section">
                 <div class="sidebar-title">
-                    <span>🎭 오른쪽 표정 슬롯 ON/OFF</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-mask"/></svg> 오른쪽 표정 슬롯 ON/OFF</span>
                     <label class="toggle-label"><input type="checkbox" checked class="toggle-input" onchange="toggleVisibility('right-area-layer', this.checked)"><div class="toggle-switch"></div></label>
                 </div>
             </div>
         </div>
 
         <!-- [중앙 영역] 메인 캔버스 -->
+        <div class="canvas-scale-wrap" id="canvas-scale-wrap">
         <div class="template-outer" id="main-canvas">
             <div class="credit-tag">@sa_se372</div>
             
-            <!-- 🎯 안심 HUD 오버레이 -->
-            <div class="canvas-overlay-guide active" id="canvas-help-overlay" onclick="toggleHelpOverlay()">
-                
-                <div class="hud-highlight" style="left: 25px; top: 25px; width: 145px; height: 110px;"></div>
-                <div class="hud-arrow-up" style="left: 97px; top: 135px; height: 20px;"></div>
-                <div class="overlay-label" style="left: 25px; top: 155px; width: 250px;">
-                    <strong>성격 키워드</strong>
-                    <ul><li>좌측 패널에서 키워드 입력 및 색을 수정할 수 있습니다.</li><li>슬라이더를 끄면 캔버스에서 사라집니다.</li><li>각 색상별로 지정할 수도 있고, <b>한 번에 일괄 적용</b>도 가능합니다.</li></ul>
-                </div>
-                
-                <div class="hud-highlight" style="right: 330px; top: 15px; width: 250px; height: 72px;"></div>
-                <div class="hud-arrow-right" style="right: 580px; top: 50px; width: 30px;"></div>
-                <div class="overlay-label" style="right: 610px; top: 15px; width: 260px;">
-                    <strong>말풍선</strong>
-                    <ul><li>좌측 패널에서 <b>1줄 대사, 2줄 대사</b> 선택이 가능합니다.</li><li>아이콘을 클릭하면 색상을 바로 변경할 수 있습니다.</li></ul>
-                </div>
-                
-                <div class="hud-highlight" style="right: 240px; top: 75px; width: 290px; height: 290px;"></div>
-                <div class="hud-arrow-right" style="right: 530px; top: 310px; width: 30px;"></div>
-                <div class="overlay-label" style="right: 560px; top: 280px; width: 250px;">
-                    <strong>메인 두상</strong>
-                    <ul><li>점선 영역을 <b>더블 클릭</b>하여 이미지를 띄웁니다.</li><li><b>마우스 휠:</b> 줌인 / 줌아웃</li><li><b>클릭 후 드래그:</b> 상하좌우 위치 조정</li></ul>
-                </div>
-                
-                <!-- 💡 짧게 개선된 표정 슬롯 가이드 -->
-                <div class="hud-highlight" style="right: 45px; top: 50px; width: 150px; height: 490px;"></div>
-                <div class="hud-arrow-right" style="right: 195px; top: 430px; width: 20px;"></div>
-                <div class="overlay-label" style="right: 215px; top: 400px; width: 260px;">
-                    <strong>표정 슬롯</strong>
-                    <ul>
-                        <li><b>크기가 같은 이미지:</b> 위치/확대 자동 동기화</li>
-                        <li><b>크기가 다른 이미지:</b> 각각 독립적으로 조작</li>
-                        <li>슬롯 우측 하단을 클릭해 <b>표정 이름</b> 입력</li>
-                    </ul>
-                </div>
-                
-                <div class="hud-highlight" style="right: 240px; bottom: 45px; width: 290px; height: 380px;"></div>
-                <div class="hud-arrow-right" style="right: 530px; bottom: 120px; width: 30px;"></div>
-                <div class="overlay-label" style="right: 560px; bottom: 60px; width: 260px;">
-                    <strong>컬러 파레트 & 텍스트 편집</strong>
-                    <ul><li><b>컬러 파레트:</b> 색상 피커를 쓰거나 컬러 코드를 직접 입력할 수 있습니다.</li><li><b>텍스트 편집:</b> 모든 텍스트는 <b>클릭하여 바로 수정</b>합니다.</li></ul>
-                </div>
-                
-                <div class="overlay-label lbl-system-status">
-                    <strong>💾 기기 브라우저 내부 안심 저장</strong><span>새로고침을 해도 즉시 유지됩니다. (다운로드 시 이 가이드는 저장되지 않습니다.)</span>
-                </div>
-                <div class="overlay-close-hint">화면 아무 곳이나 클릭하면 가이드가 닫힙니다.</div>
-            </div>
-
             <!-- UI 요소들 -->
             <div class="left-area">
                 <div class="tag-list" id="tag-list-layer">
@@ -382,26 +461,33 @@
             </div>
 
         </div>
+        </div>
 
         <div class="sidebar-panel">
-            <div class="panel-title">🛠️ 유틸리티 도구</div>
+            <div class="panel-title"><svg class="ui-icon"><use href="#icon-tool"/></svg> 유틸리티 도구</div>
             <div class="btn-group-vertical">
-                <button class="add-palette-btn" style="background: #0f172a;" onclick="toggleHelpOverlay()">💡 조작 도움말 오버레이</button>
+                <div class="snap-toggle-row">
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-magnet"/></svg> 자석 스냅 정렬</span>
+                    <label class="toggle-label"><input type="checkbox" class="toggle-input" id="snap-toggle" checked onchange="snapEnabled = this.checked; saveToLocalStorage();"><div class="toggle-switch"></div></label>
+                </div>
+
+                <button class="add-palette-btn" style="background: #0f172a;" onclick="toggleHelpOverlay()"><svg class="ui-icon"><use href="#icon-bulb"/></svg> 조작 도움말 오버레이</button>
+                <button class="add-palette-btn" style="background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe;" onclick="toggleManual(true)"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 사용 설명서 보기</button>
 
                 <div class="font-size-control-vertical">
-                    <span>📐 캔버스 가로 너비 조절</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-ruler"/></svg> 캔버스 가로 너비 조절</span>
                     <div class="slider-row">
                         <input type="range" id="canvas-width-slider" min="900" max="1200" value="950" oninput="changeCanvasWidth(this.value)">
                         <span id="canvas-width-val">950px</span>
                     </div>
                 </div>
                 
-                <label class="sticker-btn-label">✨ 스티커 추가 선택<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
-                <button class="add-palette-btn" onclick="addNewPaletteItem()">🎨 컬러 팔레트 추가</button>
-                <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()">📋 프로필 박스 추가</button>
+                <label class="sticker-btn-label"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 스티커 추가 선택<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
+                <button class="add-palette-btn" onclick="addNewPaletteItem()"><svg class="ui-icon"><use href="#icon-palette"/></svg> 컬러 팔레트 추가</button>
+                <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 프로필 박스 추가</button>
                 
                 <div class="font-size-control-vertical" style="margin-top: 2px;">
-                    <span>🅰️ 서체 종류 선택</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-font"/></svg> 서체 종류 선택</span>
                     <div class="font-select-box">
                         <label class="font-select-label"><input type="radio" name="font-style-choice" value="sans" checked onchange="changeMainFontFamily(this.value)">고딕체</label>
                         <label class="font-select-label"><input type="radio" name="font-style-choice" value="serif" onchange="changeMainFontFamily(this.value)">명조체</label>
@@ -409,16 +495,143 @@
                 </div>
 
                 <div class="font-size-control-vertical">
-                    <span>외관 설명 글씨 크기</span>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-font"/></svg> 외관 설명 글씨 크기</span>
                     <div class="slider-row">
                         <input type="range" id="font-slider" min="10" max="20" value="13" oninput="changeDescFontSize(this.value)">
                         <span id="font-val">13px</span>
                     </div>
                 </div>
 
-                <button class="save-btn png-theme" style="margin-top: 10px;" onclick="saveTemplateAsImage('png')">🖼️ PNG 이미지 저장</button>
-                <button class="save-btn jpeg-theme" onclick="saveTemplateAsImage('jpeg')">🖼️ JPEG 이미지 저장</button>
-                <button class="reset-btn" onclick="resetCanvasData()"><svg class="reset-svg" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>전체 데이터 초기화</button>
+                <button class="save-btn png-theme" style="margin-top: 10px;" onclick="saveTemplateAsImage('png')"><svg class="ui-icon"><use href="#icon-image"/></svg> PNG 이미지 저장</button>
+                <button class="save-btn jpeg-theme" onclick="saveTemplateAsImage('jpeg')"><svg class="ui-icon"><use href="#icon-image"/></svg> JPEG 이미지 저장</button>
+                <button class="reset-btn" onclick="resetCanvasData()"><svg class="ui-icon" style="stroke:#ef4444;"><use href="#icon-rotate"/></svg> 전체 데이터 초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 화면 전체 고정형 HUD 가이드 (번호 배지 + 하단 통합 설명 패널) -->
+    <div class="canvas-overlay-guide" id="canvas-help-overlay" onclick="closeHelpOverlay()">
+        <div class="hud-highlight" id="hud-box-1"></div><div class="hud-num" id="hud-num-1">1</div>
+        <div class="hud-highlight" id="hud-box-2"></div><div class="hud-num" id="hud-num-2">2</div>
+        <div class="hud-highlight" id="hud-box-3"></div><div class="hud-num" id="hud-num-3">3</div>
+        <div class="hud-highlight" id="hud-box-4"></div><div class="hud-num" id="hud-num-4">4</div>
+        <div class="hud-highlight" id="hud-box-5"></div><div class="hud-num" id="hud-num-5">5</div>
+
+        <div class="overlay-close-hint">화면 아무 곳이나 클릭하면 가이드가 닫힙니다. (Esc)</div>
+
+        <div class="hud-guide-panel" onclick="event.stopPropagation()">
+            <div class="hud-panel-head">
+                <h3><svg class="ui-icon" style="stroke:#38bdf8;"><use href="#icon-bulb"/></svg> 조작 가이드 &mdash; 번호를 캔버스와 맞춰 보세요</h3>
+                <div class="hud-save-note"><svg class="ui-icon" style="stroke:#6ee7b7;width:14px;height:14px;"><use href="#icon-rotate"/></svg> 작업 내용은 브라우저에 자동 저장되어 새로고침해도 유지됩니다</div>
+            </div>
+            <div class="hud-grid">
+                <div class="hud-card">
+                    <div class="hud-card-title"><span class="num">1</span> 성격 키워드</div>
+                    <ul>
+                        <li>좌측 패널에서 문구와 색상을 수정합니다.</li>
+                        <li><b>일괄 색상 적용</b>으로 3개를 한 번에 맞춥니다.</li>
+                        <li>토글을 끄면 캔버스에서 사라집니다.</li>
+                    </ul>
+                </div>
+                <div class="hud-card">
+                    <div class="hud-card-title"><span class="num">2</span> 한마디 말풍선</div>
+                    <ul>
+                        <li><b>1줄 / 2줄</b> 정렬과 아이콘 종류를 고릅니다.</li>
+                        <li>말풍선 <b>아이콘 클릭</b> 시 색상이 바뀝니다.</li>
+                    </ul>
+                </div>
+                <div class="hud-card">
+                    <div class="hud-card-title"><span class="num">3</span> 메인 두상 &amp; 스티커</div>
+                    <ul>
+                        <li>점선 영역 <b>더블 클릭</b>으로 업로드합니다.</li>
+                        <li><b>드래그</b> 이동, <b>휠</b>로 확대·축소합니다.</li>
+                        <li>스티커는 클릭 시 정렬 툴바가 뜨고, <b>Shift+클릭</b>으로 여러 개를 선택합니다.</li>
+                    </ul>
+                </div>
+                <div class="hud-card">
+                    <div class="hud-card-title"><span class="num">4</span> 표정 슬롯</div>
+                    <ul>
+                        <li><b>크기가 같은 이미지</b>는 위치·확대가 동기화됩니다.</li>
+                        <li>크기가 다르면 각각 독립 조작됩니다.</li>
+                        <li>우측 하단을 클릭해 <b>표정 이름</b>을 씁니다.</li>
+                    </ul>
+                </div>
+                <div class="hud-card">
+                    <div class="hud-card-title"><span class="num">5</span> 유틸리티 패널</div>
+                    <ul>
+                        <li><b>자석 스냅</b>을 켜면 스티커가 가장자리·중앙선에 붙습니다.</li>
+                        <li>캔버스 너비·글씨 크기를 조절합니다.</li>
+                        <li><b>PNG·JPEG</b>로 완성본을 저장합니다.</li>
+                        <li>자세한 내용은 <b>사용 설명서</b>에서 확인하세요.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사용설명서 모달 -->
+    <div class="manual-modal-overlay" id="manual-modal" onclick="toggleManual(false)">
+        <div class="manual-modal-box" onclick="event.stopPropagation()">
+            <div class="manual-modal-header">
+                <h2><svg class="ui-icon" style="width:18px;height:18px;"><use href="#icon-clipboard"/></svg> 사용 설명서</h2>
+                <button class="manual-modal-close-btn" onclick="toggleManual(false)">&times;</button>
+            </div>
+            <div class="manual-modal-body">
+                <div class="manual-section">
+                    <h3>1. 이미지 업로드 (두상 · 표정)</h3>
+                    <ul>
+                        <li>점선 박스를 <b>더블 클릭</b>하면 이미지 업로드 창이 열립니다.</li>
+                        <li>업로드 후 <b>드래그</b>로 위치를, <b>마우스 휠</b>로 확대·축소를 조절합니다.</li>
+                        <li>표정 슬롯은 <b>가로·세로 크기가 완전히 같은 이미지</b>끼리 위치와 확대가 자동으로 동기화됩니다. 크기가 다르면 각각 따로 조작됩니다.</li>
+                        <li>표정 슬롯 우측 하단을 클릭해 <b>표정 이름</b>을 입력할 수 있습니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>2. 스티커 / 데코</h3>
+                    <ul>
+                        <li>우측 패널 <b>'스티커 추가 선택'</b>으로 이미지를 올리면 캔버스 위에 스티커로 추가됩니다.</li>
+                        <li><b>드래그</b>로 이동, 모서리 <b>파란 사각형 손잡이</b>로 크기 조절, <b>우측 상단 원형 손잡이</b>로 회전합니다.</li>
+                        <li>마우스를 올리면 나타나는 <b>× 버튼</b>으로 삭제합니다.</li>
+                        <li>스티커를 클릭하면 위에 <b>정렬 툴바</b>가 떠서 좌/우/상/하/중앙 정렬을 바로 적용할 수 있습니다.</li>
+                        <li><b>Shift(또는 Ctrl)+클릭</b>으로 여러 스티커를 함께 선택하면, 선택한 것들끼리 나란히 정렬됩니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>3. 자석 스냅 정렬</h3>
+                    <ul>
+                        <li>우측 패널 맨 위의 토글로 <b>켜고 끌 수</b> 있습니다(기본 켜짐).</li>
+                        <li>켜져 있으면 스티커를 드래그할 때 캔버스의 <b>가장자리와 가로·세로 중앙선</b>에 가까워질 때 자동으로 달라붙고, 분홍색 가이드선이 표시됩니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>4. 성격 키워드 & 말풍선</h3>
+                    <ul>
+                        <li>좌측 패널에서 키워드 문구와 색상을 각각 지정하거나, <b>일괄 색상 적용</b>으로 한 번에 맞출 수 있습니다.</li>
+                        <li>말풍선은 <b>1줄 / 2줄</b> 정렬과 <b>마이크 / 인용구 / 표정</b> 아이콘을 고를 수 있습니다.</li>
+                        <li>말풍선 왼쪽 아이콘을 클릭하면 아이콘 색상이 바뀝니다.</li>
+                        <li>키워드·말풍선·표정 슬롯은 각각 토글로 숨길 수 있습니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>5. 이름 · 프로필 박스 · 컬러 팔레트 · 설명</h3>
+                    <ul>
+                        <li>이름과 원문 이름은 캔버스에서 직접 클릭해 입력합니다.</li>
+                        <li><b>프로필 박스 추가</b>로 성별·나이·신장 등의 칸을 늘릴 수 있습니다(최대 6개).</li>
+                        <li><b>컬러 팔레트 추가</b>로 색상 칸을 늘리고, 각 칸은 클릭해 색을 고르거나 컬러 코드를 직접 입력할 수 있습니다.</li>
+                        <li>외관 설명은 <b>'+ 외관 설명 줄 추가'</b>로 늘리고, 글씨 크기는 우측 슬라이더로 조절합니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>6. 저장 & 단축키</h3>
+                    <ul>
+                        <li>모든 작업은 <b>기기 브라우저 안에 자동 저장</b>되어 새로고침해도 유지됩니다.</li>
+                        <li><b>PNG</b>는 배경 손실 없이, <b>JPEG</b>는 더 가벼운 용량으로 저장됩니다. 저장 시 가이드·버튼 등은 이미지에 나오지 않습니다.</li>
+                        <li><b>M</b> 키(또는 화면 아래 버튼)로 좌우 패널을 숨겨 캔버스를 넓게 볼 수 있습니다.</li>
+                        <li><b>Esc</b> 키로 가이드나 이 설명서를 닫을 수 있습니다.</li>
+                        <li>화면이 좁거나 모바일에서는 캔버스가 자동으로 축소되어 보이며, 저장되는 이미지는 축소와 무관하게 항상 원본 해상도로 저장됩니다.</li>
+                        <li><b>전체 데이터 초기화</b>는 되돌릴 수 없으니 주의하세요.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -429,10 +642,215 @@
         const DEFAULT_SLOT_ID = 999; 
         let isRestoringData = false; 
 
+        let snapEnabled = true;
+        let selectedStickers = [];
+        let dragGuideV = null, dragGuideH = null;
+        let hudResizeHandler = null;
+
+        function clampNum(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        // 번호 배지는 대상 요소 위에, 설명은 하단 패널에 고정 배치되어 항상 정돈된 상태를 유지합니다.
+        function positionHudGuide() {
+            const targets = [
+                document.getElementById('tag-list-layer'),
+                document.getElementById('speech-bubble-layer'),
+                document.getElementById('bust-upload-zone'),
+                document.getElementById('right-area-layer'),
+                document.querySelectorAll('.sidebar-panel')[1]
+            ];
+
+            targets.forEach((el, i) => {
+                const box = document.getElementById('hud-box-' + (i + 1));
+                const num = document.getElementById('hud-num-' + (i + 1));
+                const r = el ? el.getBoundingClientRect() : null;
+                const hidden = !r || r.width === 0 || r.height === 0 ||
+                               (el && getComputedStyle(el).opacity === '0') ||
+                               r.bottom < 0 || r.top > window.innerHeight;
+
+                if (hidden) { box.style.display = 'none'; num.style.display = 'none'; return; }
+
+                box.style.display = 'block'; num.style.display = 'flex';
+                box.style.left = (r.left - 4) + 'px';
+                box.style.top = (r.top - 4) + 'px';
+                box.style.width = (r.width + 8) + 'px';
+                box.style.height = (r.height + 8) + 'px';
+
+                num.style.left = clampNum(r.left - 13, 4, window.innerWidth - 30) + 'px';
+                num.style.top = clampNum(r.top - 13, 4, window.innerHeight - 30) + 'px';
+            });
+        }
+
+        function scheduleHudReposition() {
+            requestAnimationFrame(positionHudGuide);
+            setTimeout(positionHudGuide, 160);
+            setTimeout(positionHudGuide, 420);
+        }
+
+        // ===== 좌우 패널 숨기기 (M) =====
+        function toggleSidebars() {
+            const panels = document.querySelectorAll('.sidebar-panel');
+            const hidden = panels[0].style.display === 'none';
+            panels.forEach(p => p.style.display = hidden ? 'flex' : 'none');
+            document.getElementById('floating-toggle-text').innerText = hidden ? '양쪽 메뉴 숨기기 (M)' : '양쪽 메뉴 보이기 (M)';
+            setTimeout(() => { autoResponsiveScale(); scheduleHudReposition(); }, 60);
+        }
+
+        // ===== 캔버스 자동 축소 (좁은 화면 / 모바일 대응) =====
+        function autoResponsiveScale() {
+            const canvas = document.getElementById('main-canvas');
+            const wrap = document.getElementById('canvas-scale-wrap');
+            if (!canvas || !wrap) return;
+
+            const canvasW = canvas.offsetWidth;
+            const stacked = window.innerWidth <= 1100;
+            const panelsHidden = document.querySelectorAll('.sidebar-panel')[0].style.display === 'none';
+            // 가로로 나란히 놓일 때는 좌우 패널(240px*2 + 여백)만큼을 빼고 남는 폭을 계산합니다.
+            const reserved = stacked ? 24 : (panelsHidden ? 60 : 560);
+            const available = window.innerWidth - reserved;
+
+            if (canvasW > 0 && available > 200 && available < canvasW) {
+                const s = available / canvasW;
+                wrap.style.transform = `scale(${s})`;
+                wrap.style.height = (canvas.offsetHeight * s) + 'px';
+                wrap.style.width = canvasW + 'px';
+            } else {
+                wrap.style.transform = 'none';
+                wrap.style.height = '';
+                wrap.style.width = '';
+            }
+        }
+
+        window.addEventListener('resize', () => { autoResponsiveScale(); if (document.getElementById('canvas-help-overlay').classList.contains('active')) scheduleHudReposition(); });
+        window.addEventListener('scroll', () => { if (document.getElementById('canvas-help-overlay').classList.contains('active')) positionHudGuide(); }, true);
+
         function toggleHelpOverlay() {
             const overlay = document.getElementById('canvas-help-overlay');
-            overlay.classList.toggle('active');
+            if (overlay.classList.contains('active')) closeHelpOverlay(); else openHelpOverlay();
         }
+
+        function openHelpOverlay() {
+            document.getElementById('canvas-help-overlay').classList.add('active');
+            scheduleHudReposition();
+            hudResizeHandler = () => scheduleHudReposition();
+            window.addEventListener('resize', hudResizeHandler);
+        }
+
+        function closeHelpOverlay() {
+            document.getElementById('canvas-help-overlay').classList.remove('active');
+            if (hudResizeHandler) { window.removeEventListener('resize', hudResizeHandler); hudResizeHandler = null; }
+        }
+
+        function toggleManual(show) {
+            document.getElementById('manual-modal').classList.toggle('active', !!show);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { toggleManual(false); closeHelpOverlay(); return; }
+            // 입력 중일 때는 단축키가 동작하지 않도록 합니다.
+            const tag = e.target.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+            if (e.key.toLowerCase() === 'm') toggleSidebars();
+        });
+
+        // ===== 자석 스냅 가이드선 =====
+        function createDragGuides(container) {
+            removeDragGuides();
+            const v = document.createElement('div'); v.className = 'snap-guide-line snap-guide-v';
+            const h = document.createElement('div'); h.className = 'snap-guide-line snap-guide-h';
+            container.appendChild(v); container.appendChild(h);
+            dragGuideV = v; dragGuideH = h;
+        }
+        function removeDragGuides() {
+            if (dragGuideV) { dragGuideV.remove(); dragGuideV = null; }
+            if (dragGuideH) { dragGuideH.remove(); dragGuideH = null; }
+        }
+
+        // ===== 스티커 선택 & 정렬 (다중 선택 지원) =====
+        function selectSticker(st) {
+            selectedStickers.forEach(s => s.classList.remove('selected'));
+            selectedStickers = [st];
+            st.classList.add('selected');
+            repositionAlignToolbar();
+        }
+
+        function toggleStickerSelection(st) {
+            const i = selectedStickers.indexOf(st);
+            if (i >= 0) { selectedStickers.splice(i, 1); st.classList.remove('selected'); }
+            else { selectedStickers.push(st); st.classList.add('selected'); }
+            repositionAlignToolbar();
+        }
+
+        function deselectSticker() {
+            selectedStickers.forEach(s => s.classList.remove('selected'));
+            selectedStickers = [];
+            document.getElementById('sticker-align-toolbar').style.display = 'none';
+        }
+
+        function repositionAlignToolbar() {
+            const tb = document.getElementById('sticker-align-toolbar');
+            const badge = document.getElementById('align-toolbar-count');
+            if (!selectedStickers.length) { tb.style.display = 'none'; return; }
+
+            const rects = selectedStickers.map(s => s.getBoundingClientRect());
+            const l = Math.min(...rects.map(r => r.left));
+            const rt = Math.max(...rects.map(r => r.right));
+            const t = Math.min(...rects.map(r => r.top));
+            const b = Math.max(...rects.map(r => r.bottom));
+
+            tb.style.display = 'flex';
+            if (selectedStickers.length > 1) { badge.textContent = selectedStickers.length + '개 선택'; badge.style.display = 'inline'; }
+            else badge.style.display = 'none';
+
+            const tw = tb.offsetWidth || 220;
+            tb.style.left = clampNum(l + (rt - l) / 2 - tw / 2, 8, window.innerWidth - tw - 8) + 'px';
+            let tt = t - 46;
+            if (tt < 8) tt = b + 10;
+            tb.style.top = tt + 'px';
+        }
+
+        function alignSticker(dir) {
+            if (!selectedStickers.length) return;
+            const canvas = document.getElementById('main-canvas');
+            const cw = canvas.clientWidth, ch = canvas.clientHeight;
+
+            if (selectedStickers.length === 1) {
+                // 하나만 선택: 캔버스 전체 기준으로 정렬
+                const st = selectedStickers[0];
+                const w = st.offsetWidth, h = st.offsetHeight;
+                if (dir === 'left') st.style.left = '0px';
+                else if (dir === 'center-h') st.style.left = ((cw - w) / 2) + 'px';
+                else if (dir === 'right') st.style.left = (cw - w) + 'px';
+                else if (dir === 'top') st.style.top = '0px';
+                else if (dir === 'center-v') st.style.top = ((ch - h) / 2) + 'px';
+                else if (dir === 'bottom') st.style.top = (ch - h) + 'px';
+            } else {
+                // 여러 개 선택: 선택한 스티커들끼리의 기준선에 맞춰 정렬
+                const d = selectedStickers.map(st => ({ st, left: parseFloat(st.style.left) || 0, top: parseFloat(st.style.top) || 0, w: st.offsetWidth, h: st.offsetHeight }));
+                if (dir === 'left') { const v = Math.min(...d.map(x => x.left)); d.forEach(x => x.st.style.left = v + 'px'); }
+                else if (dir === 'right') { const v = Math.max(...d.map(x => x.left + x.w)); d.forEach(x => x.st.style.left = (v - x.w) + 'px'); }
+                else if (dir === 'center-h') { const c = (Math.min(...d.map(x => x.left)) + Math.max(...d.map(x => x.left + x.w))) / 2; d.forEach(x => x.st.style.left = (c - x.w / 2) + 'px'); }
+                else if (dir === 'top') { const v = Math.min(...d.map(x => x.top)); d.forEach(x => x.st.style.top = v + 'px'); }
+                else if (dir === 'bottom') { const v = Math.max(...d.map(x => x.top + x.h)); d.forEach(x => x.st.style.top = (v - x.h) + 'px'); }
+                else if (dir === 'center-v') { const c = (Math.min(...d.map(x => x.top)) + Math.max(...d.map(x => x.top + x.h))) / 2; d.forEach(x => x.st.style.top = (c - x.h / 2) + 'px'); }
+            }
+            repositionAlignToolbar();
+            saveToLocalStorage();
+        }
+
+        function deleteStickerEl(btn) {
+            const el = btn.parentElement;
+            const i = selectedStickers.indexOf(el);
+            if (i >= 0) selectedStickers.splice(i, 1);
+            el.remove();
+            if (!selectedStickers.length) document.getElementById('sticker-align-toolbar').style.display = 'none';
+            else repositionAlignToolbar();
+            saveToLocalStorage();
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (!e.target.closest('.draggable-sticker') && !e.target.closest('#sticker-align-toolbar')) deselectSticker();
+        });
+        window.addEventListener('resize', () => repositionAlignToolbar());
 
         function initIndexedDB() {
             return new Promise((resolve, reject) => {
@@ -527,7 +945,8 @@
                 c1: document.getElementById('c1').value, c2: document.getElementById('c2').value,
                 addedPalettes: addedPalettes, 
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
-                specs: specValues, images: images, stickers: stickers, exprLabels: exprLabels
+                specs: specValues, images: images, stickers: stickers, exprLabels: exprLabels,
+                snapEnabled: snapEnabled
             };
 
             await writeSlotToDB(data);
@@ -649,6 +1068,11 @@
                         data.stickers.forEach(sData => restoreSticker(sData));
                     }
 
+                    if (data.hasOwnProperty('snapEnabled')) {
+                        snapEnabled = data.snapEnabled;
+                        document.getElementById('snap-toggle').checked = snapEnabled;
+                    }
+
                     if (data.exprLabels && data.exprLabels.length === 3) {
                         document.getElementById('expr-label-1').value = data.exprLabels[0];
                         document.getElementById('expr-label-2').value = data.exprLabels[1];
@@ -669,6 +1093,7 @@
             document.getElementById('canvas-width-slider').value = val;
             document.getElementById('canvas-width-val').innerText = val + 'px';
             document.documentElement.style.setProperty('--canvas-width', val + 'px');
+            setTimeout(autoResponsiveScale, 60);
             for(let i = 1; i <= 3; i++) {
                 const picker = document.getElementById(`sidebar-picker-${i}`);
                 if(picker) syncTagColor(i, picker.value);
@@ -697,7 +1122,7 @@
         }
 
         function changeMainFontFamily(fontType) {
-            document.documentElement.style.setProperty('--main-font', fontType === 'serif' ? "'BonmyeongjoSourceHanSerif', 'Noto Serif KR', serif" : "'Noto Sans KR', sans-serif");
+            document.documentElement.style.setProperty('--main-font', fontType === 'serif' ? "'BonmyeongjoSourceHanSerif', 'Noto Serif KR', 'Noto Serif JP', serif" : "'Noto Sans KR', 'Noto Sans JP', sans-serif");
         }
 
         function changeSpeechLineAlignment(lines) {
@@ -932,26 +1357,60 @@
             let diffX = 0, diffY = 0, startWidth = 0, startMouseX = 0, centerPointX = 0, centerPointY = 0;
 
             sticker.addEventListener('mousedown', function(dragEvent) {
-                const targetClass = dragEvent.target.className;
-                if (targetClass === 'delete-sticker-btn' || targetClass === 'resize-sticker-handle' || targetClass === 'rotate-sticker-handle') return;
+                if (dragEvent.target.closest('.delete-sticker-btn') || dragEvent.target.closest('.resize-sticker-handle') || dragEvent.target.closest('.rotate-sticker-handle')) return;
+                if (dragEvent.button === 2) return;
+
+                if (dragEvent.shiftKey || dragEvent.ctrlKey || dragEvent.metaKey) {
+                    // Shift/Ctrl+클릭: 이동 없이 선택 목록에 추가/제외
+                    toggleStickerSelection(sticker);
+                    dragEvent.preventDefault();
+                    return;
+                }
+
+                selectSticker(sticker);
                 isDragging = true;
                 diffX = dragEvent.clientX - sticker.offsetLeft; diffY = dragEvent.clientY - sticker.offsetTop;
+                document.getElementById('sticker-align-toolbar').style.display = 'none';
+                if (snapEnabled) createDragGuides(document.getElementById('main-canvas'));
                 dragEvent.preventDefault();
             });
             
             sticker.querySelector('.resize-sticker-handle').addEventListener('mousedown', function(resizeEvent) {
                 isResizing = true; startWidth = sticker.clientWidth; startMouseX = resizeEvent.clientX;
+                selectSticker(sticker);
                 resizeEvent.preventDefault(); resizeEvent.stopPropagation();
             });
             
             sticker.querySelector('.rotate-sticker-handle').addEventListener('mousedown', function(rotateEvent) {
                 isRotating = true; const rect = sticker.getBoundingClientRect();
                 centerPointX = rect.left + rect.width / 2; centerPointY = rect.top + rect.height / 2;
+                selectSticker(sticker);
                 rotateEvent.preventDefault(); rotateEvent.stopPropagation();
             });
             
             document.addEventListener('mousemove', function(moveEvent) {
-                if (isDragging) { sticker.style.left = `${moveEvent.clientX - diffX}px`; sticker.style.top = `${moveEvent.clientY - diffY}px`; }
+                if (isDragging) {
+                    let nl = moveEvent.clientX - diffX;
+                    let nt = moveEvent.clientY - diffY;
+
+                    if (snapEnabled) {
+                        const canvas = document.getElementById('main-canvas');
+                        const cw = canvas.clientWidth, ch = canvas.clientHeight;
+                        const sw = sticker.offsetWidth, sh = sticker.offsetHeight;
+                        const T = 8;
+                        const xs = [ { p: 0, g: 0 }, { p: (cw - sw) / 2, g: cw / 2 }, { p: cw - sw, g: cw } ];
+                        const ys = [ { p: 0, g: 0 }, { p: (ch - sh) / 2, g: ch / 2 }, { p: ch - sh, g: ch } ];
+                        let sx = false, sy = false;
+
+                        for (const t of xs) { if (Math.abs(nl - t.p) < T) { nl = t.p; if (dragGuideV) { dragGuideV.style.left = t.g + 'px'; dragGuideV.classList.add('visible'); } sx = true; break; } }
+                        for (const t of ys) { if (Math.abs(nt - t.p) < T) { nt = t.p; if (dragGuideH) { dragGuideH.style.top = t.g + 'px'; dragGuideH.classList.add('visible'); } sy = true; break; } }
+                        if (!sx && dragGuideV) dragGuideV.classList.remove('visible');
+                        if (!sy && dragGuideH) dragGuideH.classList.remove('visible');
+                    }
+
+                    sticker.style.left = nl + 'px';
+                    sticker.style.top = nt + 'px';
+                }
                 if (isResizing) { sticker.style.width = `${Math.max(30, startWidth + (moveEvent.clientX - startMouseX))}px`; }
                 if (isRotating) {
                     let angleDegrees = Math.atan2(moveEvent.clientY - centerPointY, moveEvent.clientX - centerPointX) * (180 / Math.PI) + 45;
@@ -960,7 +1419,12 @@
             });
             
             document.addEventListener('mouseup', function() {
-                if (isDragging || isResizing || isRotating) { isDragging = isResizing = isRotating = false; saveToLocalStorage(); }
+                if (isDragging || isResizing || isRotating) {
+                    isDragging = isResizing = isRotating = false;
+                    removeDragGuides();
+                    if (selectedStickers.includes(sticker)) repositionAlignToolbar();
+                    saveToLocalStorage();
+                }
             });
         }
 
@@ -975,8 +1439,8 @@
                     sticker.style.left = '80px'; sticker.style.top = '120px'; sticker.style.width = '180px'; sticker.dataset.angle = 0; 
                     sticker.innerHTML = `
                         <img src="${e.target.result}">
-                        <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
-                        <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
+                        <button class="delete-sticker-btn" onclick="deleteStickerEl(this);">×</button>
+                        <div class="rotate-sticker-handle" title="드래그하여 회전"><svg class="ui-icon-fill" style="width:11px;height:11px;"><use href="#icon-rotate"/></svg></div>
                         <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
                     `;
                     canvas.appendChild(sticker); attachStickerEvents(sticker); saveToLocalStorage();
@@ -993,8 +1457,8 @@
             if (sData.angle && sData.angle != 0) sticker.style.transform = `rotate(${sData.angle}deg)`;
             sticker.innerHTML = `
                 <img src="${sData.src}">
-                <button class="delete-sticker-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
-                <div class="rotate-sticker-handle" title="드래그하여 회전">🔄</div>
+                <button class="delete-sticker-btn" onclick="deleteStickerEl(this);">×</button>
+                <div class="rotate-sticker-handle" title="드래그하여 회전"><svg class="ui-icon-fill" style="width:11px;height:11px;"><use href="#icon-rotate"/></svg></div>
                 <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
             `;
             canvas.appendChild(sticker); attachStickerEvents(sticker);
@@ -1087,6 +1551,12 @@
             }
 
             canvasElement.classList.add('hide-on-save');
+            // 축소 상태에서도 원본 해상도로 캡처되도록 스케일을 잠시 해제합니다.
+            const scaleWrap = document.getElementById('canvas-scale-wrap');
+            const prevWrapTransform = scaleWrap.style.transform;
+            const prevWrapHeight = scaleWrap.style.height;
+            scaleWrap.style.transform = 'none'; scaleWrap.style.height = '';
+            const restoreScale = () => { scaleWrap.style.transform = prevWrapTransform; scaleWrap.style.height = prevWrapHeight; };
             const currentWidthVal = parseInt(document.getElementById('canvas-width-slider').value);
 
             setTimeout(() => {
@@ -1103,9 +1573,12 @@
                     canvasElement.classList.remove('hide-on-save');
                     savedTransfers.forEach(item => { item.temporarySpan.remove(); item.originalInput.style.display = ''; });
                     if(textareaTransfer) { textareaTransfer.temporarySpan.remove(); textareaTransfer.originalInput.style.display = ''; }
+                    restoreScale();
                 }).catch(err => {
                     canvasElement.classList.remove('hide-on-save');
                     savedTransfers.forEach(item => { item.temporarySpan.remove(); item.originalInput.style.display = ''; });
+                    if(textareaTransfer) { textareaTransfer.temporarySpan.remove(); textareaTransfer.originalInput.style.display = ''; }
+                    restoreScale();
                 });
             }, 100); 
         }
@@ -1113,6 +1586,9 @@
         window.addEventListener('DOMContentLoaded', async () => {
             await initIndexedDB();
             await loadFromLocalStorage();
+            autoResponsiveScale();
+            // 페이지를 열 때마다 시작 가이드를 자동으로 표시합니다.
+            openHelpOverlay();
         });
     </script>
 </body>
