@@ -135,6 +135,24 @@
         .desc-list input { font-weight: 500; border: none; width: 100%; color: #334155; outline: none; padding-right: 25px; font-size: var(--desc-font-size) !important; line-height: normal; text-align: left; background: transparent; }
         .row-del-btn { position: absolute; right: 0; color: #ef4444; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; opacity: 0; z-index: 5; }
         .desc-list li:hover .row-del-btn { opacity: 1; }
+        /* 상세 설명 드래그 정렬 */
+        .desc-list li { padding-left: 16px; border-radius: 6px; transition: background-color .2s, opacity .2s; }
+        .desc-list li.dragging { opacity: .5; background-color: #f1f5f9; }
+        .drag-handle { position: absolute; left: 0; color: #94a3b8; cursor: grab; padding: 4px 0; display: flex; align-items: center; justify-content: center; width: 14px; }
+        .drag-handle:active { cursor: grabbing; }
+        .hide-on-save .desc-list li { padding-left: 0 !important; }
+        .hide-on-save .drag-handle { display: none !important; }
+
+        /* 스티커 우클릭 레이어 메뉴 */
+        .context-menu { position: absolute; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,.12); border: 1px solid #e2e8f0; z-index: 100000; overflow: hidden; width: 158px; display: none; padding: 4px; }
+        .context-menu-item { padding: 8px 12px; font-size: 11px; font-weight: 700; color: #334155; cursor: pointer; display: flex; align-items: center; gap: 8px; border-radius: 4px; }
+        .context-menu-item:hover { background: #f1f5f9; color: #0f172a; }
+        .context-menu-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
+
+        /* 전신 = 스티커 안내 */
+        .sticker-tip { display: flex; gap: 5px; align-items: flex-start; font-size: 10px; line-height: 1.5; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 9px 10px; border-radius: 9px; }
+        .sticker-tip b { color: #075985; }
+
         .row-add-btn { background: #ffffff; color: #64748b; border: 1px dashed #cbd5e1; padding: 7px; border-radius: 8px; font-size: 11px; cursor: pointer; text-align: center; font-weight: 700; width: 100%; flex-shrink: 0; transition: all 0.2s; }
         .row-add-btn:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; }
 
@@ -290,6 +308,8 @@
         <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
         <symbol id="icon-rotate" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
         <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="icon-grab" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
         <symbol id="icon-magnet" viewBox="0 0 24 24"><path d="M18 6a6 6 0 0 0-12 0v6"/><path d="M6 12H2v3a4 4 0 0 0 4 4a4 4 0 0 0 4-4v-3"/><path d="M18 12h4v3a4 4 0 0 1-4 4a4 4 0 0 1-4-4v-3"/></symbol>
         <symbol id="icon-align-left" viewBox="0 0 24 24"><line x1="4" y1="3" x2="4" y2="21"/><line x1="8" y1="7" x2="18" y2="7"/><line x1="8" y1="12" x2="14" y2="12"/><line x1="8" y1="17" x2="20" y2="17"/></symbol>
         <symbol id="icon-align-right" viewBox="0 0 24 24"><line x1="20" y1="3" x2="20" y2="21"/><line x1="6" y1="7" x2="16" y2="7"/><line x1="10" y1="12" x2="16" y2="12"/><line x1="4" y1="17" x2="16" y2="17"/></symbol>
@@ -298,6 +318,15 @@
         <symbol id="icon-align-bottom" viewBox="0 0 24 24"><line x1="3" y1="20" x2="21" y2="20"/><line x1="7" y1="16" x2="7" y2="6"/><line x1="12" y1="16" x2="12" y2="10"/><line x1="17" y1="16" x2="17" y2="4"/></symbol>
         <symbol id="icon-align-center-v" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="7" y1="7" x2="7" y2="17"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="17" y1="5" x2="17" y2="19"/></symbol>
     </svg>
+
+    <!-- 스티커 우클릭 레이어 순서 메뉴 -->
+    <div id="sticker-context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="changeStickerZIndex('front')"><svg class="ui-icon"><use href="#icon-align-top"/></svg> 맨 앞으로 가져오기</div>
+        <div class="context-menu-item" onclick="changeStickerZIndex('forward')"><svg class="ui-icon"><use href="#icon-plus"/></svg> 앞으로 가져오기 (+1)</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="changeStickerZIndex('backward')"><svg class="ui-icon"><path d="M5 12h14"/></svg> 뒤로 보내기 (-1)</div>
+        <div class="context-menu-item" onclick="changeStickerZIndex('back')"><svg class="ui-icon"><use href="#icon-align-bottom"/></svg> 맨 뒤로 보내기</div>
+    </div>
 
     <!-- 스티커 선택 시 뜨는 정렬 플로팅 툴바 -->
     <div id="sticker-align-toolbar">
@@ -482,7 +511,11 @@
                     </div>
                 </div>
                 
-                <label class="sticker-btn-label"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 스티커 추가 선택<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
+                <label class="sticker-btn-label"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 스티커 / 전신 이미지 추가<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
+                <div class="sticker-tip">
+                    <svg class="ui-icon" style="width:12px;height:12px;stroke:#0369a1;margin-top:1px;"><use href="#icon-bulb"/></svg>
+                    <span><b>전신 그림</b>도 이 버튼으로 올립니다. 캔버스 어디로든 드래그해 배치하고, 모서리로 크기·회전을 맞춘 뒤 <b>우클릭</b>으로 다른 요소보다 앞/뒤에 놓을 수 있어요.</span>
+                </div>
                 <button class="add-palette-btn" onclick="addNewPaletteItem()"><svg class="ui-icon"><use href="#icon-palette"/></svg> 컬러 팔레트 추가</button>
                 <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 프로필 박스 추가</button>
                 
@@ -546,6 +579,8 @@
                         <li>점선 영역 <b>더블 클릭</b>으로 업로드합니다.</li>
                         <li><b>드래그</b> 이동, <b>휠</b>로 확대·축소합니다.</li>
                         <li>스티커는 클릭 시 정렬 툴바가 뜨고, <b>Shift+클릭</b>으로 여러 개를 선택합니다.</li>
+                        <li><b>전신 그림</b>은 우측 '스티커 / 전신 이미지 추가'로 올려 자유 배치합니다.</li>
+                        <li>스티커 <b>우클릭</b>으로 앞/뒤 레이어 순서를 바꿉니다.</li>
                     </ul>
                 </div>
                 <div class="hud-card">
@@ -589,9 +624,11 @@
                 <div class="manual-section">
                     <h3>2. 스티커 / 데코</h3>
                     <ul>
-                        <li>우측 패널 <b>'스티커 추가 선택'</b>으로 이미지를 올리면 캔버스 위에 스티커로 추가됩니다.</li>
+                        <li>우측 패널 <b>'스티커 / 전신 이미지 추가'</b>로 이미지를 올리면 캔버스 위에 스티커로 추가됩니다.</li>
+                        <li><b>전신 그림을 넣고 싶을 때도 이 버튼을 씁니다.</b> 전용 칸 대신 스티커로 올려 원하는 위치·크기로 자유롭게 배치하세요.</li>
                         <li><b>드래그</b>로 이동, 모서리 <b>파란 사각형 손잡이</b>로 크기 조절, <b>우측 상단 원형 손잡이</b>로 회전합니다.</li>
                         <li>마우스를 올리면 나타나는 <b>× 버튼</b>으로 삭제합니다.</li>
+                        <li>스티커를 <b>우클릭</b>하면 <b>맨 앞으로 / 앞으로(+1) / 뒤로(-1) / 맨 뒤로</b> 레이어 순서를 바꾸는 메뉴가 열립니다.</li>
                         <li>스티커를 클릭하면 위에 <b>정렬 툴바</b>가 떠서 좌/우/상/하/중앙 정렬을 바로 적용할 수 있습니다.</li>
                         <li><b>Shift(또는 Ctrl)+클릭</b>으로 여러 스티커를 함께 선택하면, 선택한 것들끼리 나란히 정렬됩니다.</li>
                     </ul>
@@ -619,6 +656,7 @@
                         <li><b>프로필 박스 추가</b>로 성별·나이·신장 등의 칸을 늘릴 수 있습니다(최대 6개).</li>
                         <li><b>컬러 팔레트 추가</b>로 색상 칸을 늘리고, 각 칸은 클릭해 색을 고르거나 컬러 코드를 직접 입력할 수 있습니다.</li>
                         <li>외관 설명은 <b>'+ 외관 설명 줄 추가'</b>로 늘리고, 글씨 크기는 우측 슬라이더로 조절합니다.</li>
+                        <li>각 줄 왼쪽의 <b>점 6개 손잡이</b>를 잡고 위아래로 끌면 <b>순서를 바꿀 수 있습니다.</b></li>
                     </ul>
                 </div>
                 <div class="manual-section">
@@ -763,6 +801,37 @@
         function removeDragGuides() {
             if (dragGuideV) { dragGuideV.remove(); dragGuideV = null; }
             if (dragGuideH) { dragGuideH.remove(); dragGuideH = null; }
+        }
+
+        // ===== 스티커 우클릭: 레이어 앞/뒤 순서 =====
+        let activeContextSticker = null;
+
+        document.addEventListener('contextmenu', (e) => {
+            const st = e.target.closest('.draggable-sticker');
+            if (!st) return;
+            e.preventDefault();
+            activeContextSticker = st;
+            const menu = document.getElementById('sticker-context-menu');
+            menu.style.display = 'block';
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+        });
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('sticker-context-menu');
+            if (menu.style.display === 'block') menu.style.display = 'none';
+        });
+
+        function changeStickerZIndex(action) {
+            if (!activeContextSticker) return;
+            let z = parseInt(activeContextSticker.style.zIndex) || 100;
+            if (action === 'front') z = 999;
+            else if (action === 'forward') z += 1;
+            else if (action === 'backward') z = Math.max(1, z - 1);
+            else if (action === 'back') z = 10;
+            activeContextSticker.style.zIndex = z;
+            activeContextSticker.dataset.zIndex = z;
+            saveToLocalStorage();
         }
 
         // ===== 스티커 선택 & 정렬 (다중 선택 지원) =====
@@ -915,7 +984,7 @@
             document.querySelectorAll('.draggable-sticker').forEach(sticker => {
                 const img = sticker.querySelector('img');
                 if (img) {
-                    stickers.push({ src: img.src, left: sticker.style.left, top: sticker.style.top, width: sticker.style.width, angle: sticker.dataset.angle || 0 });
+                    stickers.push({ src: img.src, left: sticker.style.left, top: sticker.style.top, width: sticker.style.width, angle: sticker.dataset.angle || 0, zIndex: sticker.dataset.zIndex || sticker.style.zIndex || 100 });
                 }
             });
 
@@ -1205,10 +1274,37 @@
             saveToLocalStorage();
         }
 
+        let draggedRowItem = null;
+
         function addDescRow(textValue = '이곳에 외관 포인트를 적습니다.') {
             const container = document.getElementById('profile-desc-container');
             const newLi = document.createElement('li');
-            newLi.innerHTML = `<input type="text" value="${textValue}"><button class="row-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>`;
+            newLi.setAttribute('draggable', 'true');
+            newLi.innerHTML = `<div class="drag-handle" title="드래그하여 순서 변경"><svg class="ui-icon"><use href="#icon-grab"/></svg></div><input type="text" value="${textValue}"><button class="row-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>`;
+
+            newLi.addEventListener('dragstart', function (e) {
+                // 입력칸에서 글자를 선택하는 동작과 겹치지 않도록 합니다.
+                if (e.target.tagName === 'INPUT') { e.preventDefault(); return; }
+                draggedRowItem = this;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => this.classList.add('dragging'), 0);
+            });
+            newLi.addEventListener('dragend', function () {
+                this.classList.remove('dragging');
+                draggedRowItem = null;
+                saveToLocalStorage();
+            });
+            newLi.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+            newLi.addEventListener('drop', function (e) {
+                e.stopPropagation();
+                if (draggedRowItem && draggedRowItem !== this && this.parentNode === draggedRowItem.parentNode) {
+                    const list = this.parentNode;
+                    const items = Array.from(list.children);
+                    if (items.indexOf(draggedRowItem) < items.indexOf(this)) list.insertBefore(draggedRowItem, this.nextSibling);
+                    else list.insertBefore(draggedRowItem, this);
+                }
+            });
+
             container.appendChild(newLi);
             newLi.querySelector('input').addEventListener('input', saveToLocalStorage);
             saveToLocalStorage();
@@ -1436,7 +1532,7 @@
                     const canvas = document.getElementById('main-canvas');
                     const sticker = document.createElement('div');
                     sticker.className = 'draggable-sticker';
-                    sticker.style.left = '80px'; sticker.style.top = '120px'; sticker.style.width = '180px'; sticker.dataset.angle = 0; 
+                    sticker.style.left = '80px'; sticker.style.top = '120px'; sticker.style.width = '180px'; sticker.dataset.angle = 0; sticker.style.zIndex = 100; sticker.dataset.zIndex = 100; 
                     sticker.innerHTML = `
                         <img src="${e.target.result}">
                         <button class="delete-sticker-btn" onclick="deleteStickerEl(this);">×</button>
@@ -1454,6 +1550,7 @@
             const sticker = document.createElement('div');
             sticker.className = 'draggable-sticker';
             sticker.style.left = sData.left; sticker.style.top = sData.top; sticker.style.width = sData.width; sticker.dataset.angle = sData.angle || 0;
+            sticker.style.zIndex = sData.zIndex || 100; sticker.dataset.zIndex = sData.zIndex || 100;
             if (sData.angle && sData.angle != 0) sticker.style.transform = `rotate(${sData.angle}deg)`;
             sticker.innerHTML = `
                 <img src="${sData.src}">
