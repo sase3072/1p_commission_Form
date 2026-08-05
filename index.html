@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>커미션 프로필 신청서 틀</title>
+    <title>1인 커미션 프로필 신청서 틀</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200..900&display=swap" rel="stylesheet">
@@ -51,6 +51,8 @@
         .add-palette-btn:hover { background: #475569; transform: translateY(-1px); }
         .bulk-color-btn { background: #e2e8f0; color: #475569; padding: 6px; font-size: 11px; border-radius: 8px; }
         .bulk-color-btn:hover { background: #cbd5e1; }
+        .guide-open-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; background: #f1f5f9; color: #3b82f6; border: 1px solid #bfdbfe; transition: all .2s; }
+        .guide-open-btn:hover { background: #e0f2fe; }
         .reset-btn { background: #fef2f2; color: #ef4444; margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #fee2e2; }
         .reset-btn:hover { background: #fee2e2; }
         .reset-svg { width: 12px; height: 12px; fill: none; stroke: #ef4444; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -150,6 +152,85 @@
         .context-menu-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
 
         /* 전신 = 스티커 안내 */
+
+        /* ===== 접이식 섹션 ===== */
+        .collapsible-head { cursor: pointer; user-select: none; }
+        .collapsible-head .fold-arrow { margin-left: auto; color: #94a3b8; transition: transform .2s ease; flex-shrink: 0; display: inline-flex; }
+        .collapsible-head .fold-arrow svg { width: 13px; height: 13px; }
+        .collapsed .fold-arrow { transform: rotate(-90deg); }
+        .collapsible-body { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+        .collapsed > .collapsible-body { display: none; }
+        .collapsible-head { display: flex; align-items: center; gap: 6px; }
+        .section-fold.collapsed { padding-bottom: 10px; }
+
+
+
+
+        /* 팔레트 색 이름 · 순서 바꾸기 */
+        .color-item { cursor: grab; }
+        .color-item.dragging { opacity: .45; }
+        .color-item.drop-target { outline: 2px dashed var(--primary-color); outline-offset: 2px; border-radius: 6px; }
+        .color-label-input { width: 100%; font-size: 9px; font-weight: 700; text-align: center; border: none;
+                             outline: none; background: transparent; color: #0f172a; padding: 0; margin-top: 1px; }
+        .color-label-input::placeholder { color: #cbd5e1; font-weight: 500; }
+        .hide-on-save .color-label-input::placeholder { color: transparent; }
+
+        /* 한글 버튼 글자가 단어 중간에서 끊기지 않도록 (예: '슬롯 불러오/기') */
+        .mini-btn, .undo-btn, .seg-label, .font-select-label, .char-select-label,
+        .line-select-label, .icon-select-label, .save-btn, .add-palette-btn,
+        .sticker-btn-label, .guide-open-btn, .reset-btn, .bulk-color-btn, .kw-add-btn {
+            word-break: keep-all; overflow-wrap: normal; white-space: nowrap;
+            font-size: 10.5px; letter-spacing: -0.3px; padding-left: 6px; padding-right: 6px;
+        }
+        .sidebar-panel { word-break: keep-all; }
+        .mini-btn { min-height: 32px; overflow: hidden; text-overflow: ellipsis; }
+        /* 말풍선 묶음 안 소제목 */
+        .bubble-sub-label { font-size: 10px !important; color: #64748b !important; font-weight: 700; margin-top: 2px; }
+
+        /* ===== 패널 잘림 / 간격 벌어짐 방지 =====
+           height:100% 때문에 내용이 눌려 잘리고, margin-top:auto 버튼들이
+           남는 공간을 나눠 가지며 간격이 벌어지던 문제를 바로잡습니다. */
+        .btn-group-vertical { height: auto !important; justify-content: flex-start !important; }
+        .sidebar-panel > *, .btn-group-vertical > * { flex-shrink: 0; }
+        .section-fold { flex-shrink: 0 !important; }
+        .guide-open-btn, .reset-btn { margin-top: 0 !important; }
+        .btn-group-vertical > .reset-btn { margin-top: 4px !important; }
+        .sidebar-panel { height: auto !important; max-height: calc(100vh - 40px) !important;
+                         overflow-y: auto !important; padding-bottom: 22px !important; }
+        @media (max-width: 1200px) {
+            .sidebar-panel { max-height: none !important; overflow-y: visible !important; }
+        }
+
+        /* ===== 접이식 섹션 공통 외형 (세 폼 동일하게 보이도록 통일) ===== */
+        .section-fold { background: #ffffff !important; border: 1px solid #e2e8f0 !important;
+                        border-radius: 12px !important; padding: 0 !important; overflow: hidden;
+                        gap: 0 !important; box-shadow: 0 1px 2px rgba(15,23,42,0.03); transition: border-color .15s; }
+        .section-fold:hover { border-color: #cbd5e1 !important; }
+        .section-fold > .collapsible-head { padding: 13px 14px !important; margin: 0 !important;
+                        font-size: 11.5px; font-weight: 700; color: #334155; background: #ffffff;
+                        display: flex; align-items: center; gap: 8px; }
+        .section-fold > .collapsible-head .ui-icon { width: 14px; height: 14px; stroke: #64748b; }
+        .section-fold:not(.collapsed) > .collapsible-head { border-bottom: 1px solid #f1f5f9; }
+        .section-fold > .collapsible-body { padding: 12px 14px 14px !important; gap: 8px; }
+        .section-fold.collapsed { padding-bottom: 0 !important; }
+        .section-fold .fold-arrow { color: #cbd5e1; }
+        .section-fold .fold-arrow svg { width: 14px; height: 14px; }
+        /* 묶음 안의 소제목 */
+        .section-fold .collapsible-body .sidebar-title-left { font-size: 10px; color: #64748b; font-weight: 700; }
+
+        .mini-toast { position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%) translateY(8px); background: #0f172a; color: #fff; padding: 9px 18px; border-radius: 20px; font-size: 12px; font-weight: 700; z-index: 300000; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+        .mini-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .undo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .undo-btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 9px; border-radius: 9px; border: 1px solid #cbd5e1; background: #fff; color: #334155; font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s; }
+        .undo-btn:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+        .undo-btn:disabled { cursor: default; }
+        .slot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .slot-select { width: 100%; padding: 7px 8px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 11px; font-weight: 700; color: #334155; background: #fff; outline: none; cursor: pointer; }
+        .mini-btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; color: #334155; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .mini-btn:hover { background: #f1f5f9; }
+        .bg-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 10px; font-weight: 700; color: #64748b; }
+        .swatch { width: 30px; height: 18px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; padding: 0; background: none; }
+
         .sticker-tip { display: flex; gap: 5px; align-items: flex-start; font-size: 10px; line-height: 1.5; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 9px 10px; border-radius: 9px; }
         .sticker-tip b { color: #075985; }
 
@@ -193,7 +274,7 @@
         .floating-toggle-btn:hover { background: #1e293b; }
 
         /* ===== 반응형 / 모바일 대응 ===== */
-        .canvas-scale-wrap { flex-shrink: 0; transform-origin: top center; }
+        .canvas-scale-wrap { flex-shrink: 0; transform-origin: top left; }
 
         @media (max-width: 1780px) {
             body { align-items: flex-start; height: auto; min-height: 100vh; overflow-y: auto; padding: 16px 12px 90px; }
@@ -445,10 +526,12 @@
                         <div class="color-item" data-permanent="true">
                             <div class="color-preview" id="c1-preview" style="background-color: #3a444d;"><input type="color" id="c1-picker" value="#3a444d" oninput="updateColorFromPicker(this, 'c1')"></div>
                             <input type="text" id="c1" class="color-code-input" value="#3A444D" onchange="updateColorFromText(this)">
+                            <input type="text" class="color-label-input" placeholder="이름">
                         </div>
                         <div class="color-item" data-permanent="true">
                             <div class="color-preview" id="c2-preview" style="background-color: #7cbade;"><input type="color" id="c2-picker" value="#7cbade" oninput="updateColorFromPicker(this, 'c2')"></div>
                             <input type="text" id="c2" class="color-code-input" value="#7CBADE" onchange="updateColorFromText(this)">
+                            <input type="text" class="color-label-input" placeholder="이름">
                         </div>
                     </div>
                 </div>
@@ -495,48 +578,111 @@
         <div class="sidebar-panel">
             <div class="panel-title"><svg class="ui-icon"><use href="#icon-tool"/></svg> 유틸리티 도구</div>
             <div class="btn-group-vertical">
+
+                <!-- 자주 쓰는 추가 버튼 -->
+                <label class="sticker-btn-label"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 스티커 / 전신 이미지 추가<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
+                <button class="add-palette-btn" onclick="addNewPaletteItem()"><svg class="ui-icon"><use href="#icon-palette"/></svg> 컬러 팔레트 추가</button>
+                <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 프로필 박스 추가</button>
+                <div class="sticker-tip">
+                    <svg class="ui-icon" style="width:12px;height:12px;stroke:#0369a1;margin-top:1px;"><use href="#icon-bulb"/></svg>
+                    <span><b>전신 그림</b>도 이 버튼으로 · 드래그로 배치 · <b>우클릭</b>으로 앞뒤 순서</span>
+                </div>
+
+                <div class="undo-row">
+                    <button class="undo-btn" id="undo-btn" onclick="doUndo()" disabled><svg class="ui-icon"><use href="#icon-rotate"/></svg> 되돌리기</button>
+                    <button class="undo-btn" id="redo-btn" onclick="doRedo()" disabled><svg class="ui-icon" style="transform:scaleX(-1);"><use href="#icon-rotate"/></svg> 다시 실행</button>
+                </div>
+
                 <div class="snap-toggle-row">
                     <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-magnet"/></svg> 자석 스냅 정렬</span>
                     <label class="toggle-label"><input type="checkbox" class="toggle-input" id="snap-toggle" checked onchange="snapEnabled = this.checked; saveToLocalStorage();"><div class="toggle-switch"></div></label>
                 </div>
 
-                <button class="add-palette-btn" style="background: #0f172a;" onclick="toggleHelpOverlay()"><svg class="ui-icon"><use href="#icon-bulb"/></svg> 조작 도움말 오버레이</button>
-                <button class="add-palette-btn" style="background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe;" onclick="toggleManual(true)"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 사용 설명서 보기</button>
-
+                <!-- 접이식: 필요할 때만 펼쳐 쓰는 설정들 -->
                 <div class="font-size-control-vertical">
-                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-ruler"/></svg> 캔버스 가로 너비 조절</span>
-                    <div class="slider-row">
-                        <input type="range" id="canvas-width-slider" min="900" max="1200" value="950" oninput="changeCanvasWidth(this.value)">
-                        <span id="canvas-width-val">950px</span>
-                    </div>
-                </div>
-                
-                <label class="sticker-btn-label"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 스티커 / 전신 이미지 추가<input type="file" accept="image/*" style="display:none;" onchange="createNewSticker(event)"></label>
-                <div class="sticker-tip">
-                    <svg class="ui-icon" style="width:12px;height:12px;stroke:#0369a1;margin-top:1px;"><use href="#icon-bulb"/></svg>
-                    <span><b>전신 그림</b>도 이 버튼으로 올립니다. 캔버스 어디로든 드래그해 배치하고, 모서리로 크기·회전을 맞춘 뒤 <b>우클릭</b>으로 다른 요소보다 앞/뒤에 놓을 수 있어요.</span>
-                </div>
-                <button class="add-palette-btn" onclick="addNewPaletteItem()"><svg class="ui-icon"><use href="#icon-palette"/></svg> 컬러 팔레트 추가</button>
-                <button class="add-palette-btn" style="background: #64748b;" onclick="addSingleSpecCardSlot()"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 프로필 박스 추가</button>
-                
-                <div class="font-size-control-vertical" style="margin-top: 2px;">
-                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-font"/></svg> 서체 종류 선택</span>
-                    <div class="font-select-box">
-                        <label class="font-select-label"><input type="radio" name="font-style-choice" value="sans" checked onchange="changeMainFontFamily(this.value)">고딕체</label>
-                        <label class="font-select-label"><input type="radio" name="font-style-choice" value="serif" onchange="changeMainFontFamily(this.value)">명조체</label>
-                    </div>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-ruler"/></svg> 캔버스 · 서체 설정</span>
+<span class="sidebar-title-left">캔버스 가로 너비</span>
+                        <div class="slider-row">
+                            <input type="range" id="canvas-width-slider" min="900" max="1200" value="950" oninput="changeCanvasWidth(this.value)">
+                            <span id="canvas-width-val">950px</span>
+                        </div>
+                        <span class="sidebar-title-left">서체 종류</span>
+                        <div class="font-select-box">
+                            <label class="font-select-label"><input type="radio" name="font-style-choice" value="sans" checked onchange="changeMainFontFamily(this.value)">고딕체</label>
+                            <label class="font-select-label"><input type="radio" name="font-style-choice" value="serif" onchange="changeMainFontFamily(this.value)">명조체</label>
+                        </div>
+                        <span class="sidebar-title-left">외관 설명 글씨 크기</span>
+                        <div class="slider-row">
+                            <input type="range" id="font-slider" min="10" max="20" value="13" oninput="changeDescFontSize(this.value)">
+                            <span id="font-val">13px</span>
+                        </div>
+                    
                 </div>
 
                 <div class="font-size-control-vertical">
-                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-font"/></svg> 외관 설명 글씨 크기</span>
-                    <div class="slider-row">
-                        <input type="range" id="font-slider" min="10" max="20" value="13" oninput="changeDescFontSize(this.value)">
-                        <span id="font-val">13px</span>
-                    </div>
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-image"/></svg> 캔버스 배경</span>
+<div class="font-select-box">
+                            <label class="font-select-label"><input type="radio" name="bg-mode" value="solid" checked onchange="applyCanvasBackground()">단색</label>
+                            <label class="font-select-label"><input type="radio" name="bg-mode" value="gradient" onchange="applyCanvasBackground()">그라데이션</label>
+                        </div>
+                        <div class="bg-row">
+                            <span>기본 색</span>
+                            <input type="color" class="swatch" id="bg-color-1" value="#ffffff" oninput="applyCanvasBackground()">
+                        </div>
+                        <div class="bg-row" id="bg-gradient-row" style="display:none;">
+                            <span>끝 색 / 각도</span>
+                            <span style="display:flex;align-items:center;gap:6px;">
+                                <input type="color" class="swatch" id="bg-color-2" value="#e0f2fe" oninput="applyCanvasBackground()">
+                                <span id="bg-angle-val" style="min-width:34px;text-align:right;color:#0f172a;">135&deg;</span>
+                            </span>
+                        </div>
+                        <input type="range" id="bg-angle" min="0" max="360" value="135" step="5" oninput="applyCanvasBackground()" style="width:100%;accent-color:#0f172a;height:4px;">
+                        <div class="bg-row"><span>첫 색 비중</span><span id="bg-ratio-val" style="color:#0f172a;">0%</span></div>
+                        <input type="range" id="bg-ratio" min="0" max="90" value="0" step="5" oninput="applyCanvasBackground()" style="width:100%;accent-color:#0f172a;height:4px;">
+                    
                 </div>
 
-                <button class="save-btn png-theme" style="margin-top: 10px;" onclick="saveTemplateAsImage('png')"><svg class="ui-icon"><use href="#icon-image"/></svg> PNG 이미지 저장</button>
-                <button class="save-btn jpeg-theme" onclick="saveTemplateAsImage('jpeg')"><svg class="ui-icon"><use href="#icon-image"/></svg> JPEG 이미지 저장</button>
+                <div class="font-size-control-vertical">
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-palette"/></svg> 이미지에서 색 추출</span>
+<div class="bg-row">
+                            <span>추출 개수</span>
+                            <select class="slot-select" id="extract-count" style="width:64px;">
+                                <option>3</option><option selected>5</option><option>7</option><option>9</option>
+                            </select>
+                        </div>
+                        <label class="bg-row" style="cursor:pointer;">
+                            <span>기존 팔레트 대체</span>
+                            <input type="checkbox" id="extract-replace" checked style="accent-color:#0f172a;">
+                        </label>
+                        <button class="mini-btn" onclick="extractPaletteFromImage()"><svg class="ui-icon"><use href="#icon-sparkle"/></svg> 두상 이미지에서 추출</button>
+                    
+                </div>
+
+                <div class="font-size-control-vertical">
+                    <span class="sidebar-title-left"><svg class="ui-icon"><use href="#icon-clipboard"/></svg> 저장 슬롯 / 백업</span>
+<select class="slot-select" id="slot-select">
+                            <option value="1">슬롯 1</option>
+                            <option value="2">슬롯 2</option>
+                            <option value="3">슬롯 3</option>
+                            <option value="4">슬롯 4</option>
+                            <option value="5">슬롯 5</option>
+                        </select>
+                        <div class="slot-row">
+                            <button class="mini-btn" onclick="saveToSlot()">슬롯 저장</button>
+                            <button class="mini-btn" onclick="loadFromSlot()">슬롯 불러오기</button>
+                        </div>
+                        <div class="slot-row">
+                            <button class="mini-btn" onclick="exportStateToFile()">파일 내보내기</button>
+                            <label class="mini-btn" style="margin:0;">파일 불러오기<input type="file" accept="application/json,.json" style="display:none;" onchange="importStateFromFile(event)"></label>
+                        </div>
+                    
+                </div>
+
+                <!-- 저장 · 도움말 -->
+                <button class="save-btn png-theme" style="margin-top: 6px;" onclick="saveTemplateAsImage('png')"><svg class="ui-icon"><use href="#icon-image"/></svg> PNG 고화질 저장</button>
+                <button class="save-btn jpeg-theme" onclick="saveTemplateAsImage('jpeg')"><svg class="ui-icon"><use href="#icon-image"/></svg> JPEG 고화질 저장</button>
+                <button class="guide-open-btn" onclick="toggleHelpOverlay()"><svg class="ui-icon" style="stroke:#3b82f6;"><use href="#icon-bulb"/></svg> 시작 가이드 다시 보기</button>
+                <button class="guide-open-btn" style="background:#eef2ff;color:#4f46e5;border-color:#c7d2fe;" onclick="toggleManual(true)"><svg class="ui-icon" style="stroke:#4f46e5;"><use href="#icon-clipboard"/></svg> 사용 설명서 보기</button>
                 <button class="reset-btn" onclick="resetCanvasData()"><svg class="ui-icon" style="stroke:#ef4444;"><use href="#icon-rotate"/></svg> 전체 데이터 초기화</button>
             </div>
         </div>
@@ -655,12 +801,40 @@
                         <li>이름과 원문 이름은 캔버스에서 직접 클릭해 입력합니다.</li>
                         <li><b>프로필 박스 추가</b>로 성별·나이·신장 등의 칸을 늘릴 수 있습니다(최대 6개).</li>
                         <li><b>컬러 팔레트 추가</b>로 색상 칸을 늘리고, 각 칸은 클릭해 색을 고르거나 컬러 코드를 직접 입력할 수 있습니다.</li>
+                        <li>각 색 칸 아래 <b>이름</b>을 적을 수 있습니다(머리카락 · 눈동자 등). 비워 두면 저장 이미지에도 나오지 않습니다.</li>
+                        <li>색 칸을 <b>드래그</b>하면 순서를 바꿀 수 있습니다.</li>
                         <li>외관 설명은 <b>'+ 외관 설명 줄 추가'</b>로 늘리고, 글씨 크기는 우측 슬라이더로 조절합니다.</li>
                         <li>각 줄 왼쪽의 <b>점 6개 손잡이</b>를 잡고 위아래로 끌면 <b>순서를 바꿀 수 있습니다.</b></li>
                     </ul>
                 </div>
                 <div class="manual-section">
-                    <h3>6. 저장 & 단축키</h3>
+                    <h3>6. 되돌리기 · 저장 슬롯 · 백업</h3>
+                    <ul>
+                        <li>우측 패널의 <b>되돌리기 / 다시 실행</b> 버튼, 또는 <b>Ctrl+Z</b> / <b>Ctrl+Shift+Z</b>(또는 Ctrl+Y)로 최근 <b>30단계</b>까지 되돌릴 수 있습니다.</li>
+                        <li><b>저장 슬롯 1~5</b>에 서로 다른 캐릭터를 따로 보관할 수 있습니다. 평소 작업은 자동 저장되고, 슬롯은 원할 때만 직접 저장·불러오기 합니다.</li>
+                        <li><b>파일 내보내기</b>를 누르면 작업 내용이 JSON 파일로 저장됩니다. 백업하거나 다른 기기·브라우저에서 <b>파일 불러오기</b>로 이어서 작업할 수 있습니다.</li>
+                        <li>슬롯 불러오기와 파일 불러오기는 현재 작업을 덮어쓰므로, 실행 전에 한 번 더 확인을 묻습니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>7. 색 추출 · 캔버스 배경</h3>
+                    <ul>
+                        <li><b>이미지에서 색 추출</b>은 업로드한 두상 이미지에서 많이 쓰인 색을 골라 팔레트를 자동으로 채웁니다. 개수는 3~9개 중 고를 수 있어요.</li>
+                        <li><b>기존 팔레트 대체</b>를 끄면 기존 색은 두고 추출한 색을 뒤에 덧붙입니다.</li>
+                        <li>추출된 색은 어디까지나 시작점이니, 마음에 들지 않으면 각 칸을 눌러 직접 다듬으세요.</li>
+                        <li><b>캔버스 배경</b>은 단색 또는 그라데이션(두 색 + 각도)으로 지정할 수 있고, 저장 이미지에도 그대로 반영됩니다.</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>8. 모바일에서 쓰기</h3>
+                    <ul>
+                        <li>스티커와 이미지를 <b>손가락으로 끌어</b> 옮길 수 있습니다.</li>
+                        <li>업로드 구역에서 <b>두 손가락으로 오므리거나 벌리면</b> 확대·축소됩니다.</li>
+                        <li>스티커를 <b>길게 누르면</b> 레이어 순서 메뉴가 열립니다(PC의 우클릭과 동일).</li>
+                    </ul>
+                </div>
+                <div class="manual-section">
+                    <h3>9. 저장 & 단축키</h3>
                     <ul>
                         <li>모든 작업은 <b>기기 브라우저 안에 자동 저장</b>되어 새로고침해도 유지됩니다.</li>
                         <li><b>PNG</b>는 배경 손실 없이, <b>JPEG</b>는 더 가벼운 용량으로 저장됩니다. 저장 시 가이드·버튼 등은 이미지에 나오지 않습니다.</li>
@@ -748,13 +922,20 @@
 
             if (canvasW > 0 && available > 200 && available < canvasW) {
                 const s = available / canvasW;
+                const chH = canvas.offsetHeight;
+                // 래퍼 크기는 원래대로 두고 transform 으로만 축소합니다.
+                // (너비까지 함께 줄이면 축소가 두 번 적용되어 캔버스가 잘립니다)
                 wrap.style.transform = `scale(${s})`;
-                wrap.style.height = (canvas.offsetHeight * s) + 'px';
                 wrap.style.width = canvasW + 'px';
+                wrap.style.height = '';
+                wrap.style.marginRight = '-' + (canvasW - canvasW * s) + 'px';
+                wrap.style.marginBottom = '-' + (chH - chH * s) + 'px';
             } else {
                 wrap.style.transform = 'none';
-                wrap.style.height = '';
                 wrap.style.width = '';
+                wrap.style.height = '';
+                wrap.style.marginRight = '0px';
+                wrap.style.marginBottom = '0px';
             }
         }
 
@@ -784,6 +965,14 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') { toggleManual(false); closeHelpOverlay(); return; }
+
+            // 되돌리기 / 다시 실행 (입력 중에는 브라우저 기본 동작을 그대로 둡니다)
+            const typing = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+            if ((e.ctrlKey || e.metaKey) && !typing) {
+                const k = e.key.toLowerCase();
+                if (k === 'z' && !e.shiftKey) { e.preventDefault(); doUndo(); return; }
+                if ((k === 'z' && e.shiftKey) || k === 'y') { e.preventDefault(); doRedo(); return; }
+            }
             // 입력 중일 때는 단축키가 동작하지 않도록 합니다.
             const tag = e.target.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA') return;
@@ -957,21 +1146,26 @@
             });
         }
 
-        async function saveToLocalStorage() {
-            if (!dbInstance || isRestoringData) return; 
+        // 현재 화면 상태를 하나의 객체로 모읍니다.
+        // 자동저장 · 되돌리기 · 슬롯 · 내보내기가 모두 이 함수를 공유합니다.
+        function collectState() {
             
             const specInputs = document.querySelectorAll('#spec-box-container .input-spec-field');
             const specValues = [];
             specInputs.forEach(input => specValues.push(input.value));
 
-            const addedPalettes = [];
+            // 순서·이름까지 보존하기 위해 기본 칸을 포함한 행 전체를 기록합니다.
+            const paletteFull = [];
             document.querySelectorAll('#palette-target-row .color-item').forEach((item) => {
-                const isPermanent = item.getAttribute('data-permanent') === 'true';
-                if (!isPermanent) {
-                    const inputColor = item.querySelector('input[type="text"]');
-                    if (inputColor) addedPalettes.push({ id: inputColor.id, color: inputColor.value });
-                }
+                const inputColor = item.querySelector('.color-code-input');
+                const lb = item.querySelector('.color-label-input');
+                if (inputColor) paletteFull.push({
+                    id: inputColor.id, color: inputColor.value,
+                    label: lb ? lb.value : '',
+                    isPermanent: item.getAttribute('data-permanent') === 'true'
+                });
             });
+            const addedPalettes = paletteFull.filter(x => !x.isPermanent);
 
             const images = {
                 bust: getUploadImageData('bust-upload-zone'),
@@ -1012,12 +1206,26 @@
                     { text: document.getElementById('sidebar-input-text-3').value, color: document.getElementById('sidebar-picker-3').value }
                 ],
                 c1: document.getElementById('c1').value, c2: document.getElementById('c2').value,
-                addedPalettes: addedPalettes, 
+                addedPalettes: addedPalettes, paletteFull: paletteFull, 
                 descriptions: Array.from(document.querySelectorAll('#profile-desc-container input')).map(i => i.value),
                 specs: specValues, images: images, stickers: stickers, exprLabels: exprLabels,
+                bg: {
+                    mode: document.querySelector('input[name="bg-mode"]:checked')?.value || 'solid',
+                    c1: document.getElementById('bg-color-1').value,
+                    c2: document.getElementById('bg-color-2').value,
+                    angle: document.getElementById('bg-angle').value,
+                    ratio: document.getElementById('bg-ratio') ? document.getElementById('bg-ratio').value : 0
+                },
                 snapEnabled: snapEnabled
             };
 
+            return data;
+        }
+
+        async function saveToLocalStorage() {
+            if (!dbInstance || isRestoringData) return;
+            const data = collectState();
+            pushUndoSnapshot(data);
             await writeSlotToDB(data);
         }
 
@@ -1057,11 +1265,17 @@
         }
 
         async function loadFromLocalStorage() {
-            isRestoringData = true; 
-            const container = document.getElementById('profile-desc-container');
-            container.innerHTML = ''; 
-
             const data = await readSlotFromDB(DEFAULT_SLOT_ID);
+            applyState(data);
+            lastSnapshot = collectState();
+        }
+
+        // 상태 객체를 화면에 그대로 반영합니다 (불러오기 · 되돌리기 공용).
+        function applyState(data) {
+            isRestoringData = true;
+            const container = document.getElementById('profile-desc-container');
+            container.innerHTML = '';
+            document.getElementById('spec-box-container').innerHTML = '';
 
             if (data) {
                 try {
@@ -1111,9 +1325,15 @@
                     if(data.c1) { document.getElementById('c1').value = data.c1; updateColorFromText(document.getElementById('c1')); }
                     if(data.c2) { document.getElementById('c2').value = data.c2; updateColorFromText(document.getElementById('c2')); }
 
-                    clearAddedPalettesOnly();
-                    if (data.addedPalettes && Array.isArray(data.addedPalettes)) {
-                        data.addedPalettes.forEach(item => rebuildPaletteItem(item.id, item.color));
+                    if (data.paletteFull && Array.isArray(data.paletteFull) && data.paletteFull.length) {
+                        // 순서와 이름을 그대로 되살리기 위해 행 전체를 다시 만듭니다.
+                        document.getElementById('palette-target-row').innerHTML = '';
+                        data.paletteFull.forEach(it => rebuildPaletteItem(it.id, it.color, it.label, it.isPermanent));
+                    } else {
+                        clearAddedPalettesOnly();
+                        if (data.addedPalettes && Array.isArray(data.addedPalettes)) {
+                            data.addedPalettes.forEach(item => rebuildPaletteItem(item.id, item.color));
+                        }
                     }
 
                     if (data.descriptions && data.descriptions.length > 0) {
@@ -1142,6 +1362,16 @@
                         document.getElementById('snap-toggle').checked = snapEnabled;
                     }
 
+                    if (data.bg) {
+                        const bm = document.querySelector('input[name="bg-mode"][value="' + data.bg.mode + '"]');
+                        if (bm) bm.checked = true;
+                        document.getElementById('bg-color-1').value = data.bg.c1 || '#ffffff';
+                        document.getElementById('bg-color-2').value = data.bg.c2 || '#e0f2fe';
+                        document.getElementById('bg-angle').value = data.bg.angle || 135;
+                        if (document.getElementById('bg-ratio')) document.getElementById('bg-ratio').value = data.bg.ratio || 0;
+                        applyCanvasBackgroundSilent();
+                    }
+
                     if (data.exprLabels && data.exprLabels.length === 3) {
                         document.getElementById('expr-label-1').value = data.exprLabels[0];
                         document.getElementById('expr-label-2').value = data.exprLabels[1];
@@ -1153,9 +1383,458 @@
             } else {
                 provideDefaultRows(); buildInitialSpecsLayout(); clearAddedPalettesOnly();
             }
-            
+
             setupAutoSaveListeners();
-            setTimeout(() => { isRestoringData = false; }, 500);
+            setTimeout(() => { isRestoringData = false; }, 300);
+        }
+
+        /* ===== 모바일 터치 대응 =====
+           기존 조작이 모두 mouse 이벤트로 되어 있어서, 터치를 마우스 이벤트로 바꿔
+           그대로 흘려보냅니다. 두 손가락은 이미지 핀치 확대로 따로 처리합니다. */
+        function enableTouchSupport() {
+            const forward = (touchEvent, mouseType) => {
+                if (touchEvent.touches.length > 1) return; // 핀치는 별도 처리
+                const t = touchEvent.changedTouches[0];
+                if (!t) return;
+                const target = touchEvent.currentTarget === document ? document.elementFromPoint(t.clientX, t.clientY) : touchEvent.target;
+                if (!target) return;
+                const ev = new MouseEvent(mouseType, {
+                    bubbles: true, cancelable: true, view: window,
+                    clientX: t.clientX, clientY: t.clientY, button: 0
+                });
+                target.dispatchEvent(ev);
+            };
+
+            document.addEventListener('touchstart', e => {
+                // 입력칸·버튼은 브라우저 기본 동작(키보드 열기 등)을 그대로 둡니다.
+                if (e.target.closest('input, textarea, button, label, select, a')) return;
+                if (e.target.closest('.draggable-sticker, .upload-zone, .drag-handle')) {
+                    forward(e, 'mousedown');
+                    if (e.cancelable && e.touches.length === 1) e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', e => {
+                if (e.touches.length > 1) return;
+                forward(e, 'mousemove');
+            }, { passive: true });
+
+            document.addEventListener('touchend', e => { forward(e, 'mouseup'); }, { passive: true });
+            document.addEventListener('touchcancel', e => { forward(e, 'mouseup'); }, { passive: true });
+
+            // 업로드 구역 두 손가락 핀치 확대/축소
+            document.querySelectorAll('.upload-zone').forEach(zone => {
+                let startDist = 0, startScale = 1;
+                zone.addEventListener('touchstart', e => {
+                    if (e.touches.length !== 2) return;
+                    const img = zone.querySelector('img');
+                    if (!img) return;
+                    startDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                    startScale = parseFloat(img.dataset.scale) || 1;
+                }, { passive: true });
+
+                zone.addEventListener('touchmove', e => {
+                    if (e.touches.length !== 2) return;
+                    const img = zone.querySelector('img');
+                    if (!img || !startDist) return;
+                    if (e.cancelable) e.preventDefault();
+                    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                    const s = Math.max(0.1, startScale * (d / startDist));
+                    img.dataset.scale = s;
+                    img.style.transform = 'translate(' + img.dataset.posX + 'px, ' + img.dataset.posY + 'px) scale(' + s + ')';
+                    if (zone.dataset.type === 'expression') syncAllExpressionTransforms(img, img.dataset.posX, img.dataset.posY, s);
+                }, { passive: false });
+
+                zone.addEventListener('touchend', e => {
+                    if (e.touches.length < 2 && startDist) { startDist = 0; saveToLocalStorage(); }
+                }, { passive: true });
+            });
+
+            // 스티커 길게 누르기 = 우클릭(레이어 메뉴)
+            let pressTimer = null;
+            document.addEventListener('touchstart', e => {
+                const st = e.target.closest('.draggable-sticker');
+                if (!st) return;
+                pressTimer = setTimeout(() => {
+                    const t = e.touches[0];
+                    st.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: t.clientX, clientY: t.clientY }));
+                }, 550);
+            }, { passive: true });
+            const clearPress = () => { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } };
+            document.addEventListener('touchmove', clearPress, { passive: true });
+            document.addEventListener('touchend', clearPress, { passive: true });
+        }
+
+        /* ===== 업로드 이미지에서 주요 색 추출 ===== */
+        function extractPaletteFromImage() {
+            const zone = document.getElementById('bust-upload-zone');
+            const img = zone ? zone.querySelector('img') : null;
+            if (!img || !img.src) { alert('먼저 두상 이미지를 업로드해 주세요.'); return; }
+
+            const n = parseInt(document.getElementById('extract-count').value) || 5;
+            const cv = document.createElement('canvas');
+            const W = 120;
+            const ratio = img.naturalHeight / img.naturalWidth || 1;
+            cv.width = W; cv.height = Math.max(1, Math.round(W * ratio));
+            const ctx = cv.getContext('2d');
+
+            try { ctx.drawImage(img, 0, 0, cv.width, cv.height); } catch (e) { alert('이미지를 읽을 수 없습니다.'); return; }
+
+            let px;
+            try { px = ctx.getImageData(0, 0, cv.width, cv.height).data; } catch (e) { alert('이미지를 읽을 수 없습니다.'); return; }
+
+            // 색 공간을 거칠게 나눠(양자화) 가장 많이 쓰인 칸을 고릅니다.
+            const bins = {};
+            for (let i = 0; i < px.length; i += 4) {
+                const a = px[i + 3];
+                if (a < 125) continue;
+                const r = px[i], g = px[i + 1], b = px[i + 2];
+                const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+                // 거의 흰색·검정에 가까운 픽셀은 대표색으로 잘 안 쓰이므로 가중치를 낮춥니다.
+                const weight = (mx > 245 && mn > 245) || (mx < 12) ? 0.15 : 1;
+                const key = (r >> 4) + ',' + (g >> 4) + ',' + (b >> 4);
+                if (!bins[key]) bins[key] = { r: 0, g: 0, b: 0, n: 0, w: 0 };
+                const bin = bins[key];
+                bin.r += r; bin.g += g; bin.b += b; bin.n++; bin.w += weight;
+            }
+
+            const sorted = Object.values(bins).sort((x, y) => y.w - x.w);
+            if (!sorted.length) { alert('색을 추출하지 못했습니다.'); return; }
+
+            // 비슷한 색이 연달아 나오지 않도록 어느 정도 거리를 둡니다.
+            const picked = [];
+            for (const bin of sorted) {
+                const col = [Math.round(bin.r / bin.n), Math.round(bin.g / bin.n), Math.round(bin.b / bin.n)];
+                const tooClose = picked.some(p => Math.abs(p[0] - col[0]) + Math.abs(p[1] - col[1]) + Math.abs(p[2] - col[2]) < 60);
+                if (!tooClose) picked.push(col);
+                if (picked.length >= n) break;
+            }
+
+            const hexes = picked.map(cl => '#' + cl.map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase());
+
+            if (document.getElementById('extract-replace').checked) clearAddedPalettesOnly();
+
+            hexes.forEach((hex, idx) => {
+                if (idx === 0 && document.getElementById('extract-replace').checked) {
+                    setPaletteSlot('c1', hex);
+                } else if (idx === 1 && document.getElementById('extract-replace').checked) {
+                    setPaletteSlot('c2', hex);
+                } else {
+                    paletteCount++;
+                    rebuildPaletteItem('c' + paletteCount, hex);
+                }
+            });
+            saveToLocalStorage();
+            showToast(hexes.length + '개 색을 팔레트에 넣었습니다');
+        }
+
+        function setPaletteSlot(id, hex) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.value = hex;
+            updateColorFromText(input);
+        }
+
+        /* ===== 캔버스 배경 ===== */
+        function paintCanvasBackground() {
+            const mode = document.querySelector('input[name="bg-mode"]:checked')?.value || 'solid';
+            const c1 = document.getElementById('bg-color-1').value;
+            const c2 = document.getElementById('bg-color-2').value;
+            const angle = document.getElementById('bg-angle').value;
+            const ratio = document.getElementById('bg-ratio') ? document.getElementById('bg-ratio').value : 0;
+            document.getElementById('bg-angle-val').innerText = angle + '\u00B0';
+            const rv = document.getElementById('bg-ratio-val');
+            if (rv) rv.innerText = ratio + '%';
+            document.getElementById('main-canvas').style.background = (mode === 'gradient')
+                ? 'linear-gradient(' + angle + 'deg, ' + c1 + ' ' + ratio + '%, ' + c2 + ' 100%)'
+                : c1;
+            document.getElementById('bg-gradient-row').style.display = (mode === 'gradient') ? 'flex' : 'none';
+        }
+
+        function applyCanvasBackground() { paintCanvasBackground(); saveToLocalStorage(); }
+        function applyCanvasBackgroundSilent() { paintCanvasBackground(); }
+
+
+        /* ===================== 사이드바 UX: 접이식 섹션 · 버튼 순서 =====================
+           마크업이 폼마다 조금씩 달라, 제목 텍스트로 섹션을 찾아 공통 처리합니다. */
+        const FOLD_TITLES = ['성격 키워드', '저장 슬롯 / 백업', '이미지에서 색 추출', '캔버스 배경',
+                             '한마디 말풍선', '캔버스 · 서체 설정'];
+        const FOLD_KEY = 'fold_state_' + (document.title || 'form');
+
+        function loadFoldState() {
+            try { return JSON.parse(localStorage.getItem(FOLD_KEY)) || {}; } catch (e) { return {}; }
+        }
+        function saveFoldState(st) {
+            try { localStorage.setItem(FOLD_KEY, JSON.stringify(st)); } catch (e) {}
+        }
+
+        function setupCollapsibleSections() {
+            const state = loadFoldState();
+
+            FOLD_TITLES.forEach(title => {
+                // 제목 요소를 찾습니다 (.sidebar-title 또는 .sidebar-title-left)
+                const heads = Array.from(document.querySelectorAll('.sidebar-title, .sidebar-title-left'));
+                const head = heads.find(h => h.textContent.trim().startsWith(title) && !h.dataset.foldReady);
+                if (!head) return;
+
+                // 제목이 .sidebar-title-left 이고 그 부모가 .sidebar-title 이면 부모를 헤더로 씁니다.
+                let headerEl = head;
+                if (head.classList.contains('sidebar-title-left') && head.parentElement &&
+                    head.parentElement.classList.contains('sidebar-title')) {
+                    headerEl = head.parentElement;
+                }
+                const section = headerEl.parentElement;
+                if (!section) return;
+
+                headerEl.dataset.foldReady = '1';
+                head.dataset.foldReady = '1';
+
+                // 헤더 뒤의 형제들을 본문으로 묶습니다.
+                const body = document.createElement('div');
+                body.className = 'collapsible-body';
+                let node = headerEl.nextSibling;
+                while (node) {
+                    const next = node.nextSibling;
+                    body.appendChild(node);
+                    node = next;
+                }
+                if (!body.childNodes.length) return;
+                section.appendChild(body);
+
+                section.classList.add('section-fold');
+                headerEl.classList.add('collapsible-head');
+
+                const arrow = document.createElement('span');
+                arrow.className = 'fold-arrow';
+                arrow.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+                headerEl.appendChild(arrow);
+
+                // 기본값은 접힘 (필요할 때만 펼쳐 쓰도록)
+                const open = state[title] === true;
+                if (!open) section.classList.add('collapsed');
+
+                headerEl.addEventListener('click', e => {
+                    // 토글 스위치·색상 선택 등은 접기 동작과 분리합니다.
+                    if (e.target.closest('input, label, select, button')) return;
+                    section.classList.toggle('collapsed');
+                    const st = loadFoldState();
+                    st[title] = !section.classList.contains('collapsed');
+                    saveFoldState(st);
+                });
+            });
+        }
+
+        function reorderUtilityButtons() {
+            const stickerInput = document.querySelector('input[onchange*="createNewSticker"]');
+            const stickerLabel = stickerInput ? stickerInput.closest('label') : null;
+            const paletteBtn = document.querySelector('button[onclick*="addNewPaletteItem"]');
+            const specBtn = document.querySelector('button[onclick*="addSpecBoxSlot"], button[onclick*="addSingleSpecCardSlot"]');
+            if (!stickerLabel) return;
+            const container = stickerLabel.parentElement;
+            if (!container) return;
+            // 자주 쓰는 추가 버튼 3종을 패널 맨 위로 올립니다.
+            if (specBtn) container.prepend(specBtn);
+            if (paletteBtn) container.prepend(paletteBtn);
+            container.prepend(stickerLabel);
+        }
+
+
+        // 세 폼의 패널 순서를 동일하게 맞춥니다 (시리즈로 느껴지도록).
+        const SECTION_ORDER = ['캔버스 · 서체 설정', '캔버스 배경', '이미지에서 색 추출', '저장 슬롯 / 백업'];
+
+        function reorderUtilitySections() {
+            const stickerInput = document.querySelector('input[onchange*="createNewSticker"]');
+            const stickerLabel = stickerInput ? stickerInput.closest('label') : null;
+            if (!stickerLabel) return;
+            const container = stickerLabel.parentElement;
+            if (!container) return;
+
+            // 저장/도움말 버튼 중 첫 번째를 기준점으로 삼아 그 앞에 순서대로 끼워 넣습니다.
+            const anchor = container.querySelector('button[onclick*="saveTemplateAsImage"]');
+
+            const pick = title => Array.from(container.querySelectorAll('.section-fold'))
+                .find(sec => {
+                    const h = sec.querySelector('.collapsible-head');
+                    return h && h.textContent.trim().startsWith(title);
+                });
+
+            // 자석 스냅 · 되돌리기 줄을 추가 버튼 바로 아래로
+            const snap = container.querySelector('.snap-toggle-row');
+            const undo = container.querySelector('.undo-row');
+            const tip = container.querySelector('.sticker-tip');
+            const head = [tip, undo, snap].filter(Boolean);
+            let after = stickerLabel;
+            const specBtn = container.querySelector('button[onclick*="addSpecBoxSlot"], button[onclick*="addSingleSpecCardSlot"]');
+            if (specBtn) after = specBtn;
+            head.forEach(el => { after.after(el); after = el; });
+
+            SECTION_ORDER.forEach(title => {
+                const sec = pick(title);
+                if (!sec) return;
+                if (anchor) container.insertBefore(sec, anchor);
+                else container.appendChild(sec);
+            });
+        }
+
+
+        // '말풍선 정렬 방식' · '말풍선 아이콘 종류' 를 '한마디 말풍선' 안으로 합칩니다.
+        // (폼마다 마크업이 조금씩 달라 제목으로 찾아 옮깁니다)
+        function mergeBubbleSections() {
+            const findSection = title => {
+                const head = Array.from(document.querySelectorAll('.sidebar-title, .sidebar-title-left'))
+                    .find(h => h.textContent.trim().startsWith(title));
+                if (!head) return null;
+                const headerEl = (head.classList.contains('sidebar-title-left') && head.parentElement
+                                  && head.parentElement.classList.contains('sidebar-title'))
+                                 ? head.parentElement : head;
+                return { headerEl, section: headerEl.parentElement };
+            };
+
+            const target = findSection('한마디 말풍선');
+            if (!target) return;
+
+            ['말풍선 정렬 방식', '말풍선 아이콘 종류'].forEach(title => {
+                const found = findSection(title);
+                if (!found || found.section === target.section) return;
+
+                // 소제목으로 바꿔 붙인 뒤 내용만 옮깁니다.
+                const label = document.createElement('span');
+                label.className = 'sidebar-title-left bubble-sub-label';
+                label.textContent = title.replace('말풍선 ', '');
+                target.section.appendChild(label);
+
+                Array.from(found.section.children).forEach(child => {
+                    if (child === found.headerEl) return;
+                    target.section.appendChild(child);
+                });
+                found.section.remove();
+            });
+        }
+
+        function setupSidebarUX() {
+            mergeBubbleSections();
+            reorderUtilityButtons();
+            setupCollapsibleSections();
+            reorderUtilitySections();
+        }
+
+        /* ===== 되돌리기 / 다시 실행 ===== */
+        let undoStack = [], redoStack = [], lastSnapshot = null;
+        const UNDO_LIMIT = 30;
+
+        function pushUndoSnapshot(current) {
+            // 직전 상태를 쌓아 두고, 새 변경이 생기면 redo 기록은 버립니다.
+            if (lastSnapshot) {
+                const prev = JSON.stringify(lastSnapshot);
+                if (prev !== JSON.stringify(current)) {
+                    undoStack.push(prev);
+                    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+                    redoStack = [];
+                }
+            }
+            lastSnapshot = current;
+            updateUndoButtons();
+        }
+
+        function updateUndoButtons() {
+            const u = document.getElementById('undo-btn'), r = document.getElementById('redo-btn');
+            if (u) { u.disabled = undoStack.length === 0; u.style.opacity = undoStack.length ? '1' : '.4'; }
+            if (r) { r.disabled = redoStack.length === 0; r.style.opacity = redoStack.length ? '1' : '.4'; }
+        }
+
+        function doUndo() {
+            if (!undoStack.length) return;
+            const cur = JSON.stringify(collectState());
+            const prev = undoStack.pop();
+            redoStack.push(cur);
+            applyState(JSON.parse(prev));
+            lastSnapshot = JSON.parse(prev);
+            writeSlotToDB(JSON.parse(prev));
+            updateUndoButtons();
+            showToast('되돌렸습니다');
+        }
+
+        function doRedo() {
+            if (!redoStack.length) return;
+            const cur = JSON.stringify(collectState());
+            const next = redoStack.pop();
+            undoStack.push(cur);
+            applyState(JSON.parse(next));
+            lastSnapshot = JSON.parse(next);
+            writeSlotToDB(JSON.parse(next));
+            updateUndoButtons();
+            showToast('다시 실행했습니다');
+        }
+
+        /* ===== 저장 슬롯 · 내보내기 / 불러오기 ===== */
+        function currentSlotId() {
+            return parseInt(document.getElementById('slot-select').value) || DEFAULT_SLOT_ID;
+        }
+
+        async function saveToSlot() {
+            const id = currentSlotId();
+            const data = collectState();
+            data.slotId = id;
+            await writeSlotToDB(data);
+            showToast('슬롯 ' + slotLabel(id) + '에 저장했습니다');
+        }
+
+        async function loadFromSlot() {
+            const id = currentSlotId();
+            const data = await readSlotFromDB(id);
+            if (!data) { alert('슬롯 ' + slotLabel(id) + '에 저장된 내용이 없습니다.'); return; }
+            if (!confirm('슬롯 ' + slotLabel(id) + '의 내용을 불러옵니다. 현재 작업은 덮어써집니다. 진행할까요?')) return;
+            applyState(data);
+            lastSnapshot = collectState();
+            saveToLocalStorage();
+            showToast('슬롯 ' + slotLabel(id) + '을 불러왔습니다');
+        }
+
+        function slotLabel(id) { return id === DEFAULT_SLOT_ID ? '자동' : String(id); }
+
+        function exportStateToFile() {
+            const data = collectState();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            const nm = document.getElementById('input-name').value || 'profile';
+            a.download = nm + '_커미션틀_백업.json';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            showToast('백업 파일을 내려받았습니다');
+        }
+
+        function importStateFromFile(event) {
+            const f = event.target.files[0];
+            if (!f) return;
+            const fr = new FileReader();
+            fr.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!confirm('불러온 파일로 현재 작업을 덮어씁니다. 진행할까요?')) return;
+                    applyState(data);
+                    lastSnapshot = collectState();
+                    saveToLocalStorage();
+                    showToast('백업 파일을 불러왔습니다');
+                } catch (err) {
+                    alert('파일을 읽을 수 없습니다. 이 도구에서 내보낸 JSON 파일인지 확인해 주세요.');
+                }
+            };
+            fr.readAsText(f);
+            event.target.value = '';
+        }
+
+        function showToast(msg) {
+            let t = document.getElementById('mini-toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'mini-toast';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.className = 'mini-toast show';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.className = 'mini-toast'; }, 1800);
         }
 
         function changeCanvasWidth(val) {
@@ -1175,19 +1854,59 @@
             });
         }
 
-        function rebuildPaletteItem(id, colorHex) {
+
+        // 팔레트 색 순서를 드래그로 바꿉니다.
+        let draggedColorItem = null;
+        function bindPaletteDrag(item) {
+            if (item.dataset.dragBound) return;   // 중복 등록 방지
+            item.dataset.dragBound = '1';
+            item.setAttribute('draggable', 'true');
+            item.addEventListener('dragstart', function (e) {
+                if (e.target.tagName === 'INPUT') { e.preventDefault(); return; }
+                draggedColorItem = this;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => this.classList.add('dragging'), 0);
+            });
+            item.addEventListener('dragend', function () {
+                this.classList.remove('dragging');
+                document.querySelectorAll('.color-item.drop-target').forEach(el => el.classList.remove('drop-target'));
+                draggedColorItem = null;
+                saveToLocalStorage();
+            });
+            item.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (draggedColorItem && draggedColorItem !== this && this.parentNode === draggedColorItem.parentNode) this.classList.add('drop-target');
+            });
+            item.addEventListener('dragleave', function () { this.classList.remove('drop-target'); });
+            item.addEventListener('drop', function (e) {
+                e.stopPropagation();
+                this.classList.remove('drop-target');
+                if (draggedColorItem && draggedColorItem !== this && this.parentNode === draggedColorItem.parentNode) {
+                    const row = this.parentNode;
+                    const items = Array.from(row.children);
+                    if (items.indexOf(draggedColorItem) < items.indexOf(this)) row.insertBefore(draggedColorItem, this.nextSibling);
+                    else row.insertBefore(draggedColorItem, this);
+                }
+            });
+        }
+
+        function rebuildPaletteItem(id, colorHex, label = '', isPermanent = false) {
             const currentNum = parseInt(id.replace('c', ''));
-            if (currentNum > paletteCount) paletteCount = currentNum;
+            if (!isNaN(currentNum) && currentNum > paletteCount) paletteCount = currentNum;
             const row = document.getElementById('palette-target-row');
             const newItem = document.createElement('div');
             newItem.className = 'color-item';
-            newItem.innerHTML = `
-                <button class="palette-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>
+            if (isPermanent) newItem.setAttribute('data-permanent', 'true');
+            const del = isPermanent ? '' : `<button class="palette-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>`;
+            newItem.innerHTML = del + `
                 <div class="color-preview" style="background-color: ${colorHex};"><input type="color" value="${colorHex}" oninput="updateColorFromPicker(this, '${id}')"></div>
                 <input type="text" id="${id}" class="color-code-input" value="${colorHex.toUpperCase()}" onchange="updateColorFromText(this)">
+                <input type="text" class="color-label-input" placeholder="이름" value="${(label || '').replace(/"/g, '&quot;')}">
             `;
             row.appendChild(newItem);
             newItem.querySelectorAll('input').forEach(input => input.addEventListener('input', saveToLocalStorage));
+            bindPaletteDrag(newItem);
         }
 
         function changeMainFontFamily(fontType) {
@@ -1232,7 +1951,12 @@
             addDescRow('이곳에 외관 포인트를 적습니다.'); addDescRow('이곳에 외관 포인트를 적습니다.'); addDescRow('이곳에 외관 포인트를 적습니다.');
         }
 
+        let autoSaveListenersBound = false;
         function setupAutoSaveListeners() {
+            // 되돌리기로 applyState가 다시 불릴 때 리스너가 중복 등록되지 않도록 합니다.
+            // (동적으로 새로 만들어지는 요소는 각자 생성 시점에 리스너를 붙입니다.)
+            if (autoSaveListenersBound) return;
+            autoSaveListenersBound = true;
             document.querySelectorAll('input[type="text"], textarea, input[type="range"], input[type="color"], input[type="radio"], input[type="checkbox"]').forEach(el => {
                 el.addEventListener('input', saveToLocalStorage); el.addEventListener('change', saveToLocalStorage);
             });
@@ -1658,7 +2382,7 @@
 
             setTimeout(() => {
                 html2canvas(canvasElement, {
-                    scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false, width: currentWidthVal, height: 840
+                    scale: 2, useCORS: true, backgroundColor: null, logging: false, width: currentWidthVal, height: 840
                 }).then(canvas => {
                     const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
                     const fileExtension = format === 'jpeg' ? 'jpg' : 'png';
@@ -1683,6 +2407,15 @@
         window.addEventListener('DOMContentLoaded', async () => {
             await initIndexedDB();
             await loadFromLocalStorage();
+            applyCanvasBackgroundSilent();
+            // HTML에 고정된 기본 팔레트 칸에도 드래그·자동저장을 연결합니다.
+            document.querySelectorAll('#palette-target-row .color-item').forEach(item => {
+                bindPaletteDrag(item);
+                item.querySelectorAll('input').forEach(inp => inp.addEventListener('input', saveToLocalStorage));
+            });
+            enableTouchSupport();
+            setupSidebarUX();
+            updateUndoButtons();
             autoResponsiveScale();
             // 페이지를 열 때마다 시작 가이드를 자동으로 표시합니다.
             openHelpOverlay();
