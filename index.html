@@ -159,7 +159,12 @@
         .desc-list li:hover .row-del-btn { opacity: 1; }
         /* 상세 설명 드래그 정렬 */
         .desc-list li { padding-left: 16px; border-radius: 6px; transition: background-color .2s, opacity .2s; }
-        .desc-list li.dragging { opacity: .5; background-color: #f1f5f9; }
+
+        .desc-list li.desc-lifted { z-index: 20; background: #fff; box-shadow: 0 12px 24px rgba(15,23,42,.18), 0 2px 6px rgba(15,23,42,.10); cursor: grabbing; }
+        .desc-list li.desc-dropping { z-index: 20; }
+        .desc-list.desc-sorting, .desc-list.desc-sorting * { user-select: none; cursor: grabbing !important; }
+        .desc-list li .drag-handle, .desc-list li .bullet-dot { touch-action: none; }
+        .hide-on-save .desc-list li.desc-lifted { box-shadow: none; }
         .drag-handle { position: absolute; left: 0; color: #94a3b8; cursor: grab; padding: 4px 0; display: flex; align-items: center; justify-content: center; width: 14px; }
         .drag-handle:active { cursor: grabbing; }
         .hide-on-save .drag-handle { display: none !important; }
@@ -387,6 +392,12 @@
         .align-btn { width: 30px; height: 30px; border-radius: 6px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #cbd5e1; transition: background 0.15s, color 0.15s; }
         .align-btn:hover { background: #1e293b; color: #ffffff; }
         .align-btn-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 3px; flex-shrink: 0; }
+        .stk-stroke { display: flex; align-items: center; gap: 6px; padding: 0 6px 0 4px; color: #cbd5e1; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .stk-stroke input[type=color] { width: 22px; height: 22px; padding: 0; border: 1px solid rgba(255,255,255,.25); border-radius: 5px; background: none; cursor: pointer; }
+        .stk-stroke input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+        .stk-stroke input[type=color]::-webkit-color-swatch { border: none; border-radius: 4px; }
+        .stk-stroke input[type=range] { width: 84px; accent-color: #38bdf8; cursor: pointer; }
+        #stk-stroke-val { min-width: 16px; text-align: right; color: #94a3b8; font-variant-numeric: tabular-nums; }
 
         /* 자석 스냅 ON/OFF 행 */
         .snap-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #fdf4ff; border: 1px solid #f5d0fe; padding: 10px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #86198f; }
@@ -567,6 +578,13 @@
         <button class="align-btn" title="위쪽 정렬" onclick="alignSticker('top')"><svg class="ui-icon"><use href="#icon-align-top"/></svg></button>
         <button class="align-btn" title="세로 중앙 정렬" onclick="alignSticker('center-v')"><svg class="ui-icon"><use href="#icon-align-center-v"/></svg></button>
         <button class="align-btn" title="아래쪽 정렬" onclick="alignSticker('bottom')"><svg class="ui-icon"><use href="#icon-align-bottom"/></svg></button>
+        <div class="align-btn-divider"></div>
+        <div class="stk-stroke" title="스티커 둘레에 획(테두리) 넣기 — 0이면 없음">
+            <span>획</span>
+            <input type="color" id="stk-stroke-color" value="#ffffff" oninput="applyStickerStroke()">
+            <input type="range" id="stk-stroke-w" min="0" max="24" step="1" value="0" oninput="applyStickerStroke()">
+            <span id="stk-stroke-val">0</span>
+        </div>
     </div>
 
     <button class="floating-toggle-btn" id="floating-sidebar-toggle" onclick="toggleSidebars()">
@@ -1241,33 +1259,136 @@
             tb.style.top = tt + 'px';
         }
 
+
+        /* ===== 스티커 획(테두리) =====
+           CSS 효과는 이미지 저장(html2canvas)에 안 나오므로, 원본 이미지 둘레에 획을 '직접 그린' 이미지로 바꿔 끼웁니다.
+           원본은 data-orig에 보관 → 굵기·색을 몇 번이고 바꾸거나 0으로 끌 수 있습니다.
+           획 굵기는 화면(캔버스) 기준 px이며, 그림 자체의 크기와 위치(중심)는 그대로 유지됩니다. */
+        const _stkImgCache = new Map(), _stkSilCache = new Map();
+        const STK_WORK_MAX = 1000;   // 작업 해상도 상한 — 큰 사진도 빠르게
+        function _stkLoad(src) {
+            if (_stkImgCache.has(src)) return _stkImgCache.get(src);
+            const p = new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+            _stkImgCache.set(src, p); return p;
+        }
+        async function _stkBase(orig) {
+            const im = await _stkLoad(orig);
+            const k = Math.min(1, STK_WORK_MAX / Math.max(im.naturalWidth, im.naturalHeight));
+            const w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+            const key = orig + '|base';
+            if (!_stkSilCache.has(key)) { const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h); _stkSilCache.set(key, c); }
+            return _stkSilCache.get(key);
+        }
+        async function _stkRender(orig, pad, color) {
+            const base = await _stkBase(orig);
+            const sk = orig + '|' + color;
+            if (!_stkSilCache.has(sk)) {          // 그림 모양 그대로 한 가지 색으로 칠한 실루엣
+                const s = document.createElement('canvas'); s.width = base.width; s.height = base.height;
+                const x = s.getContext('2d'); x.drawImage(base, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = color; x.fillRect(0, 0, s.width, s.height);
+                _stkSilCache.set(sk, s);
+            }
+            const sil = _stkSilCache.get(sk);
+            const out = document.createElement('canvas'); out.width = base.width + pad * 2; out.height = base.height + pad * 2;
+            const o = out.getContext('2d');
+            // 실루엣을 원 둘레로 조금씩 밀어 겹쳐 찍으면 둥근 획이 됩니다 (안쪽 링도 함께 찍어 빈틈 방지)
+            [pad, pad * 0.66, pad * 0.33].forEach(r => {
+                if (r < 0.5) return;
+                const n = Math.max(16, Math.min(96, Math.ceil(2 * Math.PI * r / 1.5)));
+                for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; o.drawImage(sil, pad + Math.cos(a) * r, pad + Math.sin(a) * r); }
+            });
+            o.drawImage(base, pad, pad);
+            return { src: out.toDataURL('image/png'), workW: base.width };
+        }
+        let _stkTok = 0, _stkRaf = 0;
+        // 획 적용: t = 화면 기준 굵기(px). 그림 크기·중심 위치는 그대로 두고 획만큼 스티커 칸을 넓힙니다.
+        async function setStickerStroke(st, t, color) {
+            const img = st.querySelector('img'); if (!img) return;
+            if (!st.dataset.orig) st.dataset.orig = img.src;
+            const orig = st.dataset.orig, tok = st._stkTok = ++_stkTok;
+            const base = await _stkBase(orig).catch(() => null); if (!base || tok !== st._stkTok) return;
+            const Wk = base.width;
+            const curPad = parseFloat(st.dataset.strokePad) || 0;
+            // 스티커 칸에는 안쪽 여백(padding)이 있으므로 '이미지가 차지하는 폭'으로 계산
+            const cs = getComputedStyle(st);
+            const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+            const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+            const contentW = () => Math.max(1, (st.offsetWidth || parseFloat(st.style.width) || 100) - padX);
+            const A = contentW() * Wk / (Wk + curPad * 2);          // 지금 보이는 '그림 자체'의 폭
+            const pad = t > 0 ? Math.max(1, Math.round(t * Wk / A)) : 0;
+            let src = orig;
+            if (pad) { const r = await _stkRender(orig, pad, color).catch(() => null); if (!r || tok !== st._stkTok) return; src = r.src; }
+            // 적용 직전 다시 측정 (그 사이에 크기가 바뀌었을 수 있음)
+            const C0 = contentW(), H0 = Math.max(0, st.offsetHeight - padY);
+            const A0 = C0 * Wk / (Wk + curPad * 2);
+            const Cn = A0 * (Wk + pad * 2) / Wk;
+            const Hn = Cn * (base.height + pad * 2) / (Wk + pad * 2);   // 높이는 새 이미지 비율을 따라감
+            img.src = src;
+            st.style.width = (cs.boxSizing === 'border-box' ? Cn + padX : Cn) + 'px';
+            st.style.left = ((parseFloat(st.style.left) || 0) - (Cn - C0) / 2) + 'px';
+            if (H0) st.style.top = ((parseFloat(st.style.top) || 0) - (Hn - H0) / 2) + 'px';
+            st.dataset.strokePad = pad; st.dataset.strokeW = pad ? t : 0; st.dataset.strokeC = color;
+            if (!pad) { delete st.dataset.orig; delete st.dataset.strokePad; }
+        }
+        function applyStickerStroke() {
+            const t = parseInt(document.getElementById('stk-stroke-w').value) || 0;
+            const color = document.getElementById('stk-stroke-color').value || '#ffffff';
+            document.getElementById('stk-stroke-val').innerText = t;
+            cancelAnimationFrame(_stkRaf);
+            _stkRaf = requestAnimationFrame(async () => {
+                await Promise.all(selectedStickers.map(st => setStickerStroke(st, t, color)));
+                repositionAlignToolbar();
+                if (typeof triggerAutoSave === 'function') triggerAutoSave(); else if (typeof saveToLocalStorage === 'function') saveToLocalStorage();
+            });
+        }
+        function syncStrokeControls() {
+            const st = selectedStickers[0]; if (!st) return;
+            const w = document.getElementById('stk-stroke-w'), c = document.getElementById('stk-stroke-color'), v = document.getElementById('stk-stroke-val');
+            if (!w) return;
+            w.value = parseInt(st.dataset.strokeW) || 0; v.innerText = w.value;
+            c.value = st.dataset.strokeC || '#ffffff';
+        }
+        // 저장/복원용: 원본과 획 정보를 함께 보관
+        function stickerStrokeData(st) {
+            return st.dataset.orig ? { orig: st.dataset.orig, strokeW: st.dataset.strokeW, strokeC: st.dataset.strokeC, strokePad: st.dataset.strokePad } : {};
+        }
+        function applyStickerStrokeData(st, d) {
+            if (!d || !d.orig) return;
+            st.dataset.orig = d.orig; st.dataset.strokeW = d.strokeW || 0; st.dataset.strokeC = d.strokeC || '#ffffff'; st.dataset.strokePad = d.strokePad || 0;
+        }
+
         function alignSticker(dir) {
             if (!selectedStickers.length) return;
             const canvas = document.getElementById('main-canvas');
-            const cw = canvas.clientWidth, ch = canvas.clientHeight;
-
-            if (selectedStickers.length === 1) {
-                // 하나만 선택: 캔버스 전체 기준으로 정렬
-                const st = selectedStickers[0];
+            // 모든 계산은 '캔버스 기준 좌표'와 '눈에 보이는 테두리(회전 포함)'로 합니다.
+            // → 다른 캐릭터 칸에 있는 스티커끼리도, 회전된 스티커도 정확히 맞춰집니다.
+            const offs = el => { let x = 0, y = 0; for (let e = el; e && e !== canvas; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return [x, y]; };
+            const info = st => {
+                const par = st.parentElement, [px, py] = (par === canvas) ? [0, 0] : offs(par);
                 const w = st.offsetWidth, h = st.offsetHeight;
-                if (dir === 'left') st.style.left = '0px';
-                else if (dir === 'center-h') st.style.left = ((cw - w) / 2) + 'px';
-                else if (dir === 'right') st.style.left = (cw - w) + 'px';
-                else if (dir === 'top') st.style.top = '0px';
-                else if (dir === 'center-v') st.style.top = ((ch - h) / 2) + 'px';
-                else if (dir === 'bottom') st.style.top = (ch - h) + 'px';
-            } else {
-                // 여러 개 선택: 선택한 스티커들끼리의 기준선에 맞춰 정렬
-                const d = selectedStickers.map(st => ({ st, left: parseFloat(st.style.left) || 0, top: parseFloat(st.style.top) || 0, w: st.offsetWidth, h: st.offsetHeight }));
-                if (dir === 'left') { const v = Math.min(...d.map(x => x.left)); d.forEach(x => x.st.style.left = v + 'px'); }
-                else if (dir === 'right') { const v = Math.max(...d.map(x => x.left + x.w)); d.forEach(x => x.st.style.left = (v - x.w) + 'px'); }
-                else if (dir === 'center-h') { const c = (Math.min(...d.map(x => x.left)) + Math.max(...d.map(x => x.left + x.w))) / 2; d.forEach(x => x.st.style.left = (c - x.w / 2) + 'px'); }
-                else if (dir === 'top') { const v = Math.min(...d.map(x => x.top)); d.forEach(x => x.st.style.top = v + 'px'); }
-                else if (dir === 'bottom') { const v = Math.max(...d.map(x => x.top + x.h)); d.forEach(x => x.st.style.top = (v - x.h) + 'px'); }
-                else if (dir === 'center-v') { const c = (Math.min(...d.map(x => x.top)) + Math.max(...d.map(x => x.top + x.h))) / 2; d.forEach(x => x.st.style.top = (c - x.h / 2) + 'px'); }
-            }
+                const a = (parseFloat(st.dataset.angle) || 0) * Math.PI / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+                const vw = w * c + h * s, vh = w * s + h * c;
+                const l = parseFloat(st.style.left) || 0, t = parseFloat(st.style.top) || 0;
+                const cx = px + l + w / 2, cy = py + t + h / 2;
+                return { st, par, px, py, w, h, vw, vh, cx, cy, L: cx - vw / 2, R: cx + vw / 2, T: cy - vh / 2, B: cy + vh / 2 };
+            };
+            const setCx = (d, cx) => { d.st.style.left = Math.round(cx - d.px - d.w / 2) + 'px'; };
+            const setCy = (d, cy) => { d.st.style.top = Math.round(cy - d.py - d.h / 2) + 'px'; };
+            const ds = selectedStickers.map(info);
+            const sameParent = ds.every(d => d.par === ds[0].par);
+            // 기준 영역: 하나만 골랐거나 모두 같은 칸이면 그 칸(캔버스), 아니면 고른 것들의 바깥 테두리
+            const box = (ds.length === 1 || (sameParent && /center/.test(dir)))
+                ? { L: ds[0].px, T: ds[0].py, R: ds[0].px + ds[0].par.clientWidth, B: ds[0].py + ds[0].par.clientHeight }
+                : { L: Math.min(...ds.map(d => d.L)), T: Math.min(...ds.map(d => d.T)), R: Math.max(...ds.map(d => d.R)), B: Math.max(...ds.map(d => d.B)) };
+            ds.forEach(d => {
+                if (dir === 'left') setCx(d, box.L + d.vw / 2);
+                else if (dir === 'right') setCx(d, box.R - d.vw / 2);
+                else if (dir === 'center-h') setCx(d, (box.L + box.R) / 2);
+                else if (dir === 'top') setCy(d, box.T + d.vh / 2);
+                else if (dir === 'bottom') setCy(d, box.B - d.vh / 2);
+                else if (dir === 'center-v') setCy(d, (box.T + box.B) / 2);
+            });
             repositionAlignToolbar();
-            saveToLocalStorage();
+            if (typeof triggerAutoSave === 'function') triggerAutoSave(); else if (typeof saveToLocalStorage === 'function') saveToLocalStorage();
         }
 
         function deleteStickerEl(btn) {
@@ -1782,7 +1903,7 @@
             costumeSel = (el && (el.classList.contains('costume-box') || el.classList.contains('face-obj'))) ? el : null;
         }
         selectedStickers = [...multiSel].filter(e => e.classList.contains('draggable-sticker'));
-        if (selectedStickers.length) repositionAlignToolbar();
+        if (selectedStickers.length) { repositionAlignToolbar(); syncStrokeControls(); }
         else { const tb = document.getElementById('sticker-align-toolbar'); if (tb) tb.style.display = 'none'; }
         syncObjPanel();
     }
@@ -2089,7 +2210,7 @@
             document.querySelectorAll('.draggable-sticker').forEach(sticker => {
                 const img = sticker.querySelector('img');
                 if (img) {
-                    stickers.push({ src: img.src, left: sticker.style.left, top: sticker.style.top, width: sticker.style.width, angle: sticker.dataset.angle || 0, zIndex: sticker.dataset.zIndex || sticker.style.zIndex || 100 });
+                    stickers.push({ src: img.src, left: sticker.style.left, top: sticker.style.top, width: sticker.style.width, angle: sticker.dataset.angle || 0, zIndex: sticker.dataset.zIndex || sticker.style.zIndex || 100, ...stickerStrokeData(sticker) });
                 }
             });
 
@@ -3035,36 +3156,93 @@
             document.getElementById('preview-modal').classList.remove('active');
         }
 
+
+        /* ===== 상세 외관 포인트: 블럭을 떼어내서 붙이는 순서 바꾸기 =====
+           집으면 블럭이 살짝 떠오르고, 지나가는 블럭들은 스르륵 비켜나며,
+           놓으면 빈자리에 톡 붙습니다. (캔버스 축소 배율에서도 정확하게 따라옵니다) */
+        function bindDescSort(li, onDone) {
+            li.removeAttribute('draggable');
+            const EASE = 'cubic-bezier(.2,.8,.2,1)';
+            li.addEventListener('pointerdown', e => {
+                if (e.button !== undefined && e.button !== 0) return;
+                if (e.target.closest('.desc-text, .row-del-btn, input, button')) return;
+                const list = li.parentNode;
+                if (!list) return;
+                e.preventDefault(); e.stopPropagation();
+                const scale = (li.getBoundingClientRect().height / (li.offsetHeight || 1)) || 1;
+                const startY = e.clientY;
+                const homeTop = li.offsetTop;          // 집은 순간의 자리(목록 기준)
+                const rows = () => Array.from(list.children).filter(x => x.tagName === 'LI');
+                const all = rows();
+                const minTop = all[0].offsetTop, maxTop = all[all.length - 1].offsetTop + all[all.length - 1].offsetHeight - li.offsetHeight;
+                let lastDy = 0;
+                li.classList.add('desc-lifted');
+                list.classList.add('desc-sorting');
+                // 자리를 바꾸면(DOM 이동) 포인터 붙잡기가 풀리므로 문서 전체에서 움직임을 받습니다
+                const pid = e.pointerId;
+
+                const place = () => { li.style.transform = 'translateY(' + (homeTop + lastDy - li.offsetTop) + 'px) scale(1.035) rotate(-1.2deg)'; };
+                place();
+
+                const onMove = ev => {
+                    if (ev.pointerId !== pid) return;
+                    let dy = (ev.clientY - startY) / scale;
+                    dy = Math.max(minTop - homeTop - 6, Math.min(maxTop - homeTop + 6, dy));
+                    lastDy = dy;
+                    const center = homeTop + dy + li.offsetHeight / 2;
+                    const others = rows().filter(x => x !== li);
+                    let before = null;
+                    for (const s of others) { if (center < s.offsetTop + s.offsetHeight / 2) { before = s; break; } }
+                    if (before !== li.nextElementSibling || (before === null && li !== list.lastElementChild)) {
+                        // FLIP: 자리를 바꾼 뒤, 비켜난 블럭들이 원래 자리에서 미끄러지듯 이동
+                        const first = new Map(others.map(s => [s, s.offsetTop]));
+                        if (before) list.insertBefore(li, before); else list.appendChild(li);
+                        others.forEach(s => {
+                            const d = first.get(s) - s.offsetTop;
+                            if (!d) return;
+                            s.style.transition = 'none';
+                            s.style.transform = 'translateY(' + d + 'px)';
+                            s.offsetHeight; // 강제 리플로우
+                            s.style.transition = 'transform .2s ' + EASE;
+                            s.style.transform = '';
+                        });
+                    }
+                    place();
+                };
+                const onUp = ev => {
+                    if (ev.pointerId !== pid) return;
+                    window.removeEventListener('pointermove', onMove, true);
+                    window.removeEventListener('pointerup', onUp, true);
+                    window.removeEventListener('pointercancel', onUp, true);
+                    list.classList.remove('desc-sorting');
+                    // 빈자리에 '톡' 붙기
+                    li.classList.remove('desc-lifted');
+                    li.classList.add('desc-dropping');
+                    li.style.transition = 'transform .26s cubic-bezier(.3,1.5,.5,1), box-shadow .26s ' + EASE;
+                    li.style.transform = '';
+                    const done = () => {
+                        li.removeEventListener('transitionend', done);
+                        li.classList.remove('desc-dropping');
+                        li.style.transition = '';
+                    };
+                    li.addEventListener('transitionend', done);
+                    setTimeout(done, 400);
+                    if (onDone) onDone();
+                };
+                window.addEventListener('pointermove', onMove, true);
+                window.addEventListener('pointerup', onUp, true);
+                window.addEventListener('pointercancel', onUp, true);
+            });
+        }
+
         function addDescRow(textValue = '이곳에 외관 포인트를 적습니다.') {
             const container = document.getElementById('profile-desc-container');
             const newLi = document.createElement('li');
             newLi.setAttribute('draggable', 'true');
             newLi.innerHTML = `<div class="drag-handle" title="드래그하여 순서 변경"><svg class="ui-icon"><use href="#icon-grab"/></svg></div><div class="desc-text" contenteditable="true" data-ph="이곳에 외관 포인트를 적습니다."></div><button class="row-del-btn" onclick="this.parentElement.remove(); saveToLocalStorage();">×</button>`;
 
-            newLi.addEventListener('dragstart', function (e) {
-                // 입력칸에서 글자를 선택하는 동작과 겹치지 않도록 합니다.
-                if (e.target.tagName === 'INPUT') { e.preventDefault(); return; }
-                draggedRowItem = this;
-                e.dataTransfer.effectAllowed = 'move';
-                setTimeout(() => this.classList.add('dragging'), 0);
-            });
-            newLi.addEventListener('dragend', function () {
-                this.classList.remove('dragging');
-                draggedRowItem = null;
-                saveToLocalStorage();
-            });
-            newLi.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
-            newLi.addEventListener('drop', function (e) {
-                e.stopPropagation();
-                if (draggedRowItem && draggedRowItem !== this && this.parentNode === draggedRowItem.parentNode) {
-                    const list = this.parentNode;
-                    const items = Array.from(list.children);
-                    if (items.indexOf(draggedRowItem) < items.indexOf(this)) list.insertBefore(draggedRowItem, this.nextSibling);
-                    else list.insertBefore(draggedRowItem, this);
-                }
-            });
-
             container.appendChild(newLi);
+            bindDescSort(newLi, saveToLocalStorage);
             const field = newLi.querySelector('.desc-text');
             // 저장해 둔 서식(굵게·색)을 그대로 되살립니다.
             field.innerHTML = (textValue === undefined || textValue === null) ? '' : String(textValue);
@@ -3327,6 +3505,7 @@
                 <div class="resize-sticker-handle" title="드래그하여 크기 조절"></div>
             `;
             canvas.appendChild(sticker); attachStickerEvents(sticker);
+            applyStickerStrokeData(sticker, sData);
         }
 
         function saveTemplateAsImage(format = 'png') {
